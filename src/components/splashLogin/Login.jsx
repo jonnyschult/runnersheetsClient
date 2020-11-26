@@ -82,7 +82,7 @@ const Register = (props) => {
         </Form>
       </ModalBody>
       <ModalFooter>
-        Don't have an account?? <h6 onClick={props.registerToggle}>Sign Up</h6>
+        Don't have an account? <h6 onClick={props.registerToggle}>Sign Up</h6>
       </ModalFooter>
     </>
   );
