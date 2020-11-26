@@ -6,11 +6,12 @@ import RunCard from "./Activities/RunCard";
 import TeamAthletes from "./TeamAthletes/TeamAthletes";
 import TeamStaff from "./TeamStaff/TeamStaff";
 import FetchDetailer from "./Activities/FetchDates";
+import "./Print.css";
+
 import { Button, Container } from "reactstrap";
 
 const CoachLanding = (props) => {
   const [teams, setTeams] = useState([]);
-  const [coachTeams, setCoachTeams] = useState();
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState();
   const [coaches, setCoaches] = useState([]);
@@ -33,8 +34,16 @@ const CoachLanding = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        await setCoachTeams(data.coachTeams);
-        await setTeams(data.teams);
+        const teamData = await data.teams.map((team) => {
+          //function to collate team info with roles
+          data.coachRole.forEach((role) => {
+            if (team.id === role.teamId) {
+              team.role = role.role;
+            }
+          });
+          return team;
+        });
+        await setTeams(teamData);
       })
       .catch((err) => console.log(err));
   }, [response]);
@@ -52,12 +61,17 @@ const CoachLanding = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        await setCoaches(
-          data.coachInfo.map((coach, index) => {
-            coach.role = data.teamCoaches[index].role;
-            return coach;
-          })
-        );
+        console.log(data);
+        const coachData = await data.coaches.map((coach) => {
+          //function to collate coach info with role
+          data.roles.forEach((role) => {
+            if (coach.id === role.userId) {
+              coach.role = role.role;
+            }
+          });
+          return coach;
+        });
+        await setCoaches(coachData);
       })
       .catch((err) => console.log(err));
   };
@@ -76,7 +90,6 @@ const CoachLanding = (props) => {
       .then((res) => res.json())
       .then(async (data) => {
         await setAthletes(data.athleteInfo);
-        console.log(data);
       })
       .catch((err) => console.log(err));
   };
@@ -115,7 +128,6 @@ const CoachLanding = (props) => {
           <TeamList
             token={props.token}
             teams={teams}
-            coachTeams={coachTeams}
             setResponse={setResponse}
             setLoading={setLoading}
             response={response}
@@ -125,6 +137,7 @@ const CoachLanding = (props) => {
             setSelectedTeam={setSelectedTeam}
             setCoaches={setCoaches}
             setTeamActivities={setTeamActivities}
+            selectedTeam={selectedTeam}
           />
           <TeamStaff
             token={props.token}
@@ -140,10 +153,9 @@ const CoachLanding = (props) => {
           />
         </Container>
         <Container>
-          {/* <Button onClick={fetchActivities}> Clicker you!</Button> */}
           {teamActivities ? (
             teamActivities.map((athlete, index) => {
-              return <RunCard athlete={athlete} />;
+              return <RunCard athlete={athlete} key={index} />;
             })
           ) : (
             <></>

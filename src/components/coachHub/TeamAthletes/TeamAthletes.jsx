@@ -25,6 +25,7 @@ const TeamAthletes = (props) => {
             props.athletes.map((athlete, index) => {
               return (
                 <AthleteModal
+                  key={index}
                   athlete={athlete}
                   selectedTeam={props.selectedTeam}
                   fetchAthletes={props.fetchAthletes}

@@ -22,7 +22,7 @@ const TeamList = (props) => {
                     props.setTeamActivities([]);
                   }}
                 >
-                  <b>{team.teamName}</b> <i>{props.coachTeams[index].role}</i>
+                  <b>{team.teamName}</b> <i>{team.role}</i>
                 </CardText>
               );
             })
@@ -33,7 +33,10 @@ const TeamList = (props) => {
         <TeamAdderModal
           token={props.token}
           setLoading={props.setLoading}
+          loading={props.loading}
           setResponse={props.setResponse}
+          response={props.response}
+          selectedTeam={props.selectedTeam}
         />
       </Card>
     </div>

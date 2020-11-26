@@ -44,6 +44,7 @@ const StaffModal = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
+        console.log(data);
         setLoading(true);
         await setResponse(data.message);
         setLoading(false);

@@ -27,7 +27,12 @@ const ActivitiesModal = (props) => {
           Generate
         </Button>
       </Form>
-      <Modal isOpen={modal} toggle={toggle} contentClassName="sheetModal">
+      <Modal
+        isOpen={modal}
+        toggle={toggle}
+        contentClassName="sheetModal"
+        className="print"
+      >
         <ModalHeader toggle={toggle}>Collated Workouts</ModalHeader>
         <ModalBody>
           {props.teamActivities ? (
@@ -89,10 +94,12 @@ const ActivitiesModal = (props) => {
           )}
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={toggle}>
+          <Button color="primary" onClick={toggle} className="modalButton">
             Cancel
           </Button>
-          <Button onClick={(e) => window.print()}>Print </Button>
+          <Button onClick={(e) => window.print()} className="modalButton">
+            Print
+          </Button>
         </ModalFooter>
       </Modal>
     </div>

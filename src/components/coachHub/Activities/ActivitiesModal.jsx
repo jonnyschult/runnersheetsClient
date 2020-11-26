@@ -66,7 +66,12 @@ const ActivitiesModal = (props) => {
           More Info
         </Button>
       </Form>
-      <Modal isOpen={modal} toggle={toggle} contentClassName="sheetModal">
+      <Modal
+        isOpen={modal}
+        toggle={toggle}
+        contentClassName="sheetModal"
+        className="print"
+      >
         <ModalHeader toggle={toggle}>
           {`${props.athlete.firstName} ${props.athlete.lastName}`}
         </ModalHeader>
@@ -88,7 +93,7 @@ const ActivitiesModal = (props) => {
             <tbody>
               {props.athlete.activities.map((activity, index) => {
                 return (
-                  <tr>
+                  <tr key={index}>
                     <th scope="row">{index + 1}</th>
                     <td>{new Date(activity.date).toDateString()}</td>
                     <td>
@@ -120,8 +125,11 @@ const ActivitiesModal = (props) => {
           </Table>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={toggle}>
+          <Button color="primary" onClick={toggle} className="modalButton">
             Cancel
+          </Button>
+          <Button onClick={(e) => window.print()} className="modalButton">
+            Print
           </Button>
         </ModalFooter>
       </Modal>

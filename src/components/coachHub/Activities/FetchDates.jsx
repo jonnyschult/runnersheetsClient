@@ -13,9 +13,12 @@ const FetchDetailer = (props) => {
             type="radio"
             name="radio1"
             className="radio1"
-            onChange={
-              (e) => props.setStartDate(new Date(Date.now() - 604800000)) //number of miliseconds from a week ago.
-            }
+            onChange={(e) => {
+              props.setStartDate(new Date(Date.now() - 604800000)); //number of miliseconds from a week ago.
+              document
+                .querySelectorAll(".date")
+                .forEach((date) => (date.value = ""));
+            }}
           />
           Week
         </Label>
@@ -27,9 +30,12 @@ const FetchDetailer = (props) => {
             type="radio"
             name="radio1"
             className="radio1"
-            onChange={
-              (e) => props.setStartDate(new Date(Date.now() - 2419200000)) //number of miliseconds from 4 weeks ago.
-            }
+            onChange={(e) => {
+              props.setStartDate(new Date(Date.now() - 2419200000)); //number of miliseconds from 4 weeks ago.
+              document
+                .querySelectorAll(".date")
+                .forEach((date) => (date.value = ""));
+            }}
           />
           4 Weeks
         </Label>
@@ -41,9 +47,12 @@ const FetchDetailer = (props) => {
             type="radio"
             name="radio1"
             className="radio1"
-            onChange={
-              (e) => props.setStartDate(new Date(Date.now() - 7257600000)) //number of miliseconds from 12 weeks ago.
-            }
+            onChange={(e) => {
+              props.setStartDate(new Date(Date.now() - 7257600000)); //number of miliseconds from 12 weeks ago.
+              document
+                .querySelectorAll(".date")
+                .forEach((date) => (date.value = ""));
+            }}
           />
           12 weeks
         </Label>
@@ -54,9 +63,12 @@ const FetchDetailer = (props) => {
             type="radio"
             name="radio1"
             className="radio1"
-            onChange={
-              (e) => props.setStartDate(new Date(Date.now() - 31449600000)) //number of miliseconds from a year ago.
-            }
+            onChange={(e) => {
+              props.setStartDate(new Date(Date.now() - 31449600000)); //minus 1 year of miliseconds
+              document
+                .querySelectorAll(".date")
+                .forEach((date) => (date.value = ""));
+            }}
           />
           Year
         </Label>
@@ -67,6 +79,7 @@ const FetchDetailer = (props) => {
         <Input
           type="Date"
           name="start date"
+          className="date"
           onChange={(e) => {
             props.setStartDate(e.target.value);
             document
@@ -78,6 +91,7 @@ const FetchDetailer = (props) => {
         <Input
           type="Date"
           name="end date"
+          className="date"
           onChange={(e) => {
             props.setEndDate(e.target.value);
             document

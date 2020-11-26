@@ -37,7 +37,7 @@ const RunCard = (props) => {
             <tbody>
               {props.athlete.activities.map((activity, index) => {
                 return (
-                  <tr>
+                  <tr key={index}>
                     <th scope="row">{index + 1}</th>
                     <td>{new Date(activity.date).toDateString()}</td>
                     <td>
