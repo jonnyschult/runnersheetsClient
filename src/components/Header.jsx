@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Route, Link, Switch } from "react-router-dom";
 import AthleteLanding from "./athleteHub/AthleteLanding";
+import FitbitAuth from "./athleteHub/fitbitFlow/FitbitAuth";
 import CoachLanding from "./coachHub/CoachLanding";
 import {
   Navbar,
@@ -10,13 +11,18 @@ import {
   Nav,
   NavItem,
   NavbarText,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownItem,
+  DropdownMenu,
 } from "reactstrap";
 
 const Header = (props) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const bool = props.isCoach;
   const toggle = () => setIsOpen(!isOpen);
-
+  const toggleDropdown = () => setDropdownOpen(!isOpen);
   return (
     <div className="Header">
       <Navbar color="light" light expand="md">
@@ -30,13 +36,28 @@ const Header = (props) => {
               </NavbarText>
             </NavItem>
             <NavItem>
+              <UncontrolledDropdown nav inNavbar>
+                <DropdownToggle nav caret>
+                  Athlete
+                </DropdownToggle>
+                <DropdownMenu right>
+                  <DropdownItem>
+                    <Link to="/athlete">Athlete</Link>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <Link to="/fitbit">Link Fitbit</Link>
+                  </DropdownItem>
+                  <DropdownItem>
+                    <Link to="/garmin">Link Garmin</Link>
+                  </DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+            </NavItem>
+            <NavItem>
               <NavbarText>
-                <Link to="/athlete">Athlete</Link>
+                <Link to="/plans">Plans</Link>
               </NavbarText>
             </NavItem>
-            <NavbarText>
-              <Link to="/plans">Plans</Link>
-            </NavbarText>
           </Nav>
           <NavbarText onClick={props.clearLogin}>Logout</NavbarText>
         </Collapse>
@@ -53,6 +74,9 @@ const Header = (props) => {
           </Route>
           <Route exact path="/athlete">
             <AthleteLanding token={props.token} />
+          </Route>
+          <Route exact path="/fitbit">
+            <FitbitAuth token={props.token} />
           </Route>
           <Route exact path="/coach">
             <CoachLanding token={props.token} />

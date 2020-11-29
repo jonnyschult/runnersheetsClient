@@ -54,7 +54,6 @@ const Register = (props) => {
     <>
       <ModalHeader>Register to Create Teams and Build Plans</ModalHeader>
       <ModalBody style={{ display: "flex", flexDirection: "column" }}>
-        <p>* Indicates optional field</p>
         <Form onSubmit={(e) => submitHandler(e)}>
           <FormGroup>
             <Label htmlFor="email">Email</Label>
