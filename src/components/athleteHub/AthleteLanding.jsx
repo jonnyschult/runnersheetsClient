@@ -45,7 +45,7 @@ const AthleteLanding = (props) => {
       />
       {runs ? (
         runs.map((run, index) => {
-          return <ActivitiesRunCard run={run} key={index} />;
+          return <ActivitiesRunCard run={run} key={index} index={index}/>;
         })
       ) : (
         <></>
