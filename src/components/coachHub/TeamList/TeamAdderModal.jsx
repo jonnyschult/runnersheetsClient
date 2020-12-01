@@ -14,8 +14,6 @@ import {
 } from "reactstrap";
 
 const TeamAdderModal = (props) => {
-  // const [response, setResponse] = useState("");
-  // const [loading, setLoading] = useState();
   const [modal, setModal] = useState(false);
   const [teamTitle, setTeamTitle] = useState();
   const [update, setUpdate] = useState(false);

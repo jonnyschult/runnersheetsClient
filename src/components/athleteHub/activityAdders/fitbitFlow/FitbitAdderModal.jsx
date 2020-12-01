@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import APIURL from "../../../helpers/environment";
+import APIURL from "../../../../helpers/environment";
 import {
   Button,
   Table,
@@ -23,6 +23,9 @@ const FitbitAdderModal = (props) => {
 
   const toggle = () => setModal(!modal);
 
+  /***************************
+  ADD FITBIT ACTIVITY TO DATABASE
+  ***************************/
   const runAdder = async (runObj) => {
     fetch(`${APIURL}/activity/create`, {
       method: "POST",
@@ -53,6 +56,9 @@ const FitbitAdderModal = (props) => {
       });
   };
 
+  /***************************
+  REMOVE FITBIT ACTIVITY FROM DATABASE
+  ***************************/
   const runRemover = async (runObj) => {
     fetch(`${APIURL}/activity/removeActivity`, {
       method: "DELETE",
@@ -74,6 +80,9 @@ const FitbitAdderModal = (props) => {
       });
   };
 
+  /***************************
+  GET FITBIT ACTIVITY FROM FITBIT
+  ***************************/
   const fitbitActivitiesFetcher = async (e) => {
     e.preventDefault();
     setLoading(true);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import APIURL from "../../../helpers/environment";
+import APIURL from "../../../../helpers/environment";
 import { Button } from "reactstrap";
 
 const FitbitAuth = (props) => {

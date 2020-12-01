@@ -18,17 +18,18 @@ const Register = (props) => {
   const [lastName, setLastName] = useState(null);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState();
-  const [heightInInches, setHeightInInches] = useState(null);
+  // const [heightInInches, setHeightInInches] = useState(null);
   const [feet, setFeet] = useState(null);
   const [inches, setInches] = useState(null);
   const [weightInPounds, setWeightInPounds] = useState(null);
   const [age, setAge] = useState(null);
   const [err, setErr] = useState();
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
+    let height = 0;
     if (feet && inches) {
-      setHeightInInches(feet * 12 + inches);
+      height = feet * 12 + inches;
     }
     if (password === confirmPassword) {
       fetch(`${APIURL}/user/register`, {
@@ -41,7 +42,7 @@ const Register = (props) => {
           firstName,
           lastName,
           password,
-          heightInInches,
+          heightInInches: height,
           weightInPounds,
           age,
         }),

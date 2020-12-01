@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Route, Link, Switch } from "react-router-dom";
 import AthleteLanding from "./athleteHub/AthleteLanding";
-import FitbitAuth from "./athleteHub/fitbitFlow/FitbitAuth";
+import FitbitAuth from "./athleteHub/activityAdders/fitbitFlow/FitbitAuth";
 import CoachLanding from "./coachHub/CoachLanding";
 import {
   Navbar,
