@@ -19,7 +19,7 @@ const Register = (props) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    fetch(`${APIURL}/user/login`, {
+    fetch(`https://runnersheets.herokuapp.com/user/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
