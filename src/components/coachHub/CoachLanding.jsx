@@ -5,26 +5,30 @@ import TeamPlans from "./TeamPlans";
 import RunCard from "./Activities/RunCard";
 import TeamAthletes from "./TeamAthletes/TeamAthletes";
 import TeamStaff from "./TeamStaff/TeamStaff";
-import FetchDetailer from "./Activities/FetchDates";
+import FetchDates from "./Activities/FetchDates";
 import "./Print.css";
 
-import { Button, Container } from "reactstrap";
+import { Button, Container, Spinner } from "reactstrap";
 
 const CoachLanding = (props) => {
   const [teams, setTeams] = useState([]);
-  const [response, setResponse] = useState("");
-  const [loading, setLoading] = useState();
+  const [update, setUpdate] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [loadingMain, setLoadingMain] = useState(false);
   const [coaches, setCoaches] = useState([]);
-  const [selectedTeam, setSelectedTeam] = useState("");
+  const [selectedTeam, setSelectedTeam] = useState({});
   const [athletes, setAthletes] = useState();
   const [teamActivities, setTeamActivities] = useState();
-  const [startDate, setStartDate] = useState(new Date(Date.now() - 604800000));
-  const [endDate, setEndDate] = useState(new Date(Date.now()));
+  const [startDate, setStartDate] = useState(
+    new Date(Date.now() - 604800000).getTime()
+  );
+  const [endDate, setEndDate] = useState(new Date(Date.now()).getTime());
 
   /************************
   AUTO FETCH TEAMS
   ************************/
   useEffect(() => {
+    setLoadingMain(true);
     fetch(`${APIURL}/coach/coachTeams`, {
       method: "GET",
       headers: {
@@ -43,10 +47,19 @@ const CoachLanding = (props) => {
           });
           return team;
         });
+        if (!selectedTeam) {
+          await setSelectedTeam(teamData[0]);
+        }
+        await setLoadingMain(false);
         await setTeams(teamData);
+        await fetchStaff(selectedTeam);
+        await fetchAthletes(selectedTeam);
       })
-      .catch((err) => console.log(err));
-  }, [response]);
+      .catch((err) => {
+        console.log(err);
+        setLoadingMain(false);
+      });
+  }, [update]);
 
   /************************
   ONCLICK FETCH STAFF
@@ -61,7 +74,6 @@ const CoachLanding = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        console.log(data);
         const coachData = await data.coaches.map((coach) => {
           //function to collate coach info with role
           data.roles.forEach((role) => {
@@ -98,6 +110,7 @@ const CoachLanding = (props) => {
   AUTO FETCH ATHLETES' ACTIVITIES
   ************************/
   useEffect(() => {
+    setLoading(true);
     fetch(
       `${APIURL}/coach/getTeamActivities/${selectedTeam.id}?startDate=${startDate}&endDate=${endDate}`,
       {
@@ -110,66 +123,73 @@ const CoachLanding = (props) => {
     )
       .then((res) => res.json())
       .then(async (data) => {
-        setLoading(true);
         await setTeamActivities(data.teamActivities);
         setLoading(false);
-        console.log(data.teamActivities);
       })
-      .catch((err) => console.log(err));
-  }, [selectedTeam, startDate, endDate]);
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
+  }, [selectedTeam, startDate, endDate, update]);
 
   return (
     <div>
-      <h2>
-        {selectedTeam.teamName ? selectedTeam.teamName : <>Select a Team</>}
-      </h2>
-      <div style={{ display: "flex" }}>
-        <Container>
-          <TeamList
-            token={props.token}
-            teams={teams}
-            setResponse={setResponse}
-            setLoading={setLoading}
-            response={response}
-            loading={loading}
-            fetchStaff={fetchStaff}
-            fetchAthletes={fetchAthletes}
-            setSelectedTeam={setSelectedTeam}
-            setCoaches={setCoaches}
-            setTeamActivities={setTeamActivities}
-            selectedTeam={selectedTeam}
-          />
-          <TeamStaff
-            token={props.token}
-            coaches={coaches}
-            selectedTeam={selectedTeam}
-            fetchStaff={fetchStaff}
-          />
-          <TeamAthletes
-            token={props.token}
-            athletes={athletes}
-            selectedTeam={selectedTeam}
-            fetchAthletes={fetchAthletes}
-          />
-        </Container>
-        <Container>
-          {teamActivities ? (
-            teamActivities.map((athlete, index) => {
-              return <RunCard athlete={athlete} key={index} />;
-            })
-          ) : (
-            <></>
-          )}
-        </Container>
-        <Container>
-          <FetchDetailer
-            setStartDate={setStartDate}
-            setEndDate={setEndDate}
-            teamActivities={teamActivities}
-          />
-          <TeamPlans />
-        </Container>
-      </div>
+      {loadingMain ? (
+        <Spinner></Spinner>
+      ) : (
+        <div>
+          <h2>
+            {selectedTeam.teamName ? selectedTeam.teamName : <>Select a Team</>}
+          </h2>
+          <div style={{ display: "flex" }}>
+            <Container>
+              <TeamList
+                token={props.token}
+                teams={teams}
+                setUpdate={setUpdate}
+                setLoading={setLoading}
+                update={update}
+                loading={loading}
+                fetchStaff={fetchStaff}
+                fetchAthletes={fetchAthletes}
+                setSelectedTeam={setSelectedTeam}
+                setCoaches={setCoaches}
+                setTeamActivities={setTeamActivities}
+                selectedTeam={selectedTeam}
+              />
+              <TeamStaff
+                token={props.token}
+                coaches={coaches}
+                selectedTeam={selectedTeam}
+                fetchStaff={fetchStaff}
+              />
+              <TeamAthletes
+                token={props.token}
+                athletes={athletes}
+                selectedTeam={selectedTeam}
+                fetchAthletes={fetchAthletes}
+              />
+            </Container>
+            <Container>
+              {teamActivities ? (
+                teamActivities.map((athlete, index) => {
+                  return <RunCard athlete={athlete} key={index} />;
+                })
+              ) : (
+                <></>
+              )}
+            </Container>
+            <Container>
+              <FetchDates
+                setStartDate={setStartDate}
+                setEndDate={setEndDate}
+                teamActivities={teamActivities}
+              />
+              <TeamPlans />
+            </Container>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

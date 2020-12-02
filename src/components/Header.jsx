@@ -3,6 +3,7 @@ import { Route, Link, Switch } from "react-router-dom";
 import AthleteLanding from "./athleteHub/AthleteLanding";
 import FitbitAuth from "./athleteHub/activityAdders/fitbitFlow/FitbitAuth";
 import CoachLanding from "./coachHub/CoachLanding";
+import UpdateInfoLanding from "./updateInfo/UpdateInfoLanding";
 import {
   Navbar,
   NavbarBrand,
@@ -19,10 +20,7 @@ import {
 
 const Header = (props) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const bool = props.isCoach;
   const toggle = () => setIsOpen(!isOpen);
-  const toggleDropdown = () => setDropdownOpen(!isOpen);
   return (
     <div className="Header">
       <Navbar color="light" light expand="md">
@@ -54,12 +52,24 @@ const Header = (props) => {
               </UncontrolledDropdown>
             </NavItem>
             <NavItem>
-              <NavbarText>
-                <Link to="/plans">Plans</Link>
-              </NavbarText>
+              <NavbarText>Plans</NavbarText>
             </NavItem>
           </Nav>
-          <NavbarText onClick={props.clearLogin}>Logout</NavbarText>
+          <Nav>
+            <UncontrolledDropdown nav inNavbar>
+              <DropdownToggle nav caret>
+                Settings
+              </DropdownToggle>
+              <DropdownMenu right>
+                <DropdownItem>
+                  <Link to="/updateInfo">Update User Info</Link>
+                </DropdownItem>
+                <DropdownItem>
+                  <NavbarText onClick={props.clearLogin}>Logout</NavbarText>
+                </DropdownItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
+          </Nav>
         </Collapse>
       </Navbar>
 
@@ -80,6 +90,12 @@ const Header = (props) => {
           </Route>
           <Route exact path="/coach">
             <CoachLanding token={props.token} />
+          </Route>
+          <Route exact path="/updateInfo">
+            <UpdateInfoLanding
+              token={props.token}
+              clearLogin={props.clearLogin}
+            />
           </Route>
         </Switch>
       </div>

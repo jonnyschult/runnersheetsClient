@@ -60,7 +60,6 @@ const Register = (props) => {
         })
         .then((data) => {
           props.updateToken(data.loginToken);
-          console.log(data.loginToken, data.message);
         })
         .catch((err) => {
           setErr(err.message);

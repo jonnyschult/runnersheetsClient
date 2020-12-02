@@ -14,10 +14,11 @@ const FetchDetailer = (props) => {
             name="radio1"
             className="radio1"
             onChange={(e) => {
-              props.setStartDate(new Date(Date.now() - 604800000)); //number of miliseconds from a week ago.
+              props.setEndDate(new Date(Date.now()).getTime()); //resets the endDate incase they have set it with a custom value
+              props.setStartDate(new Date(Date.now() - 604800000).getTime()); //number of miliseconds from a week ago.
               document
                 .querySelectorAll(".date")
-                .forEach((date) => (date.value = ""));
+                .forEach((date) => (date.value = "")); //resets the values for other date options
             }}
           />
           Week
@@ -31,10 +32,11 @@ const FetchDetailer = (props) => {
             name="radio1"
             className="radio1"
             onChange={(e) => {
-              props.setStartDate(new Date(Date.now() - 2419200000)); //number of miliseconds from 4 weeks ago.
+              props.setEndDate(new Date(Date.now()).getTime()); //resets the endDate incase they have set it with a custom value
+              props.setStartDate(new Date(Date.now() - 2419200000).getTime()); //number of miliseconds from 4 weeks ago.
               document
                 .querySelectorAll(".date")
-                .forEach((date) => (date.value = ""));
+                .forEach((date) => (date.value = "")); //resets the values for other date options
             }}
           />
           4 Weeks
@@ -48,10 +50,11 @@ const FetchDetailer = (props) => {
             name="radio1"
             className="radio1"
             onChange={(e) => {
-              props.setStartDate(new Date(Date.now() - 7257600000)); //number of miliseconds from 12 weeks ago.
+              props.setEndDate(new Date(Date.now()).getTime()); //resets the endDate incase they have set it with a custom value
+              props.setStartDate(new Date(Date.now() - 7257600000).getTime()); //number of miliseconds from 12 weeks ago.
               document
                 .querySelectorAll(".date")
-                .forEach((date) => (date.value = ""));
+                .forEach((date) => (date.value = "")); //resets the values for other date options
             }}
           />
           12 weeks
@@ -64,10 +67,11 @@ const FetchDetailer = (props) => {
             name="radio1"
             className="radio1"
             onChange={(e) => {
-              props.setStartDate(new Date(Date.now() - 31449600000)); //minus 1 year of miliseconds
+              props.setEndDate(new Date(Date.now()).getTime()); //resets the endDate incase they have set it with a custom value
+              props.setStartDate(new Date(Date.now() - 31449600000).getTime()); //minus 1 year of miliseconds
               document
                 .querySelectorAll(".date")
-                .forEach((date) => (date.value = ""));
+                .forEach((date) => (date.value = "")); //resets the values for other date options
             }}
           />
           Year
@@ -81,7 +85,7 @@ const FetchDetailer = (props) => {
           name="start date"
           className="date"
           onChange={(e) => {
-            props.setStartDate(e.target.value);
+            props.setStartDate(new Date(e.target.value).getTime());
             document
               .querySelectorAll(".radio1")
               .forEach((radio) => (radio.checked = false)); //Deselects all radios to prevent confusion.
@@ -93,7 +97,7 @@ const FetchDetailer = (props) => {
           name="end date"
           className="date"
           onChange={(e) => {
-            props.setEndDate(e.target.value);
+            props.setEndDate(new Date(e.target.value).getTime());
             document
               .querySelectorAll(".radio1")
               .forEach((radio) => (radio.checked = false)); //Deselects all radios to prevent confusion.

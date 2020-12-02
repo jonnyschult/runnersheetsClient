@@ -16,8 +16,8 @@ import {
 
 const ManualActivityAdder = (props) => {
   const [modal, setModal] = useState(false);
-  const [err, setErr] = useState();
   const [date, setDate] = useState();
+  const [time, setTime] = useState();
   const [distance, setDistance] = useState();
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
@@ -26,7 +26,9 @@ const ManualActivityAdder = (props) => {
   const [avgHR, setAvgHR] = useState();
   const [elevation, setElevation] = useState();
   const [description, setDescription] = useState();
+  const [response, setResponse] = useState();
   const [loading, setLoading] = useState();
+  const [err, setErr] = useState();
 
   const toggle = () => setModal(!modal);
 
@@ -36,10 +38,11 @@ const ManualActivityAdder = (props) => {
   const runAdder = async (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log(hours, minutes, seconds);
+    let dateTime =
+      new Date(`${date}T${time}:00.000Z`).getTime() +
+      new Date(`${date}T${time}:00.000Z`).getTimezoneOffset() * 60 * 1000;
     //prettier-ignore
     let duration = ((hours * 60 * 60) + (minutes * 60) + seconds)
-    console.log(duration);
     fetch(`${APIURL}/activity/create`, {
       method: "POST",
       headers: {
@@ -47,7 +50,7 @@ const ManualActivityAdder = (props) => {
         Authorization: props.token,
       },
       body: JSON.stringify({
-        date: date,
+        date: dateTime,
         meters: distance,
         durationSecs: duration,
         elevationMeters: elevation,
@@ -58,12 +61,12 @@ const ManualActivityAdder = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        console.log(data);
-        await props.setResponse(data.message);
+        await props.setUpdate(data.message);
+        await setResponse(data.message);
         setLoading(false);
         setTimeout(() => {
+          setResponse("");
           toggle();
-          props.setResponse("");
         }, 1200);
       })
       .catch((err) => {
@@ -95,7 +98,22 @@ const ManualActivityAdder = (props) => {
                 required
                 type="date"
                 name="date"
-                onChange={(e) => setDate(e.target.value)}
+                onChange={(e) => {
+                  setDate(e.target.value);
+                }}
+              ></Input>
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="time">time</Label>
+              <Input
+                required
+                type="time"
+                name="time"
+                defaultValue="15:00"
+                onChange={(e) => {
+                  setTime(e.target.value);
+                  console.log(time);
+                }}
               ></Input>
             </FormGroup>
             <FormGroup>
@@ -170,7 +188,8 @@ const ManualActivityAdder = (props) => {
             <Button type="submit" style={{ width: "100%" }}>
               Submit
             </Button>
-            {err ? <Alert>{err}</Alert> : <></>}
+            {response ? <Alert>{err}</Alert> : <></>}
+            {err ? <Alert color="danger">{err}</Alert> : <></>}
             {loading ? <Spinner></Spinner> : <></>}
           </Form>
         </ModalBody>

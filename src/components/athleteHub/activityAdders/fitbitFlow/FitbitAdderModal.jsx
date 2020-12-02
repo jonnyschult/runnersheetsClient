@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import APIURL from "../../../../helpers/environment";
 import {
   Button,
@@ -19,7 +19,7 @@ const FitbitAdderModal = (props) => {
   const [modal, setModal] = useState(false);
   const [startDate, setStartDate] = useState();
   const [loading, setLoading] = useState();
-  const [error, setError] = useState();
+  const [err, setErr] = useState();
 
   const toggle = () => setModal(!modal);
 
@@ -34,7 +34,7 @@ const FitbitAdderModal = (props) => {
         Authorization: props.token,
       },
       body: JSON.stringify({
-        date: runObj.startTime,
+        date: new Date(runObj.startTime).getTime(),
         meters: runObj.distance * 1000,
         durationSecs: runObj.activeDuration / 1000,
         elevationMeters: runObj.elevationGain,
@@ -49,7 +49,7 @@ const FitbitAdderModal = (props) => {
       .then((res) => res.json())
       .then(async (data) => {
         console.log(data);
-        await props.setResponse(data);
+        await props.setUpdate(data);
       })
       .catch((err) => {
         console.log(err);
@@ -73,7 +73,7 @@ const FitbitAdderModal = (props) => {
       .then((res) => res.json())
       .then(async (data) => {
         console.log(data);
-        await props.setResponse(data);
+        await props.setUpdate(data);
       })
       .catch((err) => {
         console.log(err);
@@ -86,9 +86,6 @@ const FitbitAdderModal = (props) => {
   const fitbitActivitiesFetcher = async (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log("button pressed");
-    //todo: set access token to local storage instead fo calling refresh everytime.
-    console.log("Hello");
     fetch(`${APIURL}/user/getAthlete`, {
       //Gets refresh token 64encoded client id and client secret
       method: "GET",
@@ -99,6 +96,9 @@ const FitbitAdderModal = (props) => {
     })
       .then((res) => res.json())
       .then((data) => {
+        if (data.athlete.fitbitRefresh === null) {
+          throw new Error("Account Not Associated with fitbit");
+        }
         fetch(
           `https://api.fitbit.com/oauth2/token?&grant_type=refresh_token&refresh_token=${data.athlete.fitbitRefresh}`, //refreshes the refresh token and gives access token.
           {
@@ -111,7 +111,6 @@ const FitbitAdderModal = (props) => {
         )
           .then((res) => res.json())
           .then((data) => {
-            console.log(data.refresh_token, data.access_token);
             fetch(`${APIURL}/user/updateUser`, {
               //Saves new update token to database
               method: "PUT",
@@ -128,8 +127,11 @@ const FitbitAdderModal = (props) => {
                 console.log("Hello", data.message);
               })
               .catch((err) => {
-                setError(err.message);
-                console.log(err);
+                setLoading(false);
+                setErr(err);
+                setTimeout(() => {
+                  setErr("");
+                }, 3000);
               });
             fetch(
               `https://api.fitbit.com/1/user/-/activities/list.json?afterDate=${startDate}&sort=desc&offset=0&limit=100`,
@@ -142,28 +144,35 @@ const FitbitAdderModal = (props) => {
             )
               .then((res) => res.json())
               .then(async (data) => {
-                // console.log(data);
                 const runs = await data.activities.filter(
                   (activity) =>
                     activity.activityName === "Run" && activity.distance > 0.05
                 );
                 await props.setFitbitRuns(runs);
                 setLoading(false);
-                console.log(props.fitbitRuns);
               })
               .catch((err) => {
-                setError("Error connecting to Fitbit");
-                console.log(err);
+                setLoading(false);
+                setErr(err);
+                setTimeout(() => {
+                  setErr("");
+                }, 3000);
               });
           })
           .catch((err) => {
-            setError(err.message);
-            console.log(err);
+            setLoading(false);
+            setErr(err);
+            setTimeout(() => {
+              setErr("");
+            }, 3000);
           });
       })
       .catch((err) => {
-        setError("Error connecting to Fitbit");
-        console.log(err);
+        setLoading(false);
+        setErr(err);
+        setTimeout(() => {
+          setErr("");
+        }, 3000);
       });
   };
 
@@ -244,6 +253,7 @@ const FitbitAdderModal = (props) => {
               )}
             </tbody>
           </Table>
+          {err ? <Alert color="Danger">{err.message}</Alert> : <></>}
         </ModalBody>
         <ModalFooter>
           <Button color="primary" onClick={toggle} className="modalButton">

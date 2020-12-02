@@ -34,9 +34,10 @@ const TeamList = (props) => {
           token={props.token}
           setLoading={props.setLoading}
           loading={props.loading}
-          setResponse={props.setResponse}
-          response={props.response}
+          setUpdate={props.setUpdate}
+          update={props.update}
           selectedTeam={props.selectedTeam}
+          setSelectedTeam={props.setSelectedTeam}
         />
       </Card>
     </div>

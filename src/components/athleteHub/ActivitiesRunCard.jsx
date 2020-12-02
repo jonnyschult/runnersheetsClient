@@ -35,10 +35,10 @@ const RunCard = (props) => {
             </thead>
             <tbody>
               <tr>
-                <th scope="row">{props.index}</th>
-                <td>{new Date(props.run.date).toDateString()}</td>
+                <th scope="row">{props.index + 1}</th>
+                <td>{new Date(parseInt(props.run.date)).toDateString()}</td>
                 <td>
-                  {props.run.meters
+                  {Math.floor(props.run.meters)
                     .toString()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                 </td>

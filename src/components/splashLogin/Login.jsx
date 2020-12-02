@@ -52,7 +52,7 @@ const Register = (props) => {
   };
   return (
     <>
-      <ModalHeader>Register to Create Teams and Build Plans</ModalHeader>
+      <ModalHeader>Login</ModalHeader>
       <ModalBody style={{ display: "flex", flexDirection: "column" }}>
         <Form onSubmit={(e) => submitHandler(e)}>
           <FormGroup>
@@ -66,7 +66,7 @@ const Register = (props) => {
             ></Input>
           </FormGroup>
           <FormGroup>
-            <Label htmlFor="password">Create a password</Label>
+            <Label htmlFor="password">Password</Label>
             <Input
               required
               type="password"

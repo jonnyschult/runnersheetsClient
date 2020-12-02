@@ -18,6 +18,11 @@ function timeConverter(seconds) {
 }
 
 const RunCard = (props) => {
+  const activities = props.athlete.activities.sort(
+    //Sorts runs by date in descending order
+    (runA, runB) => runB.date - runA.date
+  );
+
   return (
     <div>
       <Card className="bookCard">
@@ -35,13 +40,13 @@ const RunCard = (props) => {
               </tr>
             </thead>
             <tbody>
-              {props.athlete.activities.map((activity, index) => {
+              {activities.map((activity, index) => {
                 return (
                   <tr key={index}>
                     <th scope="row">{index + 1}</th>
-                    <td>{new Date(activity.date).toDateString()}</td>
+                    <td>{new Date(parseInt(activity.date)).toDateString()}</td>
                     <td>
-                      {activity.meters
+                      {Math.floor(activity.meters)
                         .toString()
                         .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                     </td>

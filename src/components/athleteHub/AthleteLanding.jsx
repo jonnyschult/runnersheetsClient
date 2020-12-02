@@ -9,7 +9,7 @@ import { Container, Spinner } from "reactstrap";
 const AthleteLanding = (props) => {
   const [fitbitRuns, setFitbitRuns] = useState([]);
   const [runs, setRuns] = useState();
-  const [response, setResponse] = useState();
+  const [update, setUpdate] = useState();
   const [alreadyAdded, setAlreadyAdded] = useState([]);
   const [teams, setTeams] = useState();
   const [athlete, setAthlete] = useState();
@@ -28,19 +28,23 @@ const AthleteLanding = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        console.log(data.result);
-        await setRuns(data.result);
         const fitbitId = await data.result.map((run) => {
+          //Gets fitbit Ids so user can see runs already adder in the fitbitAdderModal
           if (run.fitbitId != null) {
             return parseInt(run.fitbitId);
           }
         });
+        const dateDescRuns = data.result.sort(
+          //Sorts runs by date in descending order
+          (runA, runB) => runB.date - runA.date
+        );
+        await setRuns(dateDescRuns);
         await setAlreadyAdded(fitbitId);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [fitbitRuns, response]);
+  }, [fitbitRuns, update]);
 
   /************************
   AUTO FETCH ATHLETE
@@ -55,13 +59,15 @@ const AthleteLanding = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        console.log(data.athlete);
         await setAthlete(data.athlete);
         await setTeams(data.athlete.teams);
         await setLoadingMain(false);
       })
-      .catch((err) => console.log(err));
-  }, [response]);
+      .catch(async (err) => {
+        console.log(err);
+        await setLoadingMain(false);
+      });
+  }, [update]);
 
   return (
     <div>
@@ -73,7 +79,11 @@ const AthleteLanding = (props) => {
           <div style={{ display: "flex" }}>
             <Container>
               <AthleteTeamList token={props.token} teams={teams} />
-              <AthleteInfo athlete={athlete} />
+              <AthleteInfo
+                token={props.token}
+                setUpdate={setUpdate}
+                athlete={athlete}
+              />
             </Container>
             <Container>
               {runs ? (
@@ -91,8 +101,7 @@ const AthleteLanding = (props) => {
                 token={props.token}
                 fitbitRuns={fitbitRuns}
                 setFitbitRuns={setFitbitRuns}
-                setResponse={setResponse}
-                response={response}
+                setUpdate={setUpdate}
                 alreadyAdded={alreadyAdded}
               />
             </Container>

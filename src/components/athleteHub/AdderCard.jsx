@@ -17,14 +17,13 @@ const AdderCard = (props) => {
             token={props.token}
             fitbitRuns={props.fitbitRuns}
             setFitbitRuns={props.setFitbitRuns}
-            setResponse={props.setResponse}
-            response={props.response}
+            setUpdate={props.setUpdate}
             alreadyAdded={props.alreadyAdded}
           />
           <GarminAdderModal />
           <ManualActivityAdder
             token={props.token}
-            setResponse={props.setResponse}
+            setUpdate={props.setUpdate}
             response={props.response}
           />
         </CardBody>

@@ -58,7 +58,9 @@ const ActivitiesModal = (props) => {
                       return (
                         <tr>
                           <th scope="row">{index + 1}</th>
-                          <td>{new Date(activity.date).toDateString()}</td>
+                          <td>
+                            {new Date(parseInt(activity.date)).toDateString()}
+                          </td>
                           <td>
                             {activity.meters
                               .toString()

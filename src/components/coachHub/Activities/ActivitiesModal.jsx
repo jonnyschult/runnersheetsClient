@@ -16,48 +16,9 @@ import {
 } from "reactstrap";
 
 const ActivitiesModal = (props) => {
-  //   const [response, setResponse] = useState("");
-  //   const [loading, setLoading] = useState();
   const [modal, setModal] = useState(false);
-  //   const [teamTitle, setTeamTitle] = useState();
 
   const toggle = () => setModal(!modal);
-
-  //   const createTeam = (e) => {
-  //     e.preventDefault();
-  //     fetch(`${APIURL}/team/create`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: props.token,
-  //       },
-  //       body: JSON.stringify({
-  //         teamName: teamTitle,
-  //       }),
-  //     })
-  //       .then((res) => {
-  //         if (res.ok) {
-  //           return res.json();
-  //         } else {
-  //           if (res.status === 409) {
-  //             throw new Error("Name Already Taken");
-  //           } else {
-  //             throw new Error("Something went wrong");
-  //           }
-  //         }
-  //       })
-  //       .then(async (data) => {
-  //         props.setLoading(true);
-  //         await props.setResponse(data.message);
-  //         props.setLoading(false);
-  //         setTimeout(toggle, 1200);
-  //       })
-  //       .catch(async (err) => {
-  //         props.setLoading(true);
-  //         await props.setResponse(err.message);
-  //         props.setLoading(false);
-  //       });
-  //   };
 
   return (
     <div>
@@ -95,7 +56,7 @@ const ActivitiesModal = (props) => {
                 return (
                   <tr key={index}>
                     <th scope="row">{index + 1}</th>
-                    <td>{new Date(activity.date).toDateString()}</td>
+                    <td>{new Date(parseInt(activity.date)).toDateString()}</td>
                     <td>
                       {activity.meters
                         .toString()

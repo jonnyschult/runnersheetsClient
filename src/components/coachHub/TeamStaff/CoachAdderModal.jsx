@@ -16,16 +16,20 @@ import {
 
 const CoachAdderModal = (props) => {
   const [response, setResponse] = useState("");
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState();
   const [modal, setModal] = useState(false);
   const [email, setEmail] = useState();
   const [role, setRole] = useState();
 
   const toggle = () => setModal(!modal);
 
+  /*************************
+  ADD COACH TO TEAM
+  *************************/
   const addCoach = (e) => {
     e.preventDefault();
-    console.log(email, role);
+    setLoading(true);
     fetch(`${APIURL}/manager/addCoach`, {
       method: "POST",
       headers: {
@@ -42,7 +46,9 @@ const CoachAdderModal = (props) => {
         if (res.ok) {
           return res.json();
         } else {
-          if (res.status === 403) {
+          if (res.status === 401) {
+            throw new Error("Must be a manager to perform this function");
+          } else if (res.status === 403) {
             throw new Error("Can't find user with that email");
           } else if (res.status === 409) {
             throw new Error("That user is already on the team");
@@ -52,7 +58,6 @@ const CoachAdderModal = (props) => {
         }
       })
       .then(async (data) => {
-        setLoading(true);
         await setResponse(data.message);
         setLoading(false);
         props.fetchStaff(props.selectedTeam.id);
@@ -62,9 +67,11 @@ const CoachAdderModal = (props) => {
         }, 1200);
       })
       .catch(async (err) => {
-        setLoading(true);
-        await setResponse(err.message);
+        await setErr(err.message);
         setLoading(false);
+        setTimeout(() => {
+          setErr("");
+        }, 4000);
       });
   };
 
@@ -98,6 +105,7 @@ const CoachAdderModal = (props) => {
               <FormGroup check>
                 <Label check>
                   <Input
+                    required
                     type="radio"
                     name="radio1"
                     value="coach"
@@ -109,6 +117,7 @@ const CoachAdderModal = (props) => {
               <FormGroup check>
                 <Label check>
                   <Input
+                    required
                     type="radio"
                     name="radio1"
                     value="manager"
@@ -122,13 +131,8 @@ const CoachAdderModal = (props) => {
               Add
             </Button>
             {loading ? <Spinner color="primary" /> : <></>}
-            {response ? (
-              <Alert style={{ backgroundColor: " rgb(255, 155, 0)" }}>
-                {response}
-              </Alert>
-            ) : (
-              <></>
-            )}
+            {response ? <Alert>{response}</Alert> : <></>}
+            {err ? <Alert color="danger">{err}</Alert> : <></>}
           </Form>
         </ModalBody>
         <ModalFooter>

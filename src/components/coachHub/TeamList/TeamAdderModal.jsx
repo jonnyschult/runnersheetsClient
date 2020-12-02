@@ -16,7 +16,10 @@ import {
 const TeamAdderModal = (props) => {
   const [modal, setModal] = useState(false);
   const [teamTitle, setTeamTitle] = useState();
-  const [update, setUpdate] = useState(false);
+  const [modalContent, setModalContent] = useState(false);
+  const [response, setResponse] = useState();
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState();
 
   const toggle = () => setModal(!modal);
 
@@ -25,6 +28,7 @@ const TeamAdderModal = (props) => {
   ************************/
   const createTeam = (e) => {
     e.preventDefault();
+    setLoading(true);
     fetch(`${APIURL}/team/create`, {
       method: "POST",
       headers: {
@@ -47,20 +51,20 @@ const TeamAdderModal = (props) => {
         }
       })
       .then(async (data) => {
-        props.setLoading(true);
-        await props.setResponse(data.message);
-        props.setLoading(false);
+        console.log(data);
+        await props.setSelectedTeam(data.result.newTeam);
+        await setLoading(false);
+        await props.setUpdate(data);
         setTimeout(() => {
+          setResponse(data.message);
           toggle();
-          props.setResponse("");
         }, 1400);
       })
       .catch(async (err) => {
-        props.setLoading(true);
-        await props.setResponse(err.message);
-        props.setLoading(false);
+        setLoading(false);
+        setErr(err.message);
         setTimeout(() => {
-          props.setResponse("");
+          setErr("");
         }, 4000);
       });
   };
@@ -70,6 +74,7 @@ const TeamAdderModal = (props) => {
   ************************/
   const updateTeam = (e) => {
     e.preventDefault();
+    setLoading(true);
     fetch(`${APIURL}/manager/updateTeam`, {
       method: "PUT",
       headers: {
@@ -93,20 +98,20 @@ const TeamAdderModal = (props) => {
         }
       })
       .then(async (data) => {
-        props.setLoading(true);
-        await props.setResponse(data.message);
-        props.setLoading(false);
+        await props.setSelectedTeam(data.updatedTeam);
+        await props.setUpdate(data);
+        setLoading(false);
+        setResponse(data.message);
         setTimeout(() => {
+          setResponse("");
           toggle();
-          props.setResponse("");
         }, 1400);
       })
       .catch(async (err) => {
-        props.setLoading(true);
-        await props.setResponse(err.message);
-        props.setLoading(false);
+        setLoading(false);
+        setErr(err.message);
         setTimeout(() => {
-          props.setResponse("");
+          setErr("");
         }, 4000);
       });
   };
@@ -115,10 +120,12 @@ const TeamAdderModal = (props) => {
   ONCLICK DELETE TEAM
   ************************/
   const deleteTeam = (e) => {
+    e.preventDefault();
     let confirmation = window.confirm(
       "Are you certain you wish to delete this team?"
     );
     if (confirmation) {
+      setLoading(true);
       fetch(`${APIURL}/manager/removeTeam`, {
         method: "DELETE",
         headers: {
@@ -131,18 +138,22 @@ const TeamAdderModal = (props) => {
       })
         .then((res) => res.json())
         .then(async (data) => {
-          props.setLoading(true);
-          await props.setResponse(data.message);
-          props.setLoading(false);
+          await props.setSelectedTeam({});
+          await props.setUpdate(data);
+          await setResponse(data.message);
+          setLoading(false);
           setTimeout(() => {
+            setResponse("");
             toggle();
-            props.setResponse("");
           }, 1200);
         })
         .catch(async (err) => {
-          props.setLoading(true);
-          await props.setResponse(err.message);
-          props.setLoading(false);
+          setLoading(false);
+          setErr(err.message);
+          setTimeout(() => {
+            setErr("");
+            toggle();
+          }, 4000);
         });
     } else {
       toggle();
@@ -156,12 +167,14 @@ const TeamAdderModal = (props) => {
           Create or Update Team
         </Button>
       </Form>
-      {update ? (
+      {modalContent ? (
         <Modal isOpen={modal} toggle={toggle}>
           <ModalHeader toggle={toggle}>Update Team Name</ModalHeader>
           <ModalBody>
             <Form onSubmit={(e) => updateTeam(e)}>
-              <Label htmlFor="team name">Rename Team</Label>
+              <Label htmlFor="team name">
+                Rename Team or Delete <b>{props.selectedTeam.teamName}</b>
+              </Label>
               <Input
                 required
                 type="text"
@@ -172,18 +185,15 @@ const TeamAdderModal = (props) => {
               <Button color="primary" type="submit">
                 Update
               </Button>
-              <Button color="danger" onClick={(e) => deleteTeam()}>
+              <Button color="danger" onClick={(e) => deleteTeam(e)}>
                 Delete
               </Button>
-              {props.loading ? <Spinner color="primary" /> : <></>}
-              {props.response ? (
-                <Alert style={{ backgroundColor: " rgb(255, 155, 0)" }}>
-                  {props.response}
-                </Alert>
-              ) : (
-                <></>
-              )}
-              <h6 onClick={(e) => setUpdate(!update)}>Create a New team?</h6>
+              {loading ? <Spinner color="primary" /> : <></>}
+              {response ? <Alert>{response}</Alert> : <></>}
+              {err ? <Alert color="danger">{err}</Alert> : <></>}
+              <h6 onClick={(e) => setModalContent(!modalContent)}>
+                Create a New team?
+              </h6>
             </Form>
           </ModalBody>
           <ModalFooter>
@@ -210,15 +220,10 @@ const TeamAdderModal = (props) => {
               <Button color="primary" type="submit">
                 Create
               </Button>
-              {props.loading ? <Spinner color="primary" /> : <></>}
-              {props.response ? (
-                <Alert style={{ backgroundColor: " rgb(255, 155, 0)" }}>
-                  {props.response}
-                </Alert>
-              ) : (
-                <></>
-              )}
-              <h6 onClick={(e) => setUpdate(!update)}>Update?</h6>
+              {loading ? <Spinner color="primary" /> : <></>}
+              {response ? <Alert>{response}</Alert> : <></>}
+              {err ? <Alert color="danger">{err}</Alert> : <></>}
+              <h6 onClick={(e) => setModalContent(!modalContent)}>Update?</h6>
             </Form>
           </ModalBody>
           <ModalFooter>

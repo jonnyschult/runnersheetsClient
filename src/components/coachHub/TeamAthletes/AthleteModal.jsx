@@ -150,12 +150,14 @@ const StaffModal = (props) => {
                 <Input
                   type="number"
                   name="feet"
+                  placeholder={Math.floor(props.athlete.heightInInches / 12)}
                   onChange={(e) => setFeet(parseInt(e.target.value))}
                 ></Input>
                 <Label htmlFor="feet">Inches</Label>
                 <Input
                   type="number"
                   name="feet"
+                  placeholder={props.athlete.heightInInches % 12}
                   onChange={(e) => setInches(parseInt(e.target.value))}
                 ></Input>
               </FormGroup>
@@ -164,14 +166,16 @@ const StaffModal = (props) => {
                 <Input
                   type="number"
                   name="weight"
+                  placeholder={props.athlete.weightInPounds}
                   onChange={(e) => setWeight(parseInt(e.target.value))}
                 ></Input>
               </FormGroup>
               <FormGroup>
-                <Label htmlFor="age">Age*</Label>
+                <Label htmlFor="age">Age</Label>
                 <Input
                   type="number"
                   name="age"
+                  placeholder={props.athlete.age}
                   onChange={(e) => setAge(parseInt(e.target.value))}
                 ></Input>
               </FormGroup>
