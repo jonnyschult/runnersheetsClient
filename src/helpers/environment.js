@@ -5,7 +5,7 @@ switch (window.location.hostname) {
     APIURL = "http://localhost:4040";
     break;
   case "runnersheetsclient.herokuapp.com":
-    APIURL = "https://runnersheets.herokuapp.com";
+    APIURL = "https://runnersheetsserver.herokuapp.com/";
 }
 
 export default APIURL;

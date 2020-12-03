@@ -10,6 +10,7 @@ import {
   Label,
   Input,
   Alert,
+  Spinner,
 } from "reactstrap";
 
 const Register = (props) => {
@@ -23,10 +24,12 @@ const Register = (props) => {
   const [inches, setInches] = useState(null);
   const [weightInPounds, setWeightInPounds] = useState(null);
   const [age, setAge] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [err, setErr] = useState();
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    setLoading(true);
     let height = 0;
     if (feet && inches) {
       height = feet * 12 + inches;
@@ -60,9 +63,11 @@ const Register = (props) => {
         })
         .then((data) => {
           props.updateToken(data.loginToken);
+          setLoading(false);
         })
         .catch((err) => {
           setErr(err.message);
+          setLoading(false);
         });
     }
   };
@@ -162,7 +167,7 @@ const Register = (props) => {
           <Button type="submit" style={{ width: "100%" }}>
             Submit
           </Button>
-
+          {loading ? <Spinner></Spinner> : <></>}
           {err ? <Alert>{err}</Alert> : <></>}
         </Form>
       </ModalBody>

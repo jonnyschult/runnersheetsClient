@@ -10,16 +10,19 @@ import {
   Label,
   Input,
   Alert,
+  Spinner,
 } from "reactstrap";
 
-const Register = (props) => {
+const Login = (props) => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
 
   const submitHandler = (e) => {
     e.preventDefault();
-    fetch(`https://runnersheets.herokuapp.com/user/login`, {
+    setLoading(true);
+    fetch(`${APIURL}/user/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -45,9 +48,11 @@ const Register = (props) => {
       .then(async (data) => {
         await props.updateIsCoach(data.user.isCoach);
         await props.updateToken(data.loginToken);
+        setLoading(false);
       })
       .catch((err) => {
         setErr(err.message);
+        setLoading(false);
       });
   };
   return (
@@ -77,6 +82,7 @@ const Register = (props) => {
           <Button type="submit" style={{ width: "100%" }}>
             Submit
           </Button>
+          {loading ? <Spinner></Spinner> : <></>}
           {err ? <Alert>{err}</Alert> : <></>}
         </Form>
       </ModalBody>
@@ -87,4 +93,4 @@ const Register = (props) => {
   );
 };
 
-export default Register;
+export default Login;
