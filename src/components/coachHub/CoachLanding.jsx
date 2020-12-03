@@ -52,8 +52,8 @@ const CoachLanding = (props) => {
         }
         await setLoadingMain(false);
         await setTeams(teamData);
-        await fetchStaff(selectedTeam);
-        await fetchAthletes(selectedTeam);
+        await fetchStaff(selectedTeam.id);
+        await fetchAthletes(selectedTeam.id);
       })
       .catch((err) => {
         console.log(err);
@@ -165,6 +165,7 @@ const CoachLanding = (props) => {
               />
               <TeamAthletes
                 token={props.token}
+                setUpdate={setUpdate}
                 athletes={athletes}
                 selectedTeam={selectedTeam}
                 fetchAthletes={fetchAthletes}

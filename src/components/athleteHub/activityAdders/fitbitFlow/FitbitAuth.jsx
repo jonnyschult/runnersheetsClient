@@ -8,21 +8,20 @@ const FitbitAuth = (props) => {
   const [response, setResponse] = useState();
   useEffect(async () => {
     const url = window.location.href;
-    // console.log(window.location.href);
     if (url.includes("?")) {
       //checks for query parameter, which fitbit returns in their callback uri
 
       setLoading(true);
       const stringParser = (str) => {
-        //Gets
+        //Gets token from window.location.href
         const query = str.split("?");
         const codePlusHash = query[1].split("code=");
         const code = codePlusHash[1].split("#");
-        console.log(code[0]);
         return code[0];
       };
       const authCode = stringParser(url);
       fetch(`${APIURL}/fitbit/getSecretId`, {
+        //calls to get user secret stored in env.
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -31,8 +30,7 @@ const FitbitAuth = (props) => {
       })
         .then((res) => res.json())
         .then((data) => {
-          console.log(data.authorization);
-          console.log(authCode);
+          //Call to get refresh token from fitbit
           fetch(
             `https://api.fitbit.com/oauth2/token?code=${authCode}&grant_type=authorization_code&redirect_uri=${data.redirectURI}`,
             {
@@ -46,6 +44,7 @@ const FitbitAuth = (props) => {
             .then((res) => res.json())
             .then(async (data) => {
               fetch(`${APIURL}/user/updateUser`, {
+                //store refresh token in user table
                 method: "PUT",
                 headers: {
                   "Content-Type": "application/json",
@@ -62,14 +61,17 @@ const FitbitAuth = (props) => {
                 })
                 .catch((err) => {
                   setErr(err.message);
+                  setLoading(false);
                 });
             })
             .catch((err) => {
               setErr(err.message);
+              setLoading(false);
             });
         })
         .catch((err) => {
           setErr(err.message);
+          setLoading(false);
         });
     } else {
       console.log("No query parameter");
@@ -86,7 +88,6 @@ const FitbitAuth = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        await setResponse(data.message);
         window.open(
           `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${data.clientId}&redirect_uri=${data.redirectURI}&scope=activity%20nutrition%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight`
         );

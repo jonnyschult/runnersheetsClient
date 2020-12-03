@@ -16,14 +16,19 @@ import {
 
 const AthleteAdderModal = (props) => {
   const [response, setResponse] = useState("");
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
   const [modal, setModal] = useState(false);
   const [email, setEmail] = useState();
 
   const toggle = () => setModal(!modal);
 
+  /****************************
+   ADD ATHLETE TO TEAM
+   ***************************/
   const addAthlete = (e) => {
     e.preventDefault();
+    setLoading(true);
     fetch(`${APIURL}/coach/addAthlete`, {
       method: "POST",
       headers: {
@@ -49,16 +54,21 @@ const AthleteAdderModal = (props) => {
         }
       })
       .then(async (data) => {
-        setLoading(true);
+        await props.setUpdate(data);
         await setResponse(data.message);
         setLoading(false);
-        props.fetchAthletes(props.selectedTeam.id);
-        setTimeout(toggle, 1200);
+        // props.fetchAthletes(props.selectedTeam.id);
+        setTimeout(() => {
+          toggle();
+          setResponse("");
+        }, 1200);
       })
       .catch(async (err) => {
-        setLoading(true);
-        await setResponse(err.message);
+        await setErr(err.message);
         setLoading(false);
+        setTimeout(() => {
+          setErr("");
+        }, 2500);
       });
   };
 
@@ -92,13 +102,8 @@ const AthleteAdderModal = (props) => {
               Add
             </Button>
             {loading ? <Spinner color="primary" /> : <></>}
-            {response ? (
-              <Alert style={{ backgroundColor: " rgb(255, 155, 0)" }}>
-                {response}
-              </Alert>
-            ) : (
-              <></>
-            )}
+            {response ? <Alert>{response}</Alert> : <></>}
+            {err ? <Alert color="danger">{err}</Alert> : <></>}
           </Form>
         </ModalBody>
         <ModalFooter>

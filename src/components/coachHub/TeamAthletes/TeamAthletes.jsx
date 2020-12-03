@@ -30,6 +30,7 @@ const TeamAthletes = (props) => {
                   selectedTeam={props.selectedTeam}
                   fetchAthletes={props.fetchAthletes}
                   token={props.token}
+                  setUpdate={props.setUpdate}
                 />
               );
             })
@@ -41,6 +42,7 @@ const TeamAthletes = (props) => {
           fetchAthletes={props.fetchAthletes}
           selectedTeam={props.selectedTeam}
           token={props.token}
+          setUpdate={props.setUpdate}
         />
       </Card>
     </div>

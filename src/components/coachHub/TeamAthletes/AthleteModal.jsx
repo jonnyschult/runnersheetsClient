@@ -17,12 +17,15 @@ import {
 const StaffModal = (props) => {
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState();
+  const [err, setErr] = useState("");
   const [modal, setModal] = useState(false);
   const [expand, setExpand] = useState(false);
-  const [feet, setFeet] = useState();
-  const [inches, setInches] = useState();
-  const [age, setAge] = useState();
-  const [weight, setWeight] = useState();
+  const [feet, setFeet] = useState(
+    Math.floor(props.athlete.heightInInches / 12)
+  );
+  const [inches, setInches] = useState(props.athlete.heightInInches % 12);
+  const [age, setAge] = useState(props.athlete.age);
+  const [weight, setWeight] = useState(props.athlete.weightInPounds);
 
   const toggle = () => setModal(!modal);
   const toggle2 = () => setExpand(!expand);
@@ -32,6 +35,7 @@ const StaffModal = (props) => {
   **********************/
   const updateInfo = async (e) => {
     e.preventDefault();
+    setLoading(true);
     fetch(`${APIURL}/coach/updateAthlete`, {
       method: "PUT",
       headers: {
@@ -47,20 +51,20 @@ const StaffModal = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        setLoading(true);
         await setResponse(data.message);
         props.fetchAthletes(props.selectedTeam.id);
         setLoading(false);
         setTimeout(() => {
-          toggle();
           toggle2();
           setResponse("");
         }, 1400);
       })
       .catch(async (err) => {
-        setLoading(true);
-        await setResponse(err.message);
+        await setErr(err.message);
         setLoading(false);
+        setTimeout(() => {
+          setErr("");
+        }, 2400);
       });
   };
 
@@ -72,6 +76,7 @@ const StaffModal = (props) => {
       "Are you certain you wish to delete this athlete?"
     );
     if (confirmation) {
+      setLoading(true);
       fetch(`${APIURL}/coach/removeAthlete`, {
         method: "DELETE",
         headers: {
@@ -85,20 +90,21 @@ const StaffModal = (props) => {
       })
         .then((res) => res.json())
         .then(async (data) => {
-          setLoading(true);
           await setResponse(data.message);
           setLoading(false);
           setTimeout(() => {
+            props.setUpdate(data);
             toggle();
             toggle2();
             setResponse("");
-            props.fetchAthletes(props.selectedTeam.id);
-          }, 1200);
+          }, 1400);
         })
         .catch(async (err) => {
-          setLoading(true);
-          await setResponse(err.message);
+          await setErr(err.message);
           setLoading(false);
+          setTimeout(() => {
+            setErr("");
+          }, 2400);
         });
     } else {
       toggle();
@@ -171,7 +177,7 @@ const StaffModal = (props) => {
                 ></Input>
               </FormGroup>
               <FormGroup>
-                <Label htmlFor="age">Age</Label>
+                <Label htmlFor="age">Age*</Label>
                 <Input
                   type="number"
                   name="age"
@@ -185,6 +191,7 @@ const StaffModal = (props) => {
               </Button>
               {loading ? <Spinner color="primary" /> : <></>}
               {response ? <Alert>{response}</Alert> : <></>}
+              {err ? <Alert>{err}</Alert> : <></>}
             </Form>
           ) : (
             <></>
