@@ -62,7 +62,7 @@ const ManualActivityAdder = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        await props.setUpdate(data.message);
+        await props.setUpdate(data);
         await setResponse(data.message);
         setLoading(false);
         setTimeout(() => {
@@ -188,7 +188,7 @@ const ManualActivityAdder = (props) => {
             <Button type="submit" style={{ width: "100%" }}>
               Submit
             </Button>
-            {response ? <Alert>{err}</Alert> : <></>}
+            {response ? <Alert>{response}</Alert> : <></>}
             {err ? <Alert color="danger">{err}</Alert> : <></>}
             {loading ? <Spinner></Spinner> : <></>}
           </Form>

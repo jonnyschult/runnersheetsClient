@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 import APIURL from "../../../../helpers/environment";
-import { Button } from "reactstrap";
+import { Button, Spinner, Alert } from "reactstrap";
 
 const FitbitAuth = (props) => {
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState();
+  const [response, setResponse] = useState();
   useEffect(async () => {
     const url = window.location.href;
     // console.log(window.location.href);
     if (url.includes("?")) {
       //checks for query parameter, which fitbit returns in their callback uri
 
+      setLoading(true);
       const stringParser = (str) => {
         //Gets
         const query = str.split("?");
@@ -30,7 +34,7 @@ const FitbitAuth = (props) => {
           console.log(data.authorization);
           console.log(authCode);
           fetch(
-            `https://api.fitbit.com/oauth2/token?code=${authCode}&grant_type=authorization_code&redirect_uri=http://localhost:3000/fitbit`,
+            `https://api.fitbit.com/oauth2/token?code=${authCode}&grant_type=authorization_code&redirect_uri=${data.redirectURI}`,
             {
               method: "POST",
               headers: {
@@ -53,18 +57,19 @@ const FitbitAuth = (props) => {
               })
                 .then((res) => res.json())
                 .then((data) => {
-                  console.log("Hello", data.message);
+                  setResponse(data.message);
+                  setLoading(false);
                 })
                 .catch((err) => {
-                  console.log(err);
+                  setErr(err.message);
                 });
             })
             .catch((err) => {
-              console.log(err);
+              setErr(err.message);
             });
         })
         .catch((err) => {
-          console.log(err);
+          setErr(err.message);
         });
     } else {
       console.log("No query parameter");
@@ -81,19 +86,28 @@ const FitbitAuth = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
+        await setResponse(data.message);
         window.open(
           `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${data.clientId}&redirect_uri=${data.redirectURI}&scope=activity%20nutrition%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight`
         );
-        console.log(data.message);
       })
       .catch((err) => {
-        console.log(err);
+        setErr(err.message);
       });
   };
   return (
     <div>
       <h1>Connect Fitbit</h1>{" "}
-      <Button onClick={(e) => fitbitFetcher()}>Test Fetch</Button>{" "}
+      <Button onClick={(e) => fitbitFetcher()}>Connect to Fitbit</Button>
+      {response ? (
+        <Alert>
+          {response}! Please return to Athlete page to upload workouts.
+        </Alert>
+      ) : (
+        <></>
+      )}
+      {loading ? <Spinner></Spinner> : <></>}
+      {err ? <Alert>{err}</Alert> : <></>}
     </div>
   );
 };
