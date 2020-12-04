@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Register from "./Register";
 import Login from "./Login";
 import { Button, Form, Modal } from "reactstrap";
+import classes from "./Splash.module.css";
 
 const RegisterModal = (props) => {
   const [modal, setModal] = useState(false);
@@ -13,7 +14,15 @@ const RegisterModal = (props) => {
   return (
     <div>
       <Form onSubmit={(e) => e.preventDefault}>
-        <Button onClick={toggle}>+ Youself or Sign In</Button>
+        <button
+          className={classes.signUp}
+          onClick={(e) => {
+            toggle();
+            e.preventDefault();
+          }}
+        >
+          + Youself or Sign In
+        </button>
       </Form>
       <Modal isOpen={modal} toggle={toggle}>
         {register ? (

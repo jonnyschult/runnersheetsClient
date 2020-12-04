@@ -1,0 +1,96 @@
+.jumbotron {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  background-color: black;
+  height: 85vh;
+  margin-bottom: 0;
+  z-index: 0;
+  padding: 0;
+}
+
+.video {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  /*  object-fit is not supported on IE  */
+  object-fit: cover;
+  opacity: 0.5;
+}
+
+.container {
+  height: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  position: relative;
+  color: white;
+}
+
+.signUp {
+  width: 15em;
+  height: 3em;
+  border-radius: 3em;
+  border: 1px solid rgba(245, 245, 245, 0.918);
+  background-color: transparent;
+  color: whitesmoke;
+  transition: 0.2s;
+}
+
+.signUp:hover {
+  background-color: rgba(255, 155, 0, 0.8);
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.6);
+  outline: none;
+}
+
+.signUp:active {
+  box-shadow: 4px 4px 4px rgba(0, 200 0, 0) !important;
+  outline: none;
+}
+.signUp:focus {
+  outline: none;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 80vh;
+}
+
+.containerOne {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("../../Assets/histogram.png");
+}
+
+.containerTwo {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("../../Assets/backupPhoto.jpg");
+}
+
+.contentTextA {
+  height: 100%;
+  color: whitesmoke;
+  background: linear-gradient(
+    30deg,
+    transparent 0% 25%,
+    rgba(41, 41, 43, 0.95) 25% 75%,
+    transparent 75% 100%
+  );
+}
+
+.contentTextB {
+  height: 100%;
+  color: whitesmoke;
+  background: linear-gradient(
+    -30deg,
+    transparent 0% 25%,
+    rgba(41, 41, 43, 0.95) 25% 75%,
+    transparent 75% 100%
+  );
+}
