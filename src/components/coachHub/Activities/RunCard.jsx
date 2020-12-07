@@ -1,5 +1,6 @@
 import React from "react";
 import ActivitiesModal from "./ActivitiesModal";
+import classes from "../Coach.module.css";
 import {
   Card,
   CardImg,
@@ -8,6 +9,7 @@ import {
   CardSubtitle,
   CardText,
   Table,
+  CardHeader,
 } from "reactstrap";
 
 function timeConverter(seconds) {
@@ -25,36 +27,48 @@ const RunCard = (props) => {
 
   return (
     <div>
-      <Card className="bookCard">
-        <CardTitle>
-          <h5>{`${props.athlete.firstName} ${props.athlete.lastName}`}</h5>
-        </CardTitle>
-        <CardBody>
-          <Table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Date</th>
-                <th>Meters</th>
-                <th>Time</th>
+      <Card className={classes.middleContainerCard}>
+        <CardHeader className={classes.middleContainerCardHeader}>
+          <CardTitle className={classes.middleContainerCardTitle}>
+            {`${props.athlete.firstName} ${props.athlete.lastName}`}
+          </CardTitle>
+        </CardHeader>
+        <CardBody className={classes.middleContainerCardBody}>
+          <Table className={classes.table}>
+            <thead className={classes.thead}>
+              <tr className={classes.tr}>
+                <th className={classes.th}>#</th>
+                <th className={classes.th}>Date</th>
+                <th className={classes.th}>Meters</th>
+                <th className={classes.th}>Time</th>
+                <th className={classes.th}>Pace</th>
               </tr>
             </thead>
             <tbody>
               {activities.map((activity, index) => {
                 return (
-                  <tr key={index}>
+                  <tr key={index} className={`${classes.tr}`}>
                     <th scope="row">{index + 1}</th>
-                    <td>{new Date(parseInt(activity.date)).toDateString()}</td>
-                    <td>
+                    <td className={classes.td}>
+                      {new Date(parseInt(activity.date)).toDateString()}
+                    </td>
+                    <td className={classes.td}>
                       {Math.floor(activity.meters)
                         .toString()
                         .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                     </td>
-                    <td>
+                    <td className={classes.td}>
                       {new Date(activity.durationSecs * 1000)
                         .toISOString()
                         .substr(11, 8)}
                     </td>
+                    {/* prettier-ignore */}
+                    <td className={classes.td}>{new Date(
+                        (activity.durationSecs / (activity.meters / 1000)) *
+                          1000
+                      )
+                        .toISOString()
+                        .substr(11, 8)}</td>
                   </tr>
                 );
               })}

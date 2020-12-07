@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import APIURL from "../../../helpers/environment";
+import classes from "../Coach.module.css";
 import {
   Button,
   Modal,
@@ -24,8 +25,8 @@ const StaffModal = (props) => {
     Math.floor(props.athlete.heightInInches / 12)
   );
   const [inches, setInches] = useState(props.athlete.heightInInches % 12);
-  const [age, setAge] = useState(props.athlete.age);
-  const [weight, setWeight] = useState(props.athlete.weightInPounds);
+  const [age, setAge] = useState();
+  const [weight, setWeight] = useState();
 
   const toggle = () => setModal(!modal);
   const toggle2 = () => setExpand(!expand);
@@ -55,6 +56,7 @@ const StaffModal = (props) => {
         props.fetchAthletes(props.selectedTeam.id);
         setLoading(false);
         setTimeout(() => {
+          toggle();
           toggle2();
           setResponse("");
         }, 1400);
@@ -115,11 +117,12 @@ const StaffModal = (props) => {
   return (
     <div>
       <Form inline onSubmit={(e) => updateInfo(e)}>
-        <p onClick={toggle}>
+        <p className={classes.cardItem} onClick={toggle}>
           <b>{`${props.athlete.firstName} ${props.athlete.lastName}`}</b>
         </p>
       </Form>
       <Modal
+        className={classes.modal}
         isOpen={modal}
         toggle={(e) => {
           toggle();
@@ -128,10 +131,12 @@ const StaffModal = (props) => {
           }
         }}
       >
-        <ModalHeader toggle={toggle}>
-          <p>{`${props.athlete.firstName} ${props.athlete.lastName}`}</p>
+        <ModalHeader className={classes.modalHeader} toggle={toggle}>
+          <header
+            className={classes.headerText}
+          >{`${props.athlete.firstName} ${props.athlete.lastName}`}</header>
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className={classes.modalBody}>
           <p>{`Email:   ${props.athlete.email}`}</p>
           <p>{`Age:   ${props.athlete.age}`}</p>
           {props.athlete.weightInPounds ? (
@@ -146,9 +151,11 @@ const StaffModal = (props) => {
           ) : (
             <></>
           )}
-          <h6 onClick={toggle2}>Update?</h6>
+          <h6 className={classes.modalExpand} onClick={toggle2} caret>
+            Update
+          </h6>
           {expand ? (
-            <Form onSubmit={(e) => updateInfo(e)}>
+            <Form onSubmit={(e) => updateInfo(e)} className={classes.form}>
               <legend>Athlete Info</legend>
               <FormGroup style={{ display: "flex" }}>
                 <span> Height</span>
@@ -185,20 +192,35 @@ const StaffModal = (props) => {
                   onChange={(e) => setAge(parseInt(e.target.value))}
                 ></Input>
               </FormGroup>
-              <Button type="submit">Update</Button>
-              <Button color="danger" onClick={(e) => deleteAthlete(e)}>
-                Delete
-              </Button>
+              <div className={classes.btnGroup}>
+                <Button
+                  className={`${classes.modalBtn} ${classes.updateBtn}`}
+                  type="submit"
+                >
+                  Update
+                </Button>
+                <Button
+                  className={`${classes.modalBtn} ${classes.deleteBtn}`}
+                  onClick={(e) => deleteAthlete(e)}
+                >
+                  Delete
+                </Button>
+              </div>
               {loading ? <Spinner color="primary" /> : <></>}
-              {response ? <Alert>{response}</Alert> : <></>}
-              {err ? <Alert>{err}</Alert> : <></>}
+              {response ? (
+                <Alert className={classes.responseAlert}>{response}</Alert>
+              ) : (
+                <></>
+              )}
+              {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
             </Form>
           ) : (
             <></>
           )}
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={classes.modalFooter}>
           <Button
+            className={`${classes.modalBtn} ${classes.cancelBtn}`}
             color="primary"
             onClick={(e) => {
               toggle();

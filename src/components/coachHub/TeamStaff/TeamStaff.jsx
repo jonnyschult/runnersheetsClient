@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import classes from "../Coach.module.css";
 import CoachAdderModal from "./CoachAdderModal";
 import StaffModal from "./StaffModal";
 import {
@@ -13,9 +14,9 @@ import {
 const TeamStaff = (props) => {
   return (
     <div>
-      <Card className="bookCard">
-        <CardBody className="">
-          <CardTitle className="bookCardBodyTitle" tag="h5">
+      <Card className={classes.leftContainerCard}>
+        <CardBody className={classes.leftContainerCardBody}>
+          <CardTitle className={classes.leftContainerCardTitle}>
             Staff
           </CardTitle>
           {props.coaches.length > 0 ? (

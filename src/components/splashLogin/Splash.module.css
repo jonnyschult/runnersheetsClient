@@ -1,10 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Oxygen&display=swap");
+
+* {
+  font-family: "Oxygen", sans-serif;
+}
+
 .jumbotron {
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
   background-color: black;
-  height: 85vh;
+  height: 95vh;
   margin-bottom: 0;
   z-index: 0;
   padding: 0;
@@ -30,6 +36,15 @@
   z-index: 2;
   position: relative;
   color: white;
+  -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
+  -moz-animation: fadein 2s; /* Firefox < 16 */
+  -ms-animation: fadein 2s; /* Internet Explorer */
+  -o-animation: fadein 2s; /* Opera < 12.1 */
+  animation: fadein 2s;
+}
+
+.jumbotronHeader {
+  font-family: "Oxygen", sans-serif !important;
 }
 
 .signUp {
@@ -56,6 +71,14 @@
   outline: none;
 }
 
+.quote {
+  position: relative;
+  width: 27em;
+  font-size: 1.1em;
+  float: left;
+  top: 5em;
+}
+
 .contentContainer {
   display: flex;
   flex-direction: column;
@@ -63,34 +86,120 @@
   height: 80vh;
 }
 
-.containerOne {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url("../../Assets/histogram.png");
+.containerA {
+  background-image: linear-gradient(
+      rgba(41, 41, 43, 0.3),
+      90%,
+      rgba(41, 41, 43, 1) 100%
+    ),
+    url("../../Assets/pexels-andrea-piacquadio-3764533.jpg");
+  /* background-repeat: no-repeat; */
+  background-size: cover;
 }
 
-.containerTwo {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url("../../Assets/backupPhoto.jpg");
+.containerB {
+  background-image: linear-gradient(
+      rgba(41, 41, 43, 1),
+      20%,
+      rgba(41, 41, 43, 0.3) 100%
+    ),
+    url("../../Assets/steven-lelham-atSaEOeE8Nk-unsplash.jpg");
+  background-size: cover;
 }
 
-.contentTextA {
-  height: 100%;
+.rightSlash {
+  position: relative;
+  height: 50%;
   color: whitesmoke;
   background: linear-gradient(
     30deg,
     transparent 0% 25%,
-    rgba(41, 41, 43, 0.95) 25% 75%,
+    rgba(41, 41, 43, 0.75) 25% 75%,
     transparent 75% 100%
   );
 }
 
-.contentTextB {
-  height: 100%;
+.leftSlash {
+  height: 50%;
   color: whitesmoke;
   background: linear-gradient(
     -30deg,
     transparent 0% 25%,
-    rgba(41, 41, 43, 0.95) 25% 75%,
+    rgba(41, 41, 43, 0.75) 25% 75%,
     transparent 75% 100%
   );
+}
+
+.textBox {
+  opacity: 0;
+  transition: all 1s;
+}
+
+.textBoxActive {
+  opacity: 1;
+  -webkit-animation: fadein 2s;
+  -moz-animation: fadein 2s;
+  -ms-animation: fadein 2s;
+  -o-animation: fadein 2s;
+  animation: fadein 2s;
+}
+
+.textHeader {
+  position: relative;
+  margin-top: 0.7em;
+  font-size: 62px;
+  font-family: "Oxygen", sans-serif;
+}
+
+.textHeaderActive {
+  visibility: visible;
+  position: relative;
+  margin-top: 0.7em;
+  font-size: 62px;
+  font-family: "Oxygen", sans-serif;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-ms-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-o-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }

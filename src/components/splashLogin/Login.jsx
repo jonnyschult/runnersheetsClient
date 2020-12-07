@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import APIURL from "../../helpers/environment";
+import classes from "./Modal.module.css";
 import {
   Button,
   Form,
@@ -57,12 +58,13 @@ const Login = (props) => {
   };
   return (
     <>
-      <ModalHeader>Login</ModalHeader>
-      <ModalBody style={{ display: "flex", flexDirection: "column" }}>
+      <ModalHeader className={classes.modalHeader}>Login</ModalHeader>
+      <ModalBody className={classes.modalBody}>
         <Form onSubmit={(e) => submitHandler(e)}>
           <FormGroup>
             <Label htmlFor="email">Email</Label>
             <Input
+              className={classes.input}
               required
               type="email"
               name="email"
@@ -73,21 +75,25 @@ const Login = (props) => {
           <FormGroup>
             <Label htmlFor="password">Password</Label>
             <Input
+              className={classes.input}
               required
               type="password"
               name="password"
               onChange={(e) => setPassword(e.target.value)}
             ></Input>
           </FormGroup>
-          <Button type="submit" style={{ width: "100%" }}>
+          <Button type="submit" className={classes.submitButton}>
             Submit
           </Button>
           {loading ? <Spinner></Spinner> : <></>}
           {err ? <Alert>{err}</Alert> : <></>}
         </Form>
       </ModalBody>
-      <ModalFooter>
-        Don't have an account? <h6 onClick={props.registerToggle}>Sign Up</h6>
+      <ModalFooter className={classes.modalFooter}>
+        <p className={classes.switchModalText}>Don't have an account?</p>
+        <span className={classes.switchModal} onClick={props.registerToggle}>
+          Sign Up
+        </span>
       </ModalFooter>
     </>
   );

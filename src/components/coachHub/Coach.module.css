@@ -1,0 +1,394 @@
+.mainDiv {
+  margin: 5em 0 4em 0;
+}
+
+.coachLandingHeader {
+  font-weight: bold;
+  color: rgb(41, 41, 43);
+}
+
+.leftContainer {
+  width: 25%;
+  opacity: 1;
+  -webkit-animation: fadein 0.6s;
+  -moz-animation: fadein 0.6s;
+  -ms-animation: fadein 0.6s;
+  -o-animation: fadein 0.6s;
+  animation: fadein 0.6s;
+}
+
+.middleContainer {
+  width: 50%;
+  opacity: 1;
+  -webkit-animation: fadein 0.6s;
+  -moz-animation: fadein 0.6s;
+  -ms-animation: fadein 0.6s;
+  -o-animation: fadein 0.6s;
+  animation: fadein 0.6s;
+}
+
+.rightContainer {
+  width: 25%;
+  opacity: 1;
+  -webkit-animation: fadein 0.6s;
+  -moz-animation: fadein 0.6s;
+  -ms-animation: fadein 0.6s;
+  -o-animation: fadein 0.6s;
+  animation: fadein 0.6s;
+}
+
+/********* LEFT CONTAINER ITEMS **********/
+
+.leftContainerCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 2em 0 2em 0;
+}
+
+.leftContainerCardTitle {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: rgb(41, 41, 43);
+  border-bottom: 1px solid rgb(41, 41, 43);
+}
+
+.leftContainerCardBody {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.cardItem {
+  text-align: start;
+  cursor: pointer;
+}
+
+.adderModalButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5em;
+  height: 1.5em;
+  border: none;
+  border-radius: 3em;
+  /* border: 1px solid rgba(245, 245, 245, 0.918); */
+  background-color: transparent;
+  color: rgb(41, 41, 43);
+  transition: 0.5s;
+  font-size: 2em;
+}
+
+.adderModalButton:hover {
+  background-color: rgba(255, 155, 0, 0.9) !important;
+  color: whitesmoke !important;
+  box-shadow: 3px 3px 3px rgba(40, 40, 40, 0.6);
+  outline: none;
+}
+
+.adderModalButton:active {
+  box-shadow: 4px 4px 4px rgba(0, 200 0, 0) !important;
+  outline: none;
+}
+
+.adderModalButton:focus {
+  color: rgb(41, 41, 43);
+  outline: none;
+  border: none;
+  background-color: transparent;
+}
+
+/********* MIDDLE CONTAINER ITEMS **********/
+
+.middleContainerCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 2em 0 2em 0;
+}
+
+.middleContainerCardHeader {
+  background-color: rgb(80, 80, 90);
+  width: 100%;
+  border: none;
+}
+
+.middleContainerCardTitle {
+  color: whitesmoke;
+  font-size: 1.6em;
+  font-weight: bold;
+}
+
+.middleContainerCardBody {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.thead {
+  background-color: rgb(100, 100, 115) !important;
+  color: whitesmoke;
+}
+
+.th {
+  border: none !important;
+}
+
+.tr:hover {
+  background-color: rgba(255, 155, 0, 1);
+}
+
+.td:hover {
+  background-color: rgba(250, 190, 97, 1);
+}
+
+.activitiesModalButton {
+  width: 15em;
+  height: 3em;
+  border-radius: 3em;
+  border: 1px solid rgba(245, 245, 245, 0.918);
+  background-color: rgb(100, 100, 115);
+  color: whitesmoke;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
+.activitiesModalButton:hover {
+  background-color: rgba(255, 155, 0, 1);
+  border: 1px solid white;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.6);
+  outline: none;
+}
+
+.activitiesModalButton:active {
+  box-shadow: 4px 4px 4px rgba(0, 200 0, 0) !important;
+  outline: none;
+}
+.activitiesModalButton:focus {
+  outline: none;
+}
+
+/********* MIDDLE CONTAINER ITEMS **********/
+
+.datesForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 2em 0 2em 0;
+}
+
+.datesLegend {
+  font-weight: bold;
+}
+
+.datesRadiosGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.datesRadios {
+  align-self: flex-start;
+}
+
+.customDates {
+  width: 100%;
+  border: 1px solid rgb(233, 231, 231);
+  border-radius: 3px;
+  padding: 1em;
+  padding-bottom: 2em;
+}
+
+.customDatesLegend {
+  font-weight: 600;
+}
+
+.collatedWorkoutsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  border: 1px solid rgb(233, 231, 231);
+  color: rgb(41, 41, 43);
+  border-radius: 5px;
+  padding: 1em;
+  padding-bottom: 2em;
+}
+
+.collatedWorkoutsLegend {
+  font-weight: 600;
+  margin-bottom: 1em;
+}
+
+.collatedWorkoutsModal {
+  width: 10em;
+  height: 3em;
+  border-radius: 3em;
+  border: 1px solid rgba(245, 245, 245, 0.918);
+  background-color: rgba(255, 155, 0, 1);
+  color: whitesmoke;
+  transition: 0.6s;
+  font-weight: bold;
+}
+
+.collatedWorkoutsModal:hover {
+  background-color: rgba(255, 155, 0, 1);
+  border: 1px solid white;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.6);
+  outline: none;
+}
+
+.collatedWorkoutsModal:active {
+  box-shadow: 4px 4px 4px rgba(0, 200 0, 0) !important;
+  outline: none;
+}
+.collatedWorkoutsModal:focus {
+  outline: none;
+  background-color: rgba(255, 155, 0, 1);
+}
+
+/********* MODALS **********/
+
+.modalHeader {
+  height: 4em;
+  background-color: rgb(80, 80, 90);
+  color: rgb(245, 245, 245);
+  border: none;
+  font-weight: 900;
+}
+
+.headerText {
+  font-weight: 600;
+}
+
+.modalBody {
+}
+
+.modalBodyWide {
+  padding: 0;
+}
+
+.form {
+  width: 100%;
+  margin: 0;
+}
+
+.sheetModal {
+  max-height: 95vh;
+  width: 1000px;
+  overflow-y: auto;
+  position: absolute;
+  left: 50%;
+  top: 27em;
+  transform: translate(-50%, -50%);
+}
+
+.modalExpand {
+  font-weight: bold;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+.modalSwitch {
+  font-weight: bolder;
+  cursor: pointer;
+}
+
+.btnGroup {
+  display: flex;
+}
+
+.modalBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5em;
+  width: 5em;
+  height: 2.5em;
+  border: 1px solid whitesmoke;
+  border-radius: 3em;
+  background-color: rgba(255, 155, 0, 0.9);
+  color: whitesmoke;
+  transition: 0.5s;
+  font-size: 1.1em;
+}
+
+.cancelBtn,
+.printBtn {
+  background-color: rgb(80, 80, 90);
+}
+
+.cancelBtn:hover,
+.printBtn:hover {
+  background-color: rgba(255, 155, 0, 1);
+}
+
+.updateBtn:hover,
+.addBtn:hover {
+  background-color: rgb(134, 216, 134);
+  border: 1px solid whitesmoke;
+}
+
+.deleteBtn:hover {
+  background-color: tomato;
+}
+
+.plusAthleteEmail {
+  width: 15em;
+}
+
+.responseAlert {
+  background-color: rgba(255, 155, 0, 1);
+}
+
+/********* MEDIA FRAMES **********/
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-ms-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-o-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

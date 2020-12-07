@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import APIURL from "../../helpers/environment";
+import classes from "./Coach.module.css";
 import TeamList from "./TeamList/TeamList";
 import TeamPlans from "./TeamPlans";
 import RunCard from "./Activities/RunCard";
@@ -16,7 +17,7 @@ const CoachLanding = (props) => {
   const [loading, setLoading] = useState(false);
   const [loadingMain, setLoadingMain] = useState(false);
   const [coaches, setCoaches] = useState([]);
-  const [selectedTeam, setSelectedTeam] = useState({});
+  const [selectedTeam, setSelectedTeam] = useState(false);
   const [athletes, setAthletes] = useState();
   const [teamActivities, setTeamActivities] = useState();
   const [startDate, setStartDate] = useState(
@@ -38,7 +39,7 @@ const CoachLanding = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        const teamData = await data.teams.map((team) => {
+        const teamData = data.teams.map((team) => {
           //function to collate team info with roles
           data.coachRole.forEach((role) => {
             if (team.id === role.teamId) {
@@ -48,12 +49,25 @@ const CoachLanding = (props) => {
           return team;
         });
         if (!selectedTeam) {
-          await setSelectedTeam(teamData[0]);
+          await fetchStaff(data.teams[0].id);
+          await fetchAthletes(12);
+          setSelectedTeam(data.teams[0]);
+        } else {
+          fetchStaff(selectedTeam.id);
+          fetchAthletes(selectedTeam.id);
         }
-        await setLoadingMain(false);
-        await setTeams(teamData);
-        await fetchStaff(selectedTeam.id);
-        await fetchAthletes(selectedTeam.id);
+        setLoadingMain(false);
+        setTeams(
+          teamData.sort((a, b) => {
+            if (a.teamName < b.teamName) {
+              return -1;
+            }
+            if (a.teamName > b.teamName) {
+              return 1;
+            }
+            return 0;
+          })
+        );
       })
       .catch((err) => {
         console.log(err);
@@ -83,7 +97,17 @@ const CoachLanding = (props) => {
           });
           return coach;
         });
-        await setCoaches(coachData);
+        await setCoaches(
+          coachData.sort((a, b) => {
+            if (a.lastName < b.lastName) {
+              return -1;
+            }
+            if (a.lastName > b.lastName) {
+              return 1;
+            }
+            return 0;
+          })
+        );
       })
       .catch((err) => console.log(err));
   };
@@ -101,7 +125,17 @@ const CoachLanding = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        await setAthletes(data.athleteInfo);
+        await setAthletes(
+          data.athleteInfo.sort((a, b) => {
+            if (a.lastName < b.lastName) {
+              return -1;
+            }
+            if (a.lastName > b.lastName) {
+              return 1;
+            }
+            return 0;
+          })
+        );
       })
       .catch((err) => console.log(err));
   };
@@ -133,16 +167,16 @@ const CoachLanding = (props) => {
   }, [selectedTeam, startDate, endDate, update]);
 
   return (
-    <div>
+    <div className={classes.mainDiv}>
       {loadingMain ? (
         <Spinner></Spinner>
       ) : (
         <div>
-          <h2>
+          <h2 className={classes.coachLandingHeader}>
             {selectedTeam.teamName ? selectedTeam.teamName : <>Select a Team</>}
           </h2>
           <div style={{ display: "flex" }}>
-            <Container>
+            <Container className={classes.leftContainer}>
               <TeamList
                 token={props.token}
                 teams={teams}
@@ -171,7 +205,7 @@ const CoachLanding = (props) => {
                 fetchAthletes={fetchAthletes}
               />
             </Container>
-            <Container>
+            <Container className={classes.middleContainer}>
               {teamActivities ? (
                 teamActivities.map((athlete, index) => {
                   return <RunCard athlete={athlete} key={index} />;
@@ -180,13 +214,13 @@ const CoachLanding = (props) => {
                 <></>
               )}
             </Container>
-            <Container>
+            <Container className={classes.rightContainer}>
               <FetchDates
                 setStartDate={setStartDate}
                 setEndDate={setEndDate}
                 teamActivities={teamActivities}
               />
-              <TeamPlans />
+              {/* <TeamPlans /> */}
             </Container>
           </div>
         </div>

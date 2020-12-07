@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from "react";
+import classes from "../Coach.module.css";
 import AthleteAddedModal from "./AthleteAdderModal";
 import AthleteModal from "./AthleteModal";
-import {
-  Card,
-  CardImg,
-  CardBody,
-  CardTitle,
-  CardText,
-  Button,
-} from "reactstrap";
+import { Card, CardBody, CardTitle } from "reactstrap";
 
 const TeamAthletes = (props) => {
-  const addAthlete = () => {
-    alert("TEAM CREATED");
-  };
   return (
     <div>
-      <Card className="bookCard">
-        <CardBody className="">
-          <CardTitle className="bookCardBodyTitle" tag="h5">
+      <Card className={classes.leftContainerCard}>
+        <CardBody className={classes.leftContainerCardBody}>
+          <CardTitle className={classes.leftContainerCardTitle}>
             Athletes
           </CardTitle>
           {props.athletes ? (

@@ -1,18 +1,20 @@
 import TeamAdderModal from "./TeamAdderModal";
+import classes from "../Coach.module.css";
 import { Card, CardBody, CardTitle, CardText } from "reactstrap";
 
 const TeamList = (props) => {
   return (
     <div>
-      <Card className="bookCard">
-        <CardBody className="">
-          <CardTitle className="bookCardBodyTitle" tag="h4">
+      <Card className={classes.leftContainerCard}>
+        <CardBody className={classes.leftContainerCardBody}>
+          <CardTitle className={classes.leftContainerCardTitle}>
             Teams
           </CardTitle>
           {props.teams.length > 0 ? (
             props.teams.map((team, index) => {
               return (
                 <CardText
+                  className={classes.cardItem}
                   key={index}
                   onClick={async (e) => {
                     await props.setCoaches([]); //prevents error for TeamStaff  <i>{props.coachRole[index].role}</i>. Without, it would index too many times.

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
+import classes from "./HeaderFooter.module.css";
 import { Route, Link, Switch } from "react-router-dom";
-import AthleteLanding from "./athleteHub/AthleteLanding";
-import FitbitAuth from "./athleteHub/activityAdders/fitbitFlow/FitbitAuth";
-import CoachLanding from "./coachHub/CoachLanding";
-import UpdateInfoLanding from "./updateInfo/UpdateInfoLanding";
+import AthleteLanding from "../athleteHub/AthleteLanding";
+import FitbitAuth from "../athleteHub/activityAdders/fitbitFlow/FitbitAuth";
+import CoachLanding from "../coachHub/CoachLanding";
+import UpdateInfoLanding from "../updateInfo/UpdateInfoLanding";
 import {
   Navbar,
   NavbarBrand,
@@ -22,8 +23,8 @@ const Header = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
   return (
-    <div className="Header">
-      <Navbar color="light" light expand="md">
+    <div className={`Header ${classes.header}`}>
+      <Navbar className={classes.NavBarActive} light expand="md">
         <NavbarBrand href="/">Runner Sheets</NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>

@@ -24,7 +24,7 @@ const RegisterModal = (props) => {
           + Youself or Sign In
         </button>
       </Form>
-      <Modal isOpen={modal} toggle={toggle}>
+      <Modal isOpen={modal} toggle={toggle} className={classes.modal}>
         {register ? (
           <Register
             registerToggle={registerToggle}

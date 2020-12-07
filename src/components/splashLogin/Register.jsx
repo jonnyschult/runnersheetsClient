@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import APIURL from "../../helpers/environment";
+import classes from "./Modal.module.css";
 import {
   Button,
   Form,
@@ -73,13 +74,16 @@ const Register = (props) => {
   };
   return (
     <>
-      <ModalHeader>Register to Create Teams and Build Plans</ModalHeader>
-      <ModalBody>
+      <ModalHeader className={classes.modalHeader}>
+        Register to Create Teams and Build Plans
+      </ModalHeader>
+      <ModalBody className={classes.modalBody}>
         <p>* Indicates optional field</p>
         <Form onSubmit={(e) => submitHandler(e)}>
           <FormGroup>
             <Label htmlFor="email">Email</Label>
             <Input
+              className={classes.input}
               required
               type="email"
               name="email"
@@ -90,6 +94,7 @@ const Register = (props) => {
           <FormGroup>
             <Label htmlFor="password">Create a password</Label>
             <Input
+              className={classes.input}
               required
               type="password"
               name="password"
@@ -104,6 +109,7 @@ const Register = (props) => {
           <FormGroup>
             <Label htmlFor="Confirm Password">Confirm password</Label>
             <Input
+              className={classes.input}
               required
               type="password"
               name="Confirm Password"
@@ -118,6 +124,7 @@ const Register = (props) => {
           <FormGroup>
             <Label htmlFor="first name">First Name</Label>
             <Input
+              className={classes.input}
               required
               type="text"
               name="first name"
@@ -127,22 +134,25 @@ const Register = (props) => {
           <FormGroup>
             <Label htmlFor="last name">Last Name</Label>
             <Input
+              className={classes.input}
               required
               type="text"
               name="last name"
               onChange={(e) => setLastName(e.target.value)}
             ></Input>
           </FormGroup>
-          <FormGroup style={{ display: "flex" }}>
-            <span> Height*</span>
-            <Label htmlFor="feet">Feet</Label>
+          <FormGroup className={classes.height}>
+            <p className={classes.heightLabel}>Height:</p>
+            <Label htmlFor="feet">Feet:</Label>
             <Input
+              className={`${classes.input} ${classes.feet}`}
               type="number"
               name="feet"
               onChange={(e) => setFeet(parseInt(e.target.value))}
             ></Input>
-            <Label htmlFor="feet">Inches</Label>
+            <Label htmlFor="feet">Inches:</Label>
             <Input
+              className={`${classes.input} ${classes.inches}`}
               type="number"
               name="feet"
               onChange={(e) => setInches(parseInt(e.target.value))}
@@ -151,6 +161,7 @@ const Register = (props) => {
           <FormGroup>
             <Label htmlFor="weight">Weight*</Label>
             <Input
+              className={classes.input}
               type="number"
               name="weight"
               onChange={(e) => setWeightInPounds(parseInt(e.target.value))}
@@ -159,20 +170,24 @@ const Register = (props) => {
           <FormGroup>
             <Label htmlFor="age">Age*</Label>
             <Input
+              className={classes.input}
               type="number"
               name="age"
               onChange={(e) => setAge(parseInt(e.target.value))}
             ></Input>
           </FormGroup>
-          <Button type="submit" style={{ width: "100%" }}>
+          <Button type="submit" className={classes.submitButton}>
             Submit
           </Button>
           {loading ? <Spinner></Spinner> : <></>}
           {err ? <Alert>{err}</Alert> : <></>}
         </Form>
       </ModalBody>
-      <ModalFooter>
-        Already a user? <h6 onClick={props.registerToggle}>Login</h6>
+      <ModalFooter className={classes.modalFooter}>
+        <p className={classes.switchModalText}>Already a user?</p>
+        <span className={classes.switchModal} onClick={props.registerToggle}>
+          Login
+        </span>
       </ModalFooter>
     </>
   );

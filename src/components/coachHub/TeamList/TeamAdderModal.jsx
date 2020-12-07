@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import classes from "../Coach.module.css";
 import APIURL from "../../../helpers/environment";
 import {
   Button,
@@ -163,51 +164,73 @@ const TeamAdderModal = (props) => {
   return (
     <div>
       <Form inline onSubmit={(e) => e.preventDefault()}>
-        <Button onClick={toggle} style={{ margin: "0 auto" }}>
-          Create or Update Team
+        <Button onClick={toggle} className={classes.adderModalButton}>
+          +
         </Button>
       </Form>
       {modalContent ? (
-        <Modal isOpen={modal} toggle={toggle}>
-          <ModalHeader toggle={toggle}>Update Team Name</ModalHeader>
-          <ModalBody>
-            <Form onSubmit={(e) => updateTeam(e)}>
+        <Modal isOpen={modal} toggle={toggle} className={classes.modal}>
+          <ModalHeader toggle={toggle} className={classes.modalHeader}>
+            <header className={classes.headerText}>Update Team Name</header>
+          </ModalHeader>
+          <ModalBody className={classes.modalBody}>
+            <Form onSubmit={(e) => updateTeam(e)} className={classes.form}>
               <Label htmlFor="team name">
                 Rename Team or Delete <b>{props.selectedTeam.teamName}</b>
               </Label>
               <Input
                 required
                 type="text"
-                name="tean name"
+                name="team name"
                 defaultValue={props.selectedTeam.teamName}
                 onChange={(e) => setTeamTitle(e.target.value)}
               ></Input>
-              <Button color="primary" type="submit">
-                Update
-              </Button>
-              <Button color="danger" onClick={(e) => deleteTeam(e)}>
-                Delete
-              </Button>
+              <div className={classes.btnGroup}>
+                <Button
+                  className={`${classes.modalBtn} ${classes.updateBtn}`}
+                  type="submit"
+                >
+                  Update
+                </Button>
+                <Button
+                  className={`${classes.modalBtn} ${classes.deleteBtn}`}
+                  onClick={(e) => deleteTeam(e)}
+                >
+                  Delete
+                </Button>
+              </div>
               {loading ? <Spinner color="primary" /> : <></>}
-              {response ? <Alert>{response}</Alert> : <></>}
-              {err ? <Alert color="danger">{err}</Alert> : <></>}
-              <h6 onClick={(e) => setModalContent(!modalContent)}>
-                Create a New team?
+              {response ? (
+                <Alert className={classes.responseAlert}>{response}</Alert>
+              ) : (
+                <></>
+              )}
+              {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
+              <h6
+                className={classes.modalSwitch}
+                onClick={(e) => setModalContent(!modalContent)}
+              >
+                Create a New team
               </h6>
             </Form>
           </ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={toggle}>
+          <ModalFooter className={classes.modalFooter}>
+            <Button
+              className={`${classes.modalBtn} ${classes.cancelBtn}`}
+              onClick={toggle}
+            >
               Cancel
             </Button>
           </ModalFooter>
         </Modal>
       ) : (
         <Modal isOpen={modal} toggle={toggle}>
-          <ModalHeader toggle={toggle}>
-            Create a Team and Start Coaching!
+          <ModalHeader toggle={toggle} className={classes.modalHeader}>
+            <header className={classes.headerText}>
+              Create a Team and Start Coaching!
+            </header>
           </ModalHeader>
-          <ModalBody>
+          <ModalBody className={classes.modalBody}>
             <Form onSubmit={(e) => createTeam(e)}>
               <Label htmlFor="team name">Choose a Team Name</Label>
               <Input
@@ -217,17 +240,32 @@ const TeamAdderModal = (props) => {
                 placeholder="e. g. Girls Varsity Cross Country"
                 onChange={(e) => setTeamTitle(e.target.value)}
               ></Input>
-              <Button color="primary" type="submit">
+              <Button
+                className={`${classes.modalBtn} ${classes.addBtn}`}
+                type="submit"
+              >
                 Create
               </Button>
               {loading ? <Spinner color="primary" /> : <></>}
-              {response ? <Alert>{response}</Alert> : <></>}
-              {err ? <Alert color="danger">{err}</Alert> : <></>}
-              <h6 onClick={(e) => setModalContent(!modalContent)}>Update?</h6>
+              {response ? (
+                <Alert className={classes.responseAlert}>{response}</Alert>
+              ) : (
+                <></>
+              )}
+              {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
+              <h6
+                className={classes.modalSwitch}
+                onClick={(e) => setModalContent(!modalContent)}
+              >
+                Update
+              </h6>
             </Form>
           </ModalBody>
-          <ModalFooter>
-            <Button color="primary" onClick={toggle}>
+          <ModalFooter className={classes.modalFooter}>
+            <Button
+              className={`${classes.modalBtn} ${classes.cancelBtn}`}
+              onClick={toggle}
+            >
               Cancel
             </Button>
           </ModalFooter>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import APIURL from "../../../helpers/environment";
+import classes from "../Coach.module.css";
 import {
   Button,
   Modal,
@@ -16,6 +17,7 @@ import {
 
 const StaffModal = (props) => {
   const [response, setResponse] = useState("");
+  const [err, setErr] = useState();
   const [loading, setLoading] = useState();
   const [modal, setModal] = useState(false);
   const [expand, setExpand] = useState(false);
@@ -57,7 +59,7 @@ const StaffModal = (props) => {
       })
       .catch(async (err) => {
         setLoading(true);
-        await setResponse(err.message);
+        await setErr(err.message);
         setLoading(false);
       });
   };
@@ -95,7 +97,7 @@ const StaffModal = (props) => {
         })
         .catch(async (err) => {
           setLoading(true);
-          await setResponse(err.message);
+          await setErr(err.message);
           setLoading(false);
         });
     } else {
@@ -107,12 +109,13 @@ const StaffModal = (props) => {
   return (
     <div>
       <Form inline onSubmit={(e) => updateInfo(e)}>
-        <p onClick={toggle}>
+        <p onClick={toggle} className={classes.cardItem}>
           <b>{`${props.coach.firstName} ${props.coach.lastName}: `}</b>
           <i> {props.coach.role}</i>
         </p>
       </Form>
       <Modal
+        className={classes.modal}
         isOpen={modal}
         toggle={(e) => {
           toggle();
@@ -121,15 +124,19 @@ const StaffModal = (props) => {
           }
         }}
       >
-        <ModalHeader toggle={toggle}>
-          <p>{`${props.coach.firstName} ${props.coach.lastName}`}</p>
+        <ModalHeader className={classes.modalHeader} toggle={toggle}>
+          <header
+            className={classes.headerText}
+          >{`${props.coach.firstName} ${props.coach.lastName}`}</header>
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className={classes.modalBody}>
           <p>{`Email:   ${props.coach.email}`}</p>
           <p>{`Role:   ${props.coach.role}`}</p>
-          <h6 onClick={toggle2}>Update?</h6>
+          <h6 className={classes.modalExpand} onClick={toggle2}>
+            Update
+          </h6>
           {expand ? (
-            <Form onSubmit={(e) => updateInfo(e)}>
+            <Form className={classes.form} onSubmit={(e) => updateInfo(e)}>
               <FormGroup tag="fieldset">
                 <legend>New Coaches Role</legend>
                 <FormGroup check>
@@ -155,20 +162,39 @@ const StaffModal = (props) => {
                   </Label>
                 </FormGroup>
               </FormGroup>
-              <Button type="submit">Update</Button>
-              <Button color="danger" onClick={(e) => deleteCoach(e)}>
-                Delete
-              </Button>
+              <div className={classes.btnGroup}>
+                <Button
+                  className={`${classes.modalBtn} ${classes.updateBtn}`}
+                  type="submit"
+                >
+                  Update
+                </Button>
+                <Button
+                  className={`${classes.modalBtn} ${classes.deleteBtn}`}
+                  onClick={(e) => deleteCoach(e)}
+                >
+                  Delete
+                </Button>
+              </div>
               {loading ? <Spinner color="primary" /> : <></>}
-              {response ? <Alert>{response}</Alert> : <></>}
+              {response ? (
+                <Alert className={classes.responseAlert}>{response}</Alert>
+              ) : (
+                <></>
+              )}
+              {err ? (
+                <Alert className={classes.responseAlert}>{err}</Alert>
+              ) : (
+                <></>
+              )}
             </Form>
           ) : (
             <></>
           )}
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={classes.modalFooter}>
           <Button
-            color="primary"
+            className={`${classes.modalBtn} ${classes.cancelBtn}`}
             onClick={(e) => {
               toggle();
               if (expand) {

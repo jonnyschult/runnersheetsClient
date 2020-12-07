@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import APIURL from "../../../helpers/environment";
+import classes from "../Coach.module.css";
 import {
   Button,
   Modal,
@@ -17,7 +18,7 @@ import {
 const CoachAdderModal = (props) => {
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState();
+  const [err, setErr] = useState(false);
   const [modal, setModal] = useState(false);
   const [email, setEmail] = useState();
   const [role, setRole] = useState();
@@ -77,17 +78,19 @@ const CoachAdderModal = (props) => {
 
   return (
     <div>
-      <Form inline onSubmit={(e) => addCoach(e)}>
-        <Button onClick={toggle} style={{ margin: "0 auto" }}>
-          Add Coach
-        </Button>
+      <Form onSubmit={(e) => e.preventDefault()}>
+        <button onClick={toggle} className={classes.adderModalButton}>
+          +
+        </button>
       </Form>
-      <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>
-          Add Coach to {props.selectedTeam.teamName}
+      <Modal className={classes.modal} isOpen={modal} toggle={toggle}>
+        <ModalHeader className={classes.modalHeader} toggle={toggle}>
+          <header className={classes.headerText}>
+            Add Coach to {props.selectedTeam.teamName}
+          </header>
         </ModalHeader>
-        <ModalBody>
-          <Form onSubmit={(e) => addCoach(e)}>
+        <ModalBody className={classes.modalBody}>
+          <Form className={classes.form} onSubmit={(e) => addCoach(e)}>
             <FormGroup>
               <legend>New Coach's Email</legend>
               <Label htmlFor="email">
@@ -127,16 +130,26 @@ const CoachAdderModal = (props) => {
                 </Label>
               </FormGroup>
             </FormGroup>
-            <Button color="primary" type="submit">
+            <Button
+              className={`${classes.modalBtn} ${classes.addBtn}`}
+              type="submit"
+            >
               Add
             </Button>
             {loading ? <Spinner color="primary" /> : <></>}
-            {response ? <Alert>{response}</Alert> : <></>}
-            {err ? <Alert color="danger">{err}</Alert> : <></>}
+            {response ? (
+              <Alert className={classes.responseAlert}>{response}</Alert>
+            ) : (
+              <></>
+            )}
+            {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={toggle}>
+          <Button
+            className={`${classes.modalBtn} ${classes.cancelBtn}`}
+            onClick={toggle}
+          >
             Cancel
           </Button>
         </ModalFooter>

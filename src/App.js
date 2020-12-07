@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import Header from "./components/Header";
-import LoginHeader from "./components/LoginHeader";
+import Header from "./components/HeaderFooter/Header";
+import LoginHeader from "./components/HeaderFooter/LoginHeader";
 import { BrowserRouter as Router } from "react-router-dom";
 import "./App.css";
 import Splash from "./components/splashLogin/Splash";
-import Login from "./components/splashLogin/Login";
+import Footer from "./components/HeaderFooter/Footer";
 
 const App = () => {
   const [token, setToken] = useState(null);
@@ -36,11 +36,16 @@ const App = () => {
           <Router>
             <Header isCoach={isCoach} clearLogin={clearLogin} token={token} />
           </Router>
+          <Footer />
         </>
       ) : (
         <>
-          <LoginHeader />
-          <Splash updateToken={updateToken} updateIsCoach={updateIsCoach} />=
+          <LoginHeader
+            updateToken={updateToken}
+            updateIsCoach={updateIsCoach}
+          />
+          <Splash updateToken={updateToken} updateIsCoach={updateIsCoach} />
+          <Footer />
         </>
       )}
     </div>
