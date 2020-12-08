@@ -85,19 +85,18 @@ const Splash = (props) => {
             <p
               className={`${classes.text} ${classes.textA} ${classes.textAOne}`}
             >
-              - Create and manage multiple teams, all easily viewed from the
+              Create and manage multiple teams, all easily viewed from the
               coaches hub
             </p>
             <p
               className={`${classes.text} ${classes.textA} ${classes.textATwo}`}
             >
-              - View and edit athlete activities
+              View and edit athlete activities
             </p>
             <p
               className={`${classes.text} ${classes.textA} ${classes.textAThree}`}
             >
-              - Add everyone to the team, including assistant coaches and
-              managers
+              Add everyone to the team, including assistant coaches and managers
             </p>
           </div>
         </div>
@@ -109,18 +108,18 @@ const Splash = (props) => {
             <p
               className={`${classes.text} ${classes.textB} ${classes.textBOne}`}
             >
-              - Easily upload activities from Fitbit
+              Easily upload activities from Fitbit
               <img className={classes.fitbitImg} src={Fitbit} alt="" />
             </p>
             <p
               className={`${classes.text} ${classes.textB} ${classes.textBTwo}`}
             >
-              - View associated teams
+              View associated teams
             </p>
             <p
               className={`${classes.text} ${classes.textB} ${classes.textBThree}`}
             >
-              - Store all running information in one location for coaches and
+              Store all running information in one location for coaches and
               clubs to see
             </p>
           </div>
