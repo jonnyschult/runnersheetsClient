@@ -67,12 +67,12 @@ const ManualActivityAdder = (props) => {
         await setResponse(data.message);
         setMinutes(0);
         setSeconds(0);
-        setHours("");
-        setMaxHR("");
-        setAvgHR("");
-        setElevation("");
-        setDescription("");
-        setDistance("");
+        setHours();
+        setMaxHR();
+        setAvgHR();
+        setElevation();
+        setDescription();
+        setDistance();
         setLoading(false);
         setTimeout(() => {
           setResponse("");
