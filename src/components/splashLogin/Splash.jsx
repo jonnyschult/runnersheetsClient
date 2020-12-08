@@ -4,6 +4,7 @@ import RegisterModal from "./RegisterModal";
 import classes from "./Splash.module.css";
 import jumbotronMov from "../../Assets/bg-video-no-fade.mov";
 import Fitbit from "../../Assets/fitbit.png";
+import BackupPhoto from "../../Assets/backupPhoto.jpg";
 
 const Splash = (props) => {
   const [pageOne, setPageOne] = useState(false);
@@ -43,7 +44,13 @@ const Splash = (props) => {
         className={classes.jumbotron}
         // className="jumbotron jumbotron-fluid"
       >
-        <video autoPlay muted loop className={classes.video}>
+        <video
+          autoPlay
+          muted
+          loop
+          className={classes.video}
+          poster={BackupPhoto}
+        >
           <source src={jumbotronMov} type="video/mp4" />
         </video>
         <div className={classes.container}>

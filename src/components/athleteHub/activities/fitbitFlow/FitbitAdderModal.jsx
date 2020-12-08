@@ -302,7 +302,10 @@ const FitbitAdderModal = (props) => {
           )}
 
           {err ? (
-            <Alert className={classes.errAlert}>{err.message}</Alert>
+            <Alert className={classes.errAlert}>
+              Make sure you are connected to fitbit in settings or change date
+              parameters
+            </Alert>
           ) : (
             <></>
           )}
@@ -313,7 +316,7 @@ const FitbitAdderModal = (props) => {
             onClick={toggle}
             className={`${classes.modalBtn} ${classes.cancelBtn}`}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>

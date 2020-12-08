@@ -10,6 +10,10 @@ const App = () => {
   const [token, setToken] = useState(null);
   const [isCoach, setIsCoach] = useState();
 
+  useEffect(() => {
+    document.title = "RunnerSheets";
+  }, []);
+
   const updateToken = (newToken) => {
     localStorage.setItem("token", newToken);
     setToken(newToken);

@@ -123,6 +123,7 @@ const FitbitAdderModal = (props) => {
               <Input
                 type="textarea"
                 name="description"
+                placeholder={props.run.description}
                 onChange={(e) => setDescription(e.target.value)}
               ></Input>
             </FormGroup>
@@ -131,6 +132,7 @@ const FitbitAdderModal = (props) => {
               <Input
                 type="number"
                 name="maxHR"
+                placeholder={props.run.maxHR}
                 onChange={(e) => setMaxHR(parseInt(e.target.value))}
               ></Input>
             </FormGroup>
@@ -139,6 +141,7 @@ const FitbitAdderModal = (props) => {
               <Input
                 type="number"
                 name="avgHR"
+                placeholder={props.run.avgHR}
                 onChange={(e) => setAvgHR(parseInt(e.target.value))}
               ></Input>
             </FormGroup>
