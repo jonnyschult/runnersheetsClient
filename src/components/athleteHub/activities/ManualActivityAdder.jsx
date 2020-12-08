@@ -42,7 +42,6 @@ const ManualActivityAdder = (props) => {
     let dateTime =
       new Date(`${date}T${time}:00.000Z`).getTime() +
       new Date(`${date}T${time}:00.000Z`).getTimezoneOffset() * 60 * 1000;
-    console.log(dateTime, date, time);
     //prettier-ignore
     let duration = ((hours * 60 * 60) + (minutes * 60) + seconds)
     fetch(`${APIURL}/activity/create`, {
@@ -128,7 +127,6 @@ const ManualActivityAdder = (props) => {
                 name="time"
                 onChange={(e) => {
                   setTime(e.target.value);
-                  console.log(time);
                 }}
               ></Input>
             </FormGroup>

@@ -303,8 +303,7 @@ const FitbitAdderModal = (props) => {
 
           {err ? (
             <Alert className={classes.errAlert}>
-              Make sure you are connected to fitbit in settings or change date
-              parameters
+              Connect to fitbit in settings to get activities!
             </Alert>
           ) : (
             <></>
