@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import classes from "./HeaderFooter.module.css";
 import { Route, Link, Switch } from "react-router-dom";
 import AthleteLanding from "../athleteHub/AthleteLanding";
-import FitbitAuth from "../athleteHub/activityAdders/fitbitFlow/FitbitAuth";
+import FitbitAuth from "../athleteHub/activities/fitbitFlow/FitbitAuth";
 import CoachLanding from "../coachHub/CoachLanding";
 import UpdateInfoLanding from "../updateInfo/UpdateInfoLanding";
+import GarminAuth from "../athleteHub/activities/garminFlow/GarminAuth";
 import {
   Navbar,
   NavbarBrand,
@@ -25,48 +26,51 @@ const Header = (props) => {
   return (
     <div className={`Header ${classes.header}`}>
       <Navbar className={classes.NavBarActive} light expand="md">
-        <NavbarBrand href="/">Runner Sheets</NavbarBrand>
+        <NavbarBrand href="/">RunnerSheets</NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
           <Nav className="mr-auto" navbar>
-            <NavItem>
-              <NavbarText>
-                <Link to="/coach">Coaches</Link>
+            <NavItem className={classes.navItem}>
+              <NavbarText className={classes.navbarText}>
+                <Link className={classes.link} to="/coach">
+                  Coaches
+                </Link>
               </NavbarText>
             </NavItem>
-            <NavItem>
-              <UncontrolledDropdown nav inNavbar>
-                <DropdownToggle nav caret>
+            <NavItem className={classes.navItem}>
+              <NavbarText className={classes.navbarText}>
+                <Link className={classes.link} to="/athlete">
                   Athlete
-                </DropdownToggle>
-                <DropdownMenu right>
-                  <DropdownItem>
-                    <Link to="/athlete">Athlete</Link>
-                  </DropdownItem>
-                  <DropdownItem>
-                    <Link to="/fitbit">Link Fitbit</Link>
-                  </DropdownItem>
-                  <DropdownItem>
-                    <Link to="/garmin">Link Garmin</Link>
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
+                </Link>
+              </NavbarText>
             </NavItem>
-            <NavItem>
-              <NavbarText>Plans</NavbarText>
+            <NavItem className={classes.navItem}>
+              <NavbarText className={classes.navbarText}>Plans</NavbarText>
             </NavItem>
           </Nav>
           <Nav>
             <UncontrolledDropdown nav inNavbar>
-              <DropdownToggle nav caret>
+              <DropdownToggle className={classes.dropdownToggle} nav caret>
                 Settings
               </DropdownToggle>
-              <DropdownMenu right>
+              <DropdownMenu className={classes.dropdownMenu} right>
                 <DropdownItem>
-                  <Link to="/updateInfo">Update User Info</Link>
+                  <Link className={classes.link} to="/updateInfo">
+                    Update User Info
+                  </Link>
                 </DropdownItem>
                 <DropdownItem>
-                  <NavbarText onClick={props.clearLogin}>Logout</NavbarText>
+                  <Link className={classes.link} to="/fitbit">
+                    Link Fitbit
+                  </Link>
+                </DropdownItem>
+                <DropdownItem>
+                  <NavbarText
+                    className={classes.navbarText}
+                    onClick={props.clearLogin}
+                  >
+                    Logout
+                  </NavbarText>
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
@@ -88,6 +92,9 @@ const Header = (props) => {
           </Route>
           <Route exact path="/fitbit">
             <FitbitAuth token={props.token} />
+          </Route>
+          <Route exact path="/garmin">
+            <GarminAuth token={props.token} />
           </Route>
           <Route exact path="/coach">
             <CoachLanding token={props.token} />

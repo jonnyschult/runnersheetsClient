@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import APIURL from "../../helpers/environment";
+import classes from "./UpdateInfo.module.css";
 import {
   Button,
   Form,
@@ -63,48 +64,43 @@ const UpdateInfo = (props) => {
   };
 
   return (
-    <div>
-      <div>
-        <h5>Update {props.user.firstName}'s Info</h5>
-        {/********************
-    UPDATE USER INFO
-    ********************/}
-        <Form onSubmit={(e) => userUpdater(e)}>
-          <FormGroup>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              type="email"
-              name="email"
-              placeholder={props.user.email}
-              onChange={(e) => setEmail(e.target.value)}
-            ></Input>
-          </FormGroup>
-          <FormGroup>
-            <Label htmlFor="first name">First Name</Label>
-            <Input
-              type="text"
-              name="first name"
-              placeholder={props.user.firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            ></Input>
-          </FormGroup>
-          <FormGroup>
-            <Label htmlFor="last name">Last Name</Label>
-            <Input
-              type="text"
-              name="last name"
-              placeholder={props.user.lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            ></Input>
-          </FormGroup>
-          <Button type="submit" style={{ width: "100%" }}>
-            Submit
-          </Button>
-          {loading ? <Spinner></Spinner> : <></>}
-          {response ? <Alert>{response}</Alert> : <></>}
-          {err ? <Alert color="danger">{err}</Alert> : <></>}
-        </Form>
-      </div>
+    <div className={classes.subDiv}>
+      <h5>Update {props.user.firstName}'s Info</h5>
+      <Form className={classes.form} onSubmit={(e) => userUpdater(e)}>
+        <FormGroup>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            type="email"
+            name="email"
+            placeholder={props.user.email}
+            onChange={(e) => setEmail(e.target.value)}
+          ></Input>
+        </FormGroup>
+        <FormGroup>
+          <Label htmlFor="first name">First Name</Label>
+          <Input
+            type="text"
+            name="first name"
+            placeholder={props.user.firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          ></Input>
+        </FormGroup>
+        <FormGroup>
+          <Label htmlFor="last name">Last Name</Label>
+          <Input
+            type="text"
+            name="last name"
+            placeholder={props.user.lastName}
+            onChange={(e) => setLastName(e.target.value)}
+          ></Input>
+        </FormGroup>
+        <Button type="submit" style={{ width: "100%" }}>
+          Submit
+        </Button>
+        {loading ? <Spinner></Spinner> : <></>}
+        {response ? <Alert>{response}</Alert> : <></>}
+        {err ? <Alert color="danger">{err}</Alert> : <></>}
+      </Form>
     </div>
   );
 };

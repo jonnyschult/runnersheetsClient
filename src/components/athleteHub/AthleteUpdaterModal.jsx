@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import APIURL from "../../helpers/environment";
+import classes from "./Athlete.module.css";
 import {
   Button,
   Form,
@@ -74,17 +75,21 @@ const AthleteUpdater = (props) => {
   return (
     <>
       <Form onSubmit={(e) => e.preventDefault}>
-        <h6 onClick={toggle}>Update Metrics?</h6>
+        <h6 className={classes.adderModalButton} onClick={toggle}>
+          +
+        </h6>
       </Form>
       <Modal
         isOpen={modal}
         toggle={toggle}
         contentClassName="sheetModal"
-        className="print"
+        className={`print ${classes.modal}`}
       >
-        <ModalHeader>Update Athlete Metrics</ModalHeader>
-        <ModalBody>
-          <Form onSubmit={(e) => updateInfo(e)}>
+        <ModalHeader className={classes.modalHeader}>
+          <header className={classes.headerText}>Update Athlete Metrics</header>
+        </ModalHeader>
+        <ModalBody className={classes.modalBody}>
+          <Form className={classes.form} onSubmit={(e) => updateInfo(e)}>
             <FormGroup style={{ display: "flex" }}>
               <span> Height</span>
               <Label htmlFor="feet">Feet</Label>
@@ -120,16 +125,26 @@ const AthleteUpdater = (props) => {
                 onChange={(e) => setAge(parseInt(e.target.value))}
               ></Input>
             </FormGroup>
-            <Button type="submit" style={{ width: "100%" }}>
+            <Button
+              className={`${classes.modalBtn} ${classes.addBtn}`}
+              type="submit"
+            >
               Submit
             </Button>
-            {response ? <Alert>{response}</Alert> : <></>}
-            {err ? <Alert color="danger">{err}</Alert> : <></>}
+            {response ? (
+              <Alert className={classes.responseAlert}>{response}</Alert>
+            ) : (
+              <></>
+            )}
+            {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
             {loading ? <Spinner></Spinner> : <></>}
           </Form>
         </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={toggle} className="modalButton">
+        <ModalFooter className={classes.modalFooter}>
+          <Button
+            className={`${classes.modalBtn} ${classes.cancelBtn}`}
+            onClick={toggle}
+          >
             Cancel
           </Button>
         </ModalFooter>

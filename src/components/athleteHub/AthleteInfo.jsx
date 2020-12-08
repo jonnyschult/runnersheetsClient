@@ -1,25 +1,34 @@
 import React, { useState } from "react";
+import classes from "./Athlete.module.css";
 import AthleteUpdaterModal from "./AthleteUpdaterModal";
 import { Card, CardBody, CardTitle, CardText } from "reactstrap";
 
 const TeamList = (props) => {
   return (
     <div>
-      <Card className="bookCard">
-        <CardBody className="">
-          <CardTitle className="bookCardBodyTitle" tag="h4">
+      <Card className={classes.card}>
+        <CardBody className={classes.cardBody}>
+          <CardTitle className={classes.cardTitle} tag="h4">
             Athlete Information
           </CardTitle>
-          <CardText>
+          <CardText className={classes.cardItem}>
             {`Name:     ${props.athlete.firstName} ${props.athlete.lastName}`}
           </CardText>
-          <CardText>{`Email: ${props.athlete.email}`}</CardText>
-          <CardText>{`Age: ${props.athlete.age}`}</CardText>
-          <CardText>{`Height: ${Math.floor(
+          <CardText
+            className={classes.cardItem}
+          >{`Email: ${props.athlete.email}`}</CardText>
+          <CardText
+            className={classes.cardItem}
+          >{`Age: ${props.athlete.age}`}</CardText>
+          <CardText className={classes.cardItem}>{`Height: ${Math.floor(
             props.athlete.heightInInches / 12
           )}'${props.athlete.heightInInches % 12}"`}</CardText>
-          <CardText>{`Weight: ${props.athlete.weightInPounds}`}</CardText>
-          <CardText>{`Premium Member: ${props.athlete.isPremium}`}</CardText>
+          <CardText
+            className={classes.cardItem}
+          >{`Weight: ${props.athlete.weightInPounds}`}</CardText>
+          <CardText
+            className={classes.cardItem}
+          >{`Premium Member: ${props.athlete.isPremium}`}</CardText>
           <AthleteUpdaterModal
             token={props.token}
             athlete={props.athlete}

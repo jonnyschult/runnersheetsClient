@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import APIURL from "../../helpers/environment";
+import classes from "./UpdateInfo.module.css";
+
 import {
   Button,
   Form,
@@ -50,7 +52,6 @@ const DeleteUser = (props) => {
           .then((data) => {
             setResponse(data.message);
             setLoading(false);
-            props.setUpdate(data);
             setTimeout(() => {
               props.clearLogin();
             }, 4000);
@@ -76,44 +77,39 @@ const DeleteUser = (props) => {
   };
 
   return (
-    <div>
-      <div>
-        <h5>Delete {props.user.firstName}'s Account</h5>
-        {/********************
-    DELETE USER
-    ********************/}
-        <Form onSubmit={(e) => userRemover(e)}>
-          <FormGroup>
-            <Label htmlFor="password">Password</Label>
-            <Input
-              required
-              type="password"
-              name="password"
-              onChange={(e) => setPassword(e.target.value)}
-            ></Input>
-          </FormGroup>
-          <FormGroup>
-            <Label htmlFor="confirm password">Confirm Password</Label>
-            <Input
-              required
-              type="password"
-              name="confirm password"
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            ></Input>
-          </FormGroup>
-          {password !== confirmPassword && password.length > 0 ? (
-            <Alert>Passwords must match</Alert>
-          ) : (
-            <></>
-          )}
-          <Button type="submit" style={{ width: "100%" }}>
-            Submit
-          </Button>
-          {loading ? <Spinner></Spinner> : <></>}
-          {response ? <Alert>{response}</Alert> : <></>}
-          {err ? <Alert color="danger">{err}</Alert> : <></>}
-        </Form>
-      </div>
+    <div className={classes.subDiv}>
+      <h5>Delete {props.user.firstName}'s Account</h5>
+      <Form className={classes.form} onSubmit={(e) => userRemover(e)}>
+        <FormGroup>
+          <Label htmlFor="password">Password</Label>
+          <Input
+            required
+            type="password"
+            name="password"
+            onChange={(e) => setPassword(e.target.value)}
+          ></Input>
+        </FormGroup>
+        <FormGroup>
+          <Label htmlFor="confirm password">Confirm Password</Label>
+          <Input
+            required
+            type="password"
+            name="confirm password"
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          ></Input>
+        </FormGroup>
+        {password !== confirmPassword && password.length > 0 ? (
+          <Alert>Passwords must match</Alert>
+        ) : (
+          <></>
+        )}
+        <Button type="submit" style={{ width: "100%" }}>
+          Submit
+        </Button>
+        {loading ? <Spinner></Spinner> : <></>}
+        {response ? <Alert>{response}</Alert> : <></>}
+        {err ? <Alert color="danger">{err}</Alert> : <></>}
+      </Form>
     </div>
   );
 };

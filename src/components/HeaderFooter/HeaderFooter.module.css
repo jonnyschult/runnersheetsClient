@@ -35,6 +35,27 @@
   justify-content: space-between;
 }
 
+.navItem {
+  padding: 0 1em 0 1em;
+  font-size: 1.07em;
+}
+
+.navbarText {
+  color: rgb(41, 43, 44) !important;
+}
+
+.dropdownToggle,
+.dropdownToggle:hover {
+  color: rgb(41, 43, 44);
+  text-emphasis: none;
+}
+
+.link,
+.link:hover {
+  color: rgb(41, 43, 44);
+  text-decoration: none;
+}
+
 footer {
   display: flex;
   justify-content: center;

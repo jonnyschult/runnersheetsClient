@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import APIURL from "../../helpers/environment";
+import classes from "./UpdateInfo.module.css";
 import {
   Button,
   Form,
@@ -62,54 +63,48 @@ const UpdatePassword = (props) => {
   };
 
   return (
-    <div>
-      <div>
-        <h5>Update {props.user.firstName}'s Password</h5>
-        {/********************
-    UPDATE USER PASSWORD
-    ********************/}
-        <Form onSubmit={(e) => passwordUpdater(e)}>
-          <FormGroup>
-            <Label htmlFor="current password">Current Password</Label>
-            <Input
-              required
-              type="password"
-              name="current password"
-              onChange={(e) => setPassword(e.target.value)}
-            ></Input>
-          </FormGroup>
-          <FormGroup>
-            <Label htmlFor="new password">New Password</Label>
-            <Input
-              required
-              type="password"
-              name="new password"
-              onChange={(e) => setNewPassword(e.target.value)}
-            ></Input>
-          </FormGroup>
-          <FormGroup>
-            <Label htmlFor="Confirm New Password">Confirm New password</Label>
-            <Input
-              required
-              type="password"
-              name="Confirm New Password"
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
-            ></Input>
-          </FormGroup>
-          {newPassword !== confirmNewPassword &&
-          confirmNewPassword.length > 0 ? (
-            <Alert>New Passwords must match</Alert>
-          ) : (
-            <></>
-          )}
-          <Button type="submit" style={{ width: "100%" }}>
-            Submit
-          </Button>
-          {loading ? <Spinner></Spinner> : <></>}
-          {response ? <Alert>{response}</Alert> : <></>}
-          {err ? <Alert color="danger">{err}</Alert> : <></>}
-        </Form>
-      </div>
+    <div className={classes.subDiv}>
+      <h5>Update {props.user.firstName}'s Password</h5>
+      <Form className={classes.form} onSubmit={(e) => passwordUpdater(e)}>
+        <FormGroup>
+          <Label htmlFor="current password">Current Password</Label>
+          <Input
+            required
+            type="password"
+            name="current password"
+            onChange={(e) => setPassword(e.target.value)}
+          ></Input>
+        </FormGroup>
+        <FormGroup>
+          <Label htmlFor="new password">New Password</Label>
+          <Input
+            required
+            type="password"
+            name="new password"
+            onChange={(e) => setNewPassword(e.target.value)}
+          ></Input>
+        </FormGroup>
+        <FormGroup>
+          <Label htmlFor="Confirm New Password">Confirm New password</Label>
+          <Input
+            required
+            type="password"
+            name="Confirm New Password"
+            onChange={(e) => setConfirmNewPassword(e.target.value)}
+          ></Input>
+        </FormGroup>
+        {newPassword !== confirmNewPassword && confirmNewPassword ? (
+          <Alert>New Passwords must match</Alert>
+        ) : (
+          <></>
+        )}
+        <Button type="submit" style={{ width: "100%" }}>
+          Submit
+        </Button>
+        {loading ? <Spinner></Spinner> : <></>}
+        {response ? <Alert>{response}</Alert> : <></>}
+        {err ? <Alert color="danger">{err}</Alert> : <></>}
+      </Form>
     </div>
   );
 };

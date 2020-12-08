@@ -1,50 +1,51 @@
 import React, { useEffect, useState } from "react";
 import APIURL from "../../helpers/environment";
-import AdderCard from "./AdderCard";
-import ActivitiesRunCard from "./ActivitiesRunCard";
+import classes from "./Athlete.module.css";
+import AdderCard from "./activities/AdderCard";
+import RunTable from "./activities/RunTable";
 import AthleteTeamList from "./AthleteTeamLists";
 import AthleteInfo from "./AthleteInfo";
+import AthleteDateFetch from "./AthleteDateFetcher";
 import { Container, Spinner } from "reactstrap";
 
 const AthleteLanding = (props) => {
   const [fitbitRuns, setFitbitRuns] = useState([]);
   const [runs, setRuns] = useState();
   const [update, setUpdate] = useState();
-  const [alreadyAdded, setAlreadyAdded] = useState([]);
   const [teams, setTeams] = useState();
   const [athlete, setAthlete] = useState();
+  const [startDate, setStartDate] = useState(
+    new Date(Date.now() - 604800000).getTime()
+  );
+  const [endDate, setEndDate] = useState(new Date(Date.now()).getTime());
   const [loadingMain, setLoadingMain] = useState(true);
 
   /************************
-  AUTO FETCH ACTIVITIES
+  AUTO FETCH ACTIVITIES BY DATE
   ************************/
   useEffect(() => {
-    fetch(`${APIURL}/activity/getActivities`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-    })
+    fetch(
+      `${APIURL}/activity/getActivitiesDate?startDate=${startDate}&endDate=${endDate}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: props.token,
+        },
+      }
+    )
       .then((res) => res.json())
       .then(async (data) => {
-        const fitbitId = await data.result.map((run) => {
-          //Gets fitbit Ids so user can see runs already adder in the fitbitAdderModal
-          if (run.fitbitId != null) {
-            return parseInt(run.fitbitId);
-          }
-        });
         const dateDescRuns = data.result.sort(
           //Sorts runs by date in descending order
           (runA, runB) => runB.date - runA.date
         );
         await setRuns(dateDescRuns);
-        await setAlreadyAdded(fitbitId);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [fitbitRuns, update]);
+  }, [fitbitRuns, startDate, endDate, update]);
 
   /************************
   AUTO FETCH ATHLETE
@@ -70,14 +71,16 @@ const AthleteLanding = (props) => {
   }, [update]);
 
   return (
-    <div>
+    <div className={classes.mainDiv}>
       {loadingMain ? (
         <Spinner></Spinner>
       ) : (
         <div>
-          <h1>Hello {athlete.firstName}</h1>
+          <h1 className={classes.athleteLandingHeader}>
+            {`${athlete.firstName}'s Workouts`}
+          </h1>
           <div style={{ display: "flex" }}>
-            <Container>
+            <Container className={classes.leftContainer}>
               <AthleteTeamList token={props.token} teams={teams} />
               <AthleteInfo
                 token={props.token}
@@ -85,24 +88,20 @@ const AthleteLanding = (props) => {
                 athlete={athlete}
               />
             </Container>
-            <Container>
-              {runs ? (
-                runs.map((run, index) => {
-                  return (
-                    <ActivitiesRunCard run={run} key={index} index={index} />
-                  );
-                })
-              ) : (
-                <>Run Cards or graphs</>
-              )}
+            <Container className={classes.middleContainer}>
+              <RunTable runs={runs} token={props.token} setUpdate={setUpdate} />
             </Container>
-            <Container>
+            <Container className={classes.rightContainer}>
+              <AthleteDateFetch
+                setStartDate={setStartDate}
+                setEndDate={setEndDate}
+              />
               <AdderCard
                 token={props.token}
                 fitbitRuns={fitbitRuns}
                 setFitbitRuns={setFitbitRuns}
                 setUpdate={setUpdate}
-                alreadyAdded={alreadyAdded}
+                update={update}
               />
             </Container>
           </div>

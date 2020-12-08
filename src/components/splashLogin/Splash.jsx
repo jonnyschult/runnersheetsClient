@@ -3,6 +3,7 @@ import { Jumbotron, Button } from "reactstrap";
 import RegisterModal from "./RegisterModal";
 import classes from "./Splash.module.css";
 import jumbotronMov from "../../Assets/bg-video-no-fade.mov";
+import Fitbit from "../../Assets/fitbit.png";
 
 const Splash = (props) => {
   const [pageOne, setPageOne] = useState(false);
@@ -47,7 +48,7 @@ const Splash = (props) => {
         </video>
         <div className={classes.container}>
           <h1 className={`display-4 ${classes.jumbotronHeader}`}>
-            Welcome to Runner Sheets
+            Welcome to RunnerSheets
           </h1>
           <h3 className={`${classes.subHeader}`}>
             Data Communication for Informed Coaching
@@ -72,32 +73,48 @@ const Splash = (props) => {
         <div className={classes.rightSlash}>
           <div className={pageOne ? classes.textBoxActive : classes.textBox}>
             <h1 className={`${classes.textHeaderA} ${classes.textHeader}`}>
-              Hello
+              Coaches
             </h1>
-            <p className={`${classes.textA} ${classes.textAOne}`}>
-              Create or upload activities
+            <p
+              className={`${classes.text} ${classes.textA} ${classes.textAOne}`}
+            >
+              - Create and manage multiple teams, all easily viewed from the
+              coaches hub
             </p>
-            <p className={`${classes.textA} ${classes.textATwo}`}>
-              See coaches plans and challenges
+            <p
+              className={`${classes.text} ${classes.textA} ${classes.textATwo}`}
+            >
+              - View and edit athlete activities
             </p>
-            <p className={`${classes.textA} ${classes.textAThree}`}>
-              Eat as much pie as they want
+            <p
+              className={`${classes.text} ${classes.textA} ${classes.textAThree}`}
+            >
+              - Add everyone to the team, including assistant coaches and
+              managers
             </p>
           </div>
         </div>
         <div className={classes.leftSlash}>
           <div className={pageTwo ? classes.textBoxActive : classes.textBox}>
             <h1 className={`${classes.textHeaderB} ${classes.textHeader}`}>
-              Coaches Can
+              Athletes
             </h1>
-            <p className={`${classes.textB} ${classes.textBOne}`}>
-              Create or upload activities
+            <p
+              className={`${classes.text} ${classes.textB} ${classes.textBOne}`}
+            >
+              - Easily upload activities from Fitbit
+              <img className={classes.fitbitImg} src={Fitbit} alt="" />
             </p>
-            <p className={`${classes.textB} ${classes.textBTwo}`}>
-              See coaches plans and challenges
+            <p
+              className={`${classes.text} ${classes.textB} ${classes.textBTwo}`}
+            >
+              - View associated teams
             </p>
-            <p className={`${classes.textB} ${classes.textBThree}`}>
-              Eat as much pie as they want
+            <p
+              className={`${classes.text} ${classes.textB} ${classes.textBThree}`}
+            >
+              - Store all running information in one location for coaches and
+              clubs to see
             </p>
           </div>
         </div>
@@ -106,32 +123,46 @@ const Splash = (props) => {
         <div className={classes.rightSlash}>
           <div className={pageThree ? classes.textBoxActive : classes.textBox}>
             <h1 className={`${classes.textHeaderA} ${classes.textHeader}`}>
-              Athletes Can
+              Clubs
             </h1>
-            <p className={`${classes.textA} ${classes.textAOne}`}>
-              Create or upload activities
+            <p
+              className={`${classes.text} ${classes.textA} ${classes.textAOne}`}
+            >
+              Utilize the team focus and functionality to stay connected to any
+              runner you invite to your club
             </p>
-            <p className={`${classes.textA} ${classes.textATwo}`}>
-              See coaches plans and challenges
+            <p
+              className={`${classes.text} ${classes.textA} ${classes.textATwo}`}
+            >
+              See activities and offer peer to peer coaching
             </p>
-            <p className={`${classes.textA} ${classes.textAThree}`}>
-              Eat as much pie as they want
+            <p
+              className={`${classes.text} ${classes.textA} ${classes.textAThree}`}
+            >
+              Stay motivated and accountable while interacting with club
+              activities
             </p>
           </div>
         </div>
         <div className={classes.leftSlash}>
           <div className={pageFour ? classes.textBoxActive : classes.textBox}>
             <h1 className={`${classes.textHeaderB} ${classes.textHeader}`}>
-              Coaches Can
+              Coming Soon
             </h1>
-            <p className={`${classes.textB} ${classes.textBOne}`}>
-              Create or upload activities
+            <p
+              className={`${classes.text} ${classes.textB} ${classes.textBOne}`}
+            >
+              Integration with Garmin activeware
             </p>
-            <p className={`${classes.textB} ${classes.textBTwo}`}>
-              See coaches plans and challenges
+            <p
+              className={`${classes.text} ${classes.textB} ${classes.textBTwo}`}
+            >
+              Create Challenges for Athletes
             </p>
-            <p className={`${classes.textB} ${classes.textBThree}`}>
-              Eat as much pie as they want
+            <p
+              className={`${classes.text} ${classes.textB} ${classes.textBThree}`}
+            >
+              Create training plans for your teams
             </p>
           </div>
         </div>

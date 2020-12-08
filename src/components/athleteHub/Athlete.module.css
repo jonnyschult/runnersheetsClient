@@ -1,0 +1,407 @@
+.mainDiv {
+  margin: 5em 0 4em 0;
+  opacity: 1;
+  -webkit-animation: fadein 0.6s;
+  -moz-animation: fadein 0.6s;
+  -ms-animation: fadein 0.6s;
+  -o-animation: fadein 0.6s;
+  animation: fadein 0.6s;
+}
+
+.athleteLandingHeader {
+  font-weight: bold;
+  color: rgb(41, 41, 43);
+}
+
+.leftContainer {
+  width: 20%;
+}
+
+.middleContainer {
+  width: 60%;
+}
+
+.rightContainer {
+  width: 20%;
+}
+
+/********* LEFT CONTAINER ITEMS **********/
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 2em 0 2em 0;
+}
+
+.cardTitle {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: rgb(41, 41, 43);
+  border-bottom: 1px solid rgb(41, 41, 43);
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.cardItem {
+  text-align: start;
+}
+
+/********* MIDDLE CONTAINER ITEMS **********/
+
+.table {
+  margin: 2em 0 2em 0;
+}
+
+.thead {
+  background-color: rgb(83, 83, 83) !important;
+  color: whitesmoke;
+}
+
+.th {
+  border: none !important;
+}
+
+.tr:hover {
+  background-color: rgba(255, 155, 0, 1);
+}
+
+.td:hover {
+  background-color: rgba(250, 190, 97, 1);
+}
+
+.descriptionExpander {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.runDescription {
+  visibility: hidden;
+  width: 200px;
+  background-color: rgb(41, 41, 43);
+  color: whitesmoke;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+  position: absolute;
+  z-index: 1;
+}
+
+.descriptionExpander:hover + .runDescription {
+  visibility: visible;
+}
+
+/********* RIGHT CONTAINER ITEMS **********/
+
+.datesForm {
+  margin: 2em 0 2em 0;
+}
+
+.activityCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.activityCard .cardTitle {
+  color: rgb(41, 41, 43);
+}
+
+/**********FITBIT AUTH********/
+
+.fitbitMain {
+  display: flex;
+  justify-content: center;
+}
+
+.fitbitCardImg {
+  max-width: 300px;
+  max-height: 300px;
+}
+
+.fitbitCard {
+  display: flex;
+  width: 400px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 2em 0 2em 0;
+}
+
+.fitbitCardTitle {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: rgb(41, 41, 43);
+  border-bottom: 1px solid rgb(41, 41, 43);
+}
+
+.fitbitCardBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.fitbitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5em;
+  width: 5em;
+  height: 2.5em;
+  border: 1px solid whitesmoke;
+  border-radius: 3em;
+  background-color: rgba(255, 155, 0, 0.9);
+  color: whitesmoke;
+  transition: 0.5s;
+  font-size: 1.1em;
+}
+
+/********* MODALS **********/
+
+.editWorkoutBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2em;
+  height: 2.2em;
+  border: none;
+  border-radius: 2em;
+  border: 1px solid rgba(245, 245, 245, 0.918);
+  background-color: rgba(83, 83, 83, 1);
+  color: whitesmoke;
+  transition: 0.5s;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.editWorkoutBtn:hover {
+  background-color: whitesmoke;
+  color: rgb(83, 83, 83);
+  font-weight: bold;
+  font-size: 1em;
+}
+
+.launchModalBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5em;
+  width: 12em;
+  height: 3em;
+  border: none;
+  border-radius: 3em;
+  border: 1px solid rgba(245, 245, 245, 0.918);
+  background-color: rgba(255, 155, 0, 1);
+  color: whitesmoke;
+  transition: 0.5s;
+  font-size: 1em;
+}
+
+.launchModalBtn:hover {
+  border: 1px solid rgba(245, 245, 245, 0.918);
+  background-color: rgba(255, 155, 0, 1);
+  box-shadow: 4px 4px 4px rgb(41, 41, 43);
+}
+
+.launchModalBtn:active,
+.launchModalBtn:focus {
+  border: 1px solid rgba(245, 245, 245, 0.918);
+  background-color: rgba(255, 155, 0, 1);
+}
+
+.adderModalButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5em;
+  height: 1.5em;
+  border: none;
+  border-radius: 3em;
+  /* border: 1px solid rgba(245, 245, 245, 0.918); */
+  background-color: transparent;
+  color: rgb(41, 41, 43);
+  transition: 0.5s;
+  font-size: 2em;
+}
+
+.adderModalButton:hover {
+  background-color: rgba(255, 155, 0, 0.9) !important;
+  color: whitesmoke !important;
+  box-shadow: 3px 3px 3px rgba(40, 40, 40, 0.6);
+  outline: none;
+}
+
+.adderModalButton:active {
+  box-shadow: 4px 4px 4px rgba(0, 200 0, 0) !important;
+  outline: none;
+}
+
+.adderModalButton:focus {
+  color: rgb(41, 41, 43);
+  outline: none;
+  border: none;
+  background-color: transparent;
+}
+
+.modalHeader {
+  height: 4em;
+  background-color: rgb(83, 83, 83);
+  color: rgb(245, 245, 245);
+  border: none;
+  font-weight: 900;
+}
+
+.headerText {
+  font-weight: 600;
+}
+
+.modalBody {
+}
+
+.modalBodyWide {
+  padding: 0;
+}
+
+.form {
+  width: 100%;
+  margin: 0;
+}
+
+.sheetModal {
+  max-height: 95vh;
+  width: 1000px;
+  overflow-y: auto;
+  position: absolute;
+  left: 50%;
+  top: 27em;
+  transform: translate(-50%, -50%);
+}
+
+.modalExpand {
+  font-weight: bold;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+.modalSwitch {
+  font-weight: bolder;
+  cursor: pointer;
+}
+
+.btnGroup {
+  display: flex;
+}
+
+.modalBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.5em;
+  width: 5em;
+  height: 2.5em;
+  border: 1px solid whitesmoke;
+  border-radius: 3em;
+  background-color: rgba(255, 155, 0, 0.9);
+  color: whitesmoke;
+  transition: 0.5s;
+  font-size: 1.1em;
+}
+
+.cancelBtn,
+.printBtn {
+  background-color: rgb(83, 83, 83);
+}
+
+.cancelBtn:hover,
+.printBtn:hover {
+  background-color: rgba(255, 155, 0, 1);
+}
+
+.updateBtn:hover,
+.addBtn:hover {
+  background-color: rgb(134, 216, 134);
+  border: 1px solid whitesmoke;
+}
+
+.deleteBtn:hover {
+  background-color: tomato;
+}
+
+.fitbitBtn {
+  width: 13em;
+}
+
+.fitbitBtn:hover {
+  background-color: rgb(134, 216, 134);
+  border: 1px solid whitesmoke;
+}
+
+.fitbitRemoverBtn {
+  cursor: pointer;
+}
+
+.fitbitRemoverBtn:hover {
+  font-weight: bold;
+}
+
+.plusAthleteEmail {
+  width: 15em;
+}
+
+.responseAlert {
+  background-color: rgba(255, 155, 0, 1);
+}
+
+/********* MEDIA FRAMES **********/
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-ms-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@-o-keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
