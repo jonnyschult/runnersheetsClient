@@ -50,7 +50,7 @@ const CoachLanding = (props) => {
         });
         if (!selectedTeam) {
           await fetchStaff(data.teams[0].id);
-          await fetchAthletes(12);
+          await fetchAthletes(data.team[0].id);
           setSelectedTeam(data.teams[0]);
         } else {
           fetchStaff(selectedTeam.id);
