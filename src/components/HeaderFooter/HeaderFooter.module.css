@@ -50,6 +50,10 @@
   text-emphasis: none;
 }
 
+.dropdownItem:active {
+  background-color: white;
+}
+
 .link,
 .link:hover {
   color: rgb(41, 43, 44);

@@ -65,6 +65,14 @@ const ManualActivityAdder = (props) => {
       .then(async (data) => {
         await props.setUpdate(data);
         await setResponse(data.message);
+        setMinutes(0);
+        setSeconds(0);
+        setHours("");
+        setMaxHR("");
+        setAvgHR("");
+        setElevation("");
+        setDescription("");
+        setDistance("");
         setLoading(false);
         setTimeout(() => {
           setResponse("");
@@ -90,12 +98,17 @@ const ManualActivityAdder = (props) => {
       <Modal
         isOpen={modal}
         toggle={toggle}
-        contentClassName="sheetModal"
-        className="print"
+        // contentClassName={classes.sheetModal}
+        className={`${classes.modal} print`}
       >
-        <ModalHeader toggle={toggle}>Adder Modal</ModalHeader>
-        <ModalBody>
-          <Form onSubmit={(e) => runAdder(e)}>
+        <ModalHeader className={classes.modalHeader} toggle={toggle}>
+          Adder Modal
+        </ModalHeader>
+        <ModalBody className={classes.modalBody}>
+          <Form
+            className={classes.manualAdderForm}
+            onSubmit={(e) => runAdder(e)}
+          >
             <FormGroup>
               <Label htmlFor="date">Date</Label>
               <Input
@@ -128,34 +141,35 @@ const ManualActivityAdder = (props) => {
                 onChange={(e) => setDistance(parseInt(e.target.value))}
               ></Input>
             </FormGroup>
-            <FormGroup>
-              <Label htmlFor="hours">Hours</Label>
-              <Input
-                required
-                type="number"
-                name="hours"
-                defaultValue="0"
-                onChange={(e) => setHours(parseInt(e.target.value))}
-              ></Input>
-            </FormGroup>
-            <FormGroup>
-              <Label htmlFor="Minutes">Minutes</Label>
-              <Input
-                required
-                type="number"
-                name="minutes"
-                onChange={(e) => setMinutes(parseInt(e.target.value))}
-              ></Input>
-            </FormGroup>
-            <FormGroup>
-              <Label htmlFor="seconds">Seconds</Label>
-              <Input
-                required
-                type="number"
-                name="seconds"
-                onChange={(e) => setSeconds(parseInt(e.target.value))}
-              ></Input>
-            </FormGroup>
+            <div className={classes.timeGroup}>
+              <FormGroup>
+                <Label htmlFor="hours">Hours</Label>
+                <Input
+                  required
+                  type="number"
+                  name="hours"
+                  onChange={(e) => setHours(parseInt(e.target.value))}
+                ></Input>
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="Minutes">Minutes</Label>
+                <Input
+                  required
+                  type="number"
+                  name="minutes"
+                  onChange={(e) => setMinutes(parseInt(e.target.value))}
+                ></Input>
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="seconds">Seconds</Label>
+                <Input
+                  required
+                  type="number"
+                  name="seconds"
+                  onChange={(e) => setSeconds(parseInt(e.target.value))}
+                ></Input>
+              </FormGroup>
+            </div>
             <FormGroup>
               <Label htmlFor="elevation">Elevation Gain*</Label>
               <Input
@@ -188,7 +202,10 @@ const ManualActivityAdder = (props) => {
                 onChange={(e) => setDescription(e.target.value)}
               ></Input>
             </FormGroup>
-            <Button type="submit" style={{ width: "100%" }}>
+            <Button
+              className={`${classes.modalBtn} ${classes.addBtn}`}
+              type="submit"
+            >
               Submit
             </Button>
             {response ? <Alert>{response}</Alert> : <></>}
@@ -197,7 +214,10 @@ const ManualActivityAdder = (props) => {
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={toggle} className="modalButton">
+          <Button
+            className={`${classes.modalBtn} ${classes.cancelBtn}`}
+            onClick={toggle}
+          >
             Cancel
           </Button>
         </ModalFooter>

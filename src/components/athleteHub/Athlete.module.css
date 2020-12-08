@@ -113,7 +113,15 @@
   color: rgb(41, 41, 43);
 }
 
-/**********FITBIT AUTH********/
+.manualAdderForm {
+  width: 100%;
+}
+
+.timeGroup {
+  display: flex;
+}
+
+/**********FITBIT********/
 
 .fitbitMain {
   display: flex;

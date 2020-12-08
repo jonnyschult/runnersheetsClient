@@ -54,17 +54,17 @@ const Header = (props) => {
                 Settings
               </DropdownToggle>
               <DropdownMenu className={classes.dropdownMenu} right>
-                <DropdownItem>
+                <DropdownItem className={classes.dropdownItem}>
                   <Link className={classes.link} to="/updateInfo">
                     Update User Info
                   </Link>
                 </DropdownItem>
-                <DropdownItem>
+                <DropdownItem className={classes.dropdownItem}>
                   <Link className={classes.link} to="/fitbit">
                     Link Fitbit
                   </Link>
                 </DropdownItem>
-                <DropdownItem>
+                <DropdownItem className={classes.dropdownItem}>
                   <NavbarText
                     className={classes.navbarText}
                     onClick={props.clearLogin}
