@@ -4,7 +4,7 @@ Do   not    format   this
 
 **Overview:** This application is aimed at team running, be that high school crosscountry teams, or a local running club. As such, this project orients around two main hubs, the athlete hub, and the coach hub. The athlete hub is where users can manually upload activities, or transfer them from fitbit. It also presents these activities on a table which display data such as distance, pace and heart rate. All activities are full CRUD. Also, athletes can see the teams they are on and update their biometrics. The coaches hub is the most feature rich section of the app. Here, coaches can create teams, add staff and athletes, and view athlete activites. Each athlete has a section which display their activities, and there is a collated, printable sheet on the side. Also, individual user activities can be printed. Teams and staff are full CRUD. 
 
-Here is app [RunnerSheets](https://runnersheetsclient.herokuapp.com/)
+Here is the app: [RunnerSheets](https://runnersheetsclient.herokuapp.com/)
 
 ### Important feature:
 - **Fitbit connectivity**
