@@ -6,6 +6,7 @@ import RunTable from "./activities/RunTable";
 import AthleteTeamList from "./AthleteTeamLists";
 import AthleteInfo from "./AthleteInfo";
 import AthleteDateFetch from "./AthleteDateFetcher";
+import ChartsAndGraphs from "./charts/ChartsAndGraphs";
 import { Container, Spinner } from "reactstrap";
 
 const AthleteLanding = (props) => {
@@ -90,6 +91,7 @@ const AthleteLanding = (props) => {
             </Container>
             <Container className={classes.middleContainer}>
               <RunTable runs={runs} token={props.token} setUpdate={setUpdate} />
+              <ChartsAndGraphs runs={runs} />
             </Container>
             <Container className={classes.rightContainer}>
               <AthleteDateFetch

@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "../Athlete.module.css";
 import UpdateModal from "./UpdateModal";
 import { Button, Table } from "reactstrap";
 
 const ActivitiesModal = (props) => {
+  const [expand, setExpand] = useState(true);
+  const [showMore, setShowMore] = useState(false);
+
+  const toggle = () => setExpand(!expand);
+
   return (
-    <div>
+    <div className={classes.tableContainer}>
       {props.runs ? (
         <Table className={classes.table}>
           <thead className={classes.thead}>
@@ -26,7 +31,14 @@ const ActivitiesModal = (props) => {
             {props.runs.map((run, index) => {
               return (
                 <>
-                  <tr className={classes.tr} key={index}>
+                  <tr
+                    className={
+                      index > 8 && expand
+                        ? `${classes.tr} ${classes.expandableTr}`
+                        : classes.tr
+                    }
+                    key={index}
+                  >
                     <th scope="row">{index + 1}</th>
                     <td className={classes.td}>
                       {new Date(parseInt(run.date)).toDateString()}
@@ -79,7 +91,15 @@ const ActivitiesModal = (props) => {
               );
             })}
           </tbody>
+          <tfoot></tfoot>
         </Table>
+      ) : (
+        <></>
+      )}
+      {props.runs.length > 9 ? (
+        <p className={classes.expand} onClick={(e) => toggle()}>
+          {expand ? "More" : "Less"}
+        </p>
       ) : (
         <></>
       )}
