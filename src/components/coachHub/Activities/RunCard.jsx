@@ -1,29 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import ActivitiesModal from "./ActivitiesModal";
 import classes from "../Coach.module.css";
-import {
-  Card,
-  CardImg,
-  CardBody,
-  CardTitle,
-  CardSubtitle,
-  CardText,
-  Table,
-  CardHeader,
-} from "reactstrap";
-
-function timeConverter(seconds) {
-  let remainingSecs = seconds % 60;
-  let minutes = Math.floor(seconds / 60);
-  let time = minutes + remainingSecs / 100;
-  return time.toFixed(2);
-}
+import { Card, CardBody, CardTitle, Table, CardHeader } from "reactstrap";
 
 const RunCard = (props) => {
+  const [expand, setExpand] = useState(true);
+
+  const toggle = () => setExpand(!expand);
+
   const activities = props.athlete.activities.sort(
     //Sorts runs by date in descending order
     (runA, runB) => runB.date - runA.date
   );
+
+  const metersAdder = (arr) => {
+    let totalNum = 0;
+    arr.forEach((run) => (totalNum += run.meters));
+    return totalNum;
+  };
+
+  const timeAdder = (arr) => {
+    let totalNum = 0;
+    arr.forEach((run) => (totalNum += run.durationSecs));
+    return totalNum;
+  };
 
   return (
     <div>
@@ -47,7 +47,13 @@ const RunCard = (props) => {
             <tbody>
               {activities.map((activity, index) => {
                 return (
-                  <tr key={index} className={`${classes.tr}`}>
+                  <tr
+                    className={
+                      index > 7 && expand
+                        ? `${classes.tr} ${classes.expandableTr}`
+                        : classes.tr
+                    }
+                  >
                     <th scope="row">{index + 1}</th>
                     <td className={classes.td}>
                       {new Date(parseInt(activity.date)).toDateString()}
@@ -73,7 +79,69 @@ const RunCard = (props) => {
                 );
               })}
             </tbody>
+            <tfoot className={classes.tfoot}>
+              <tr className={`${classes.tr} ${classes.totals}`}>
+                <th>Totals</th>
+                <td className={classes.td}>
+                  {new Date(parseInt(activities[0].date))
+                    .toDateString()
+                    .substr(4, 6)}{" "}
+                  -
+                  {new Date(parseInt(activities[activities.length - 1].date))
+                    .toDateString()
+                    .substr(4, 6)}
+                </td>
+                <td className={classes.td}>
+                  {Math.floor(metersAdder(activities))
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                </td>
+                <td className={classes.td}>
+                  {new Date(timeAdder(activities) * 1000)
+                    .toISOString()
+                    .substr(11, 8)}
+                </td>
+                <td className={classes.td}>N/A</td>
+              </tr>
+              <tr className={`${classes.tr} ${classes.averages}`}>
+                <th>Averages</th>
+                <td className={classes.td}>
+                  {new Date(parseInt(activities[0].date))
+                    .toDateString()
+                    .substr(4, 6)}{" "}
+                  -
+                  {new Date(parseInt(activities[activities.length - 1].date))
+                    .toDateString()
+                    .substr(4, 6)}
+                </td>
+                <td className={classes.td}>
+                  {Math.floor(metersAdder(activities) / activities.length)
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                </td>
+                <td className={classes.td}>
+                  {new Date((timeAdder(activities) * 1000) / activities.length)
+                    .toISOString()
+                    .substr(11, 8)}
+                </td>
+                <td className={classes.td}>
+                  {new Date(
+                    (timeAdder(activities) / (metersAdder(activities) / 1000)) *
+                      1000
+                  )
+                    .toISOString()
+                    .substr(11, 8)}
+                </td>
+              </tr>
+            </tfoot>
           </Table>
+          {activities.length > 8 ? (
+            <p className={classes.expand} onClick={(e) => toggle()}>
+              {expand ? "Expand" : "Less"}
+            </p>
+          ) : (
+            <></>
+          )}
           <ActivitiesModal athlete={props.athlete} />
         </CardBody>
       </Card>

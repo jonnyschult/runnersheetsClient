@@ -15,6 +15,51 @@ const ActivitiesModal = (props) => {
 
   const toggle = () => setModal(!modal);
 
+  const metersAdder = (arr) => {
+    let totalNum = 0;
+    arr.forEach((run) => (totalNum += run.meters));
+    return totalNum;
+  };
+
+  const timeAdder = (arr) => {
+    let totalNum = 0;
+    arr.forEach((run) => (totalNum += run.durationSecs));
+    return totalNum;
+  };
+
+  const elevationAdder = (arr) => {
+    let totalNum = 0;
+    let counter = 0;
+    arr.forEach((run) => {
+      if (typeof run.elevationMeters === "number")
+        totalNum += run.elevationMeters;
+      counter++;
+    });
+    return { total: totalNum, average: totalNum / counter };
+  };
+
+  const avgHRAdder = (arr) => {
+    let totalNum = 0;
+    let counter = 0;
+    arr.forEach((run) => {
+      if (typeof run.avgHR === "number") totalNum += run.avgHR;
+      counter++;
+    });
+    return totalNum / counter;
+  };
+
+  const maxHRAdder = (arr) => {
+    let totalNum = 0;
+    let counter = 0;
+    arr.forEach((run) => {
+      if (typeof run.maxHR === "number") {
+        totalNum += run.maxHR;
+        counter++;
+      }
+    });
+    return totalNum / counter;
+  };
+
   return (
     <div>
       <Form inline onSubmit={(e) => e.preventDefault()}>
@@ -92,6 +137,100 @@ const ActivitiesModal = (props) => {
                 );
               })}
             </tbody>
+            <tfoot className={classes.tfoot}>
+              <tr className={`${classes.tr} ${classes.totals}`}>
+                <th>Totals</th>
+                <td className={classes.td}>
+                  {new Date(parseInt(props.athlete.activities[0].date))
+                    .toDateString()
+                    .substr(4, 6)}{" "}
+                  -
+                  {new Date(
+                    parseInt(
+                      props.athlete.activities[
+                        props.athlete.activities.length - 1
+                      ].date
+                    )
+                  )
+                    .toDateString()
+                    .substr(4, 6)}
+                </td>
+                <td className={classes.td}>
+                  {Math.floor(metersAdder(props.athlete.activities))
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                </td>
+                <td className={classes.td}>
+                  {new Date(timeAdder(props.athlete.activities) * 1000)
+                    .toISOString()
+                    .substr(11, 8)}
+                </td>
+                <td className={classes.td}>N/A</td>
+                <td className={classes.td}>
+                  {Math.floor(elevationAdder(props.athlete.activities).total)
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                </td>
+                <td className={classes.td}>N/A</td>
+                <td className={classes.td}>N/A</td>
+                <td className={classes.td}>N/A</td>
+              </tr>
+              <tr className={`${classes.tr} ${classes.averages}`}>
+                <th>Averages</th>
+                <td className={classes.td}>
+                  {new Date(parseInt(props.athlete.activities[0].date))
+                    .toDateString()
+                    .substr(4, 6)}{" "}
+                  -
+                  {new Date(
+                    parseInt(
+                      props.athlete.activities[
+                        props.athlete.activities.length - 1
+                      ].date
+                    )
+                  )
+                    .toDateString()
+                    .substr(4, 6)}
+                </td>
+                <td className={classes.td}>
+                  {Math.floor(
+                    metersAdder(props.athlete.activities) /
+                      props.athlete.activities.length
+                  )
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                </td>
+                <td className={classes.td}>
+                  {new Date(
+                    (timeAdder(props.athlete.activities) * 1000) /
+                      props.athlete.activities.length
+                  )
+                    .toISOString()
+                    .substr(11, 8)}
+                </td>
+                <td className={classes.td}>
+                  {new Date(
+                    (timeAdder(props.athlete.activities) /
+                      (metersAdder(props.athlete.activities) / 1000)) *
+                      1000
+                  )
+                    .toISOString()
+                    .substr(11, 8)}
+                </td>
+                <td className={classes.td}>
+                  {Math.floor(elevationAdder(props.athlete.activities).average)
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                </td>
+                <td className={classes.td}>
+                  {Math.floor(avgHRAdder(props.athlete.activities))}
+                </td>
+                <td className={classes.td}>
+                  {Math.floor(maxHRAdder(props.athlete.activities))}
+                </td>
+                <td className={classes.td}>N/A</td>
+              </tr>
+            </tfoot>
           </Table>
         </ModalBody>
         <ModalFooter className={classes.modalFooter}>

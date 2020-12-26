@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  Card,
-  CardImg,
-  CardBody,
-  CardTitle,
-  CardSubtitle,
-  CardText,
-  Table,
-} from "reactstrap";
+import { Card, CardBody, CardTitle, Table } from "reactstrap";
 
 function timeConverter(seconds) {
   let remainingSecs = seconds % 60;

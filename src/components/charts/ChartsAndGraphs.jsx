@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import APIURL from "../../../helpers/environment";
 import classes from "./Charts.module.css";
-import LineGraph from "./LineGraph";
+import DistanceBarChart from "./DistanceBarChart";
+import ElevationLineGraph from "./ElevationLineGraph";
+import Doughnut from "./DistanceDoughnut";
+import PolarChart from "./DaysPoloar";
 import { Container, Spinner } from "reactstrap";
 
 const ChartsAndGraphs = (props) => {
@@ -33,33 +35,13 @@ const ChartsAndGraphs = (props) => {
         <div>
           <h5>Charts and Graphs</h5>
           <Container className={classes.topCharts}>
-            <LineGraph runs={props.runs} />
-          </Container>
-          <Container className={classes.middleCharts}>
-            <div>
-              <h4>
-                {loading ? (
-                  <Spinner />
-                ) : (
-                  `Time Ran: ${new Date(timeRan * 1000)
-                    .toISOString()
-                    .substr(11, 8)}`
-                )}
-              </h4>
-              <h4>
-                {loading ? (
-                  <Spinner />
-                ) : (
-                  `Distance:
-                ${(distanceCovered / 1000)
-                  .toFixed(2)
-                  .toString()
-                  .replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,")} kms`
-                )}
-              </h4>
+            <DistanceBarChart runs={props.runs} />
+            <ElevationLineGraph runs={props.runs} />
+            <div className={classes.polarDoughnut}>
+              <Doughnut runs={props.runs} />
+              <PolarChart runs={props.runs} />
             </div>
           </Container>
-          <Container className={classes.bottomCharts}></Container>
         </div>
       )}
     </div>

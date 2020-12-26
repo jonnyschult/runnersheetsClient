@@ -76,7 +76,6 @@ const FitbitAdderModal = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        console.log(data);
         await props.setUpdate(data);
       })
       .catch((err) => {
@@ -100,7 +99,6 @@ const FitbitAdderModal = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        console.log(data);
         await props.setUpdate(data);
       })
       .catch((err) => {
@@ -151,9 +149,7 @@ const FitbitAdderModal = (props) => {
               }),
             })
               .then((res) => res.json())
-              .then((data) => {
-                console.log("Hello", data.message);
-              })
+              .then((data) => {})
               .catch((err) => {
                 setLoading(false);
                 setErr(err);

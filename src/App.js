@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "./components/HeaderFooter/Header";
 import LoginHeader from "./components/HeaderFooter/LoginHeader";
 import { BrowserRouter as Router } from "react-router-dom";
+import jwt_decode from "jwt-decode";
 import "./App.css";
 import Splash from "./components/splashLogin/Splash";
 import Footer from "./components/HeaderFooter/Footer";
@@ -28,9 +29,18 @@ const App = () => {
     setToken("");
   };
 
-  useEffect(() => {
-    setToken(localStorage.getItem("token"));
-    setIsCoach(localStorage.getItem("isCoach") === "true");
+  useEffect(async () => {
+    if (localStorage.getItem("token")) {
+      if (
+        new Date().getTime() >
+        jwt_decode(localStorage.getItem("token")).exp * 1000
+      ) {
+        clearLogin();
+      } else {
+        await setToken(localStorage.getItem("token"));
+        setIsCoach(localStorage.getItem("isCoach") === "true");
+      }
+    }
   }, [token]);
 
   return (

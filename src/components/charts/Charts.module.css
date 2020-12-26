@@ -1,0 +1,12 @@
+.mainDiv {
+  margin-bottom: 10em;
+}
+
+.polarDoughnut {
+  display: flex;
+}
+
+.polar,
+.doughnut {
+  min-width: 50%;
+}

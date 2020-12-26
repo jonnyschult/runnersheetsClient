@@ -79,12 +79,16 @@
   animation: fadein 0.6s;
 }
 
+.trHead {
+  animation: fadein 0.6s;
+}
+
 .expandableTr {
   display: none;
 }
 
 .tr:hover {
-  background-color: rgba(255, 155, 0, 1);
+  background-color: rgba(255, 155, 0, 0.9);
 }
 
 .td:hover {
@@ -123,6 +127,10 @@
 
 .descriptionExpander:hover + .runDescription {
   visibility: visible;
+}
+
+.tfoot {
+  background-color: rgba(255, 155, 0, 1);
 }
 
 /********* RIGHT CONTAINER ITEMS **********/

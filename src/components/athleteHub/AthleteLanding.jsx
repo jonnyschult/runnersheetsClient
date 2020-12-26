@@ -6,7 +6,7 @@ import RunTable from "./activities/RunTable";
 import AthleteTeamList from "./AthleteTeamLists";
 import AthleteInfo from "./AthleteInfo";
 import AthleteDateFetch from "./AthleteDateFetcher";
-import ChartsAndGraphs from "./charts/ChartsAndGraphs";
+import ChartsAndGraphs from "../charts/ChartsAndGraphs";
 import { Container, Spinner } from "reactstrap";
 
 const AthleteLanding = (props) => {
@@ -17,9 +17,10 @@ const AthleteLanding = (props) => {
   const [athlete, setAthlete] = useState();
   const [startDate, setStartDate] = useState(
     new Date(Date.now() - 604800000).getTime()
-  );
+  ); //One week ago.
   const [endDate, setEndDate] = useState(new Date(Date.now()).getTime());
-  const [loadingMain, setLoadingMain] = useState(true);
+  const [loadingMain1, setLoadingMain1] = useState(true);
+  const [loadingMain2, setLoadingMain2] = useState(true);
 
   /************************
   AUTO FETCH ACTIVITIES BY DATE
@@ -42,6 +43,7 @@ const AthleteLanding = (props) => {
           (runA, runB) => runB.date - runA.date
         );
         await setRuns(dateDescRuns);
+        setLoadingMain2(false);
       })
       .catch((err) => {
         console.log(err);
@@ -63,17 +65,17 @@ const AthleteLanding = (props) => {
       .then(async (data) => {
         await setAthlete(data.athlete);
         await setTeams(data.athlete.teams);
-        await setLoadingMain(false);
+        await setLoadingMain1(false);
       })
       .catch(async (err) => {
         console.log(err);
-        await setLoadingMain(false);
+        await setLoadingMain1(false);
       });
   }, [update]);
 
   return (
     <div className={classes.mainDiv}>
-      {loadingMain ? (
+      {loadingMain1 || loadingMain2 ? (
         <Spinner></Spinner>
       ) : (
         <div>
