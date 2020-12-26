@@ -20,7 +20,7 @@ const AdderCard = (props) => {
             setUpdate={props.setUpdate}
             update={props.update}
           />
-          <GarminAdderModal />
+          {/* <GarminAdderModal /> */}
           <ManualActivityAdder
             token={props.token}
             setUpdate={props.setUpdate}

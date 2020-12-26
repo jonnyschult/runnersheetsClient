@@ -44,9 +44,9 @@ const Header = (props) => {
                 </Link>
               </NavbarText>
             </NavItem>
-            <NavItem className={classes.navItem}>
+            {/* <NavItem className={classes.navItem}>
               <NavbarText className={classes.navbarText}>Plans</NavbarText>
-            </NavItem>
+            </NavItem> */}
           </Nav>
           <Nav>
             <UncontrolledDropdown nav inNavbar>
