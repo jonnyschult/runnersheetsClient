@@ -21,18 +21,32 @@ const FitbitAdderModal = (props) => {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState();
   const [modal, setModal] = useState(false);
-  const [description, setDescription] = useState();
+  const [date, setDate] = useState(new Date(parseInt(props.run.date)).toISOString().substr(0, 10));
+  const [time, setTime] = useState(new Date(parseInt(props.run.date)).toISOString().substr(11, 5));
+  const [distance, setDistance] = useState();
+  const [hours, setHours] = useState();
+  const [minutes, setMinutes] = useState();
+  const [seconds, setSeconds] = useState();
   const [maxHR, setMaxHR] = useState();
   const [avgHR, setAvgHR] = useState();
+  const [elevation, setElevation] = useState();
+  const [description, setDescription] = useState();
 
   const toggle = () => setModal(!modal);
-
   /***************************
   UPDATE ACTIVITY 
   ***************************/
-  const updateInfo = (e) => {
+  const updateInfo = async (e) => {
+    console.log(time)
     e.preventDefault();
     setLoading(true);
+    let dateTime =
+      new Date(`${date}T${time}:00.000Z`).getTime() +
+      new Date(`${date}T${time}:00.000Z`).getTimezoneOffset() * 60 * 1000;
+    let duration;
+    if(hours || minutes || seconds){
+      duration = ((hours * 60 * 60) + (minutes * 60) + seconds)
+    } else {duration = props.run.durationSecs}
     fetch(`${APIURL}/activity/update`, {
       method: "PUT",
       headers: {
@@ -41,9 +55,13 @@ const FitbitAdderModal = (props) => {
       },
       body: JSON.stringify({
         activityId: props.run.id,
-        description,
-        avgHR,
-        maxHR,
+        date: dateTime,
+        meters: distance,
+        durationSecs: duration,
+        elevationMeters: elevation,
+        avgHR: avgHR,
+        maxHR: maxHR,
+        description: description,
       }),
     })
       .then((res) => res.json())
@@ -57,6 +75,7 @@ const FitbitAdderModal = (props) => {
         }, 1200);
       })
       .catch((err) => {
+        console.log(err)
         setErr(err.message);
         setLoading(false);
       });
@@ -118,6 +137,73 @@ const FitbitAdderModal = (props) => {
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
           <Form className={classes.form} onSubmit={(e) => updateInfo(e)}>
+          <FormGroup>
+              <Label htmlFor="date">Date</Label>
+              <Input
+                type="date"
+                name="date"
+                onChange={(e) => {
+                  setDate(e.target.value);
+                }}
+              ></Input>
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="time">Time of Day</Label>
+              <Input
+                type="time"
+                name="time"
+                onChange={(e) => {
+                  setTime(e.target.value);
+                }}
+              ></Input>
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="distance">Distance in Meters</Label>
+              <Input
+                type="number"
+                name="distance"
+                placeholder={props.run.meters}
+                onChange={(e) => setDistance(parseInt(e.target.value))}
+              ></Input>
+            </FormGroup>
+            <div className={classes.timeGroup}>
+              <FormGroup>
+                <Label htmlFor="hours">Hours</Label>
+                <Input
+                  type="number"
+                  name="hours"
+                  placeholder={new Date(props.run.durationSecs * 1000).toISOString().substr(11, 2)}
+                  onChange={(e) => setHours(parseInt(e.target.value))}
+                ></Input>
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="Minutes">Minutes</Label>
+                <Input
+                  type="number"
+                  name="minutes"
+                  placeholder={new Date(props.run.durationSecs * 1000).toISOString().substr(14, 2)}
+                  onChange={(e) => setMinutes(parseInt(e.target.value))}
+                ></Input>
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="seconds">Seconds</Label>
+                <Input
+                  type="number"
+                  name="seconds"
+                  placeholder={new Date(props.run.durationSecs * 1000).toISOString().substr(17, 2)}
+                  onChange={(e) => setSeconds(parseInt(e.target.value))}
+                ></Input>
+              </FormGroup>
+            </div>
+            <FormGroup>
+              <Label htmlFor="elevation">Elevation Gain in Meters*</Label>
+              <Input
+                type="number"
+                name="elevation"
+                placeholder={props.run.elevationMeters}
+                onChange={(e) => setElevation(parseInt(e.target.value))}
+              ></Input>
+            </FormGroup>
             <FormGroup>
               <Label htmlFor="description">description</Label>
               <Input

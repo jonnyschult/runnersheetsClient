@@ -8,6 +8,7 @@ const Footer = (props) => {
       <p>Powered by</p>
       <img src={NobleTech} alt="" />
       <p>NobleTech</p>
+      <p className={classes.copyright}>copyright 2020</p>
     </footer>
   );
 };

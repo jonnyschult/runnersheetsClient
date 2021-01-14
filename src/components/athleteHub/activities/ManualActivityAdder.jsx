@@ -116,11 +116,12 @@ const ManualActivityAdder = (props) => {
                 name="date"
                 onChange={(e) => {
                   setDate(e.target.value);
+                  console.log(e.target.value)
                 }}
               ></Input>
             </FormGroup>
             <FormGroup>
-              <Label htmlFor="time">time</Label>
+              <Label htmlFor="time">Time of Day</Label>
               <Input
                 required
                 type="time"
@@ -169,7 +170,7 @@ const ManualActivityAdder = (props) => {
               </FormGroup>
             </div>
             <FormGroup>
-              <Label htmlFor="elevation">Elevation Gain*</Label>
+              <Label htmlFor="elevation">Elevation Gain in Meters*</Label>
               <Input
                 type="number"
                 name="elevation"

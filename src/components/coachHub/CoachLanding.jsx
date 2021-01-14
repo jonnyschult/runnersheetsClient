@@ -167,6 +167,7 @@ const CoachLanding = (props) => {
   }, [selectedTeam, startDate, endDate, update]);
 
   return (
+    <div className={classes.wrapper}>
     <div className={classes.mainDiv}>
       {loadingMain ? (
         <Spinner></Spinner>
@@ -225,6 +226,7 @@ const CoachLanding = (props) => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };

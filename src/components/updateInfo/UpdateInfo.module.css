@@ -1,6 +1,6 @@
-.mainDiv {
+.wrapper {
   display: flex;
-  margin: 4em 0 4em 0;
+  min-height: calc(100vh - 60px);
   opacity: 1;
   -webkit-animation: fadein 0.6s;
   -moz-animation: fadein 0.6s;
@@ -17,6 +17,7 @@
 .containerDiv {
   display: flex;
   width: 100%;
+  margin: 4em 0 4em 0;
 }
 
 .leftContainer {

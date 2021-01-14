@@ -54,7 +54,7 @@ const UpdateInfoLanding = (props) => {
     setUpdatePassword(true);
   };
   return (
-    <div className={classes.mainDiv}>
+    <div className={classes.wrapper}>
       {loadingMain ? (
         <Spinner></Spinner>
       ) : (

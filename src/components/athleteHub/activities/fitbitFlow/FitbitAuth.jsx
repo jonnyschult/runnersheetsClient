@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import APIURL from "../../../../helpers/environment";
-import classes from "../../Athlete.module.css";
+import classes from "./Fitbit.module.css";
 import Fitbit from "../../../../Assets/fitbit.jpg";
 import {
   Button,
@@ -108,7 +108,8 @@ const FitbitAuth = (props) => {
       });
   };
   return (
-    <div className={`${classes.mainDiv} ${classes.fitbitMain}`}>
+    <div className={classes.wrapper}>
+    <div className={classes.mainDiv}>
       <Card className={classes.fitbitCard}>
         <CardHeader className={classes.fitbitCardHeader}>
           <h1 className={classes.headerText}>Connect Fitbit</h1>{" "}
@@ -136,6 +137,7 @@ const FitbitAuth = (props) => {
         {loading ? <Spinner></Spinner> : <></>}
         {err ? <Alert>{err}</Alert> : <></>}
       </Card>
+    </div>
     </div>
   );
 };

@@ -74,6 +74,7 @@ const AthleteLanding = (props) => {
   }, [update]);
 
   return (
+    <div className={classes.wrapepr}>
     <div className={classes.mainDiv}>
       {loadingMain1 || loadingMain2 ? (
         <Spinner></Spinner>
@@ -111,6 +112,7 @@ const AthleteLanding = (props) => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };
