@@ -3,7 +3,7 @@ import classes from "./Charts.module.css";
 import DistanceBarChart from "./DistanceBarChart";
 import ElevationLineGraph from "./ElevationLineGraph";
 import Doughnut from "./DistanceDoughnut";
-import PolarChart from "./DaysPoloar";
+import PolarChart from "./DaysPolar";
 import { Container, Spinner } from "reactstrap";
 
 const ChartsAndGraphs = (props) => {
@@ -15,15 +15,15 @@ const ChartsAndGraphs = (props) => {
   /**********************
   SET DISTANCE AND DURATION
   **********************/
-  useEffect(async () => {
+  useEffect(() => {
     let time = 0;
     let distance = 0;
-    await props.runs.forEach((run) => {
+    props.runs.forEach((run) => {
       time += run.durationSecs;
       distance += run.meters;
     });
-    await setTimeRan(time);
-    await setDistanceCovered(distance);
+    setTimeRan(time);
+    setDistanceCovered(distance);
     setLoading(false);
   }, [props.runs]);
 

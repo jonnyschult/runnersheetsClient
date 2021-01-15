@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import classes from "../Athlete.module.css";
 import UpdateModal from "./UpdateModal";
 import { Table } from "reactstrap";

@@ -1,19 +1,13 @@
-import React, { useEffect, useState } from "react";
-import APIURL from "../../../../helpers/environment";
+import React, { useState } from "react";
+// import APIURL from "../../../../helpers/environment";
 import classes from "../../Athlete.module.css";
 import {
   Button,
-  Table,
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter,
   Form,
-  FormGroup,
-  Label,
-  Input,
-  Spinner,
-  Alert,
 } from "reactstrap";
 
 const GarminAdderModal = (props) => {

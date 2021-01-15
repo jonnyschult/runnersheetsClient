@@ -29,7 +29,7 @@ const App = () => {
     setToken("");
   };
 
-  useEffect(async () => {
+  useEffect(() => {
     if (localStorage.getItem("token")) {
       if (
         new Date().getTime() >
@@ -37,7 +37,7 @@ const App = () => {
       ) {
         clearLogin();
       } else {
-        await setToken(localStorage.getItem("token"));
+        setToken(localStorage.getItem("token"));
         setIsCoach(localStorage.getItem("isCoach") === "true");
       }
     }

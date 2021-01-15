@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import classes from "./Athlete.module.css";
 import AthleteUpdaterModal from "./AthleteUpdaterModal";
 import { Card, CardBody, CardTitle, CardText } from "reactstrap";

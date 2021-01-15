@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 import APIURL from "../../helpers/environment";
 import classes from "./Coach.module.css";
 import TeamList from "./TeamList/TeamList";
-import TeamPlans from "./TeamPlans";
+// import TeamPlans from "./TeamPlans";
 import RunCard from "./Activities/RunCard";
 import TeamAthletes from "./TeamAthletes/TeamAthletes";
 import TeamStaff from "./TeamStaff/TeamStaff";
 import FetchDates from "./Activities/FetchDates";
+import Scatter from "../charts/DistanceScatter"
 import "./Print.css";
 
-import { Button, Container, Spinner } from "reactstrap";
+import { Container, Spinner } from "reactstrap";
 
 const CoachLanding = (props) => {
   const [teams, setTeams] = useState([]);
@@ -158,6 +159,7 @@ const CoachLanding = (props) => {
       .then((res) => res.json())
       .then(async (data) => {
         await setTeamActivities(data.teamActivities);
+        console.log(data.teamActivities)
         setLoading(false);
       })
       .catch((err) => {
@@ -207,6 +209,11 @@ const CoachLanding = (props) => {
               />
             </Container>
             <Container className={classes.middleContainer}>
+              {teamActivities ? (
+                <Scatter teamActivities={teamActivities} />
+              ) : (
+                <></>
+              )}
               {teamActivities ? (
                 teamActivities.map((athlete, index) => {
                   return <RunCard athlete={athlete} key={index} />;

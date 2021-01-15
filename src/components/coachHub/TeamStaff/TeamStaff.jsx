@@ -1,14 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import classes from "../Coach.module.css";
 import CoachAdderModal from "./CoachAdderModal";
 import StaffModal from "./StaffModal";
 import {
   Card,
-  CardImg,
   CardBody,
   CardTitle,
-  CardText,
-  Button,
 } from "reactstrap";
 
 const TeamStaff = (props) => {

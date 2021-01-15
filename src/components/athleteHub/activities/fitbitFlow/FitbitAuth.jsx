@@ -17,7 +17,7 @@ const FitbitAuth = (props) => {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState();
   const [response, setResponse] = useState();
-  useEffect(async () => {
+  useEffect(() => {
     const url = window.location.href;
     if (url.includes("?")) {
       //checks for query parameter, which fitbit returns in their callback uri

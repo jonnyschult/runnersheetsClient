@@ -161,56 +161,6 @@
   display: flex;
 }
 
-/**********FITBIT********/
-
-.fitbitMain {
-  display: flex;
-  justify-content: center;
-}
-
-.fitbitCardImg {
-  max-width: 300px;
-  max-height: 300px;
-}
-
-.fitbitCard {
-  display: flex;
-  width: 400px;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: 2em 0 2em 0;
-}
-
-.fitbitCardTitle {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: rgb(41, 41, 43);
-  border-bottom: 1px solid rgb(41, 41, 43);
-}
-
-.fitbitCardBody {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.fitbitBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0.5em;
-  width: 5em;
-  height: 2.5em;
-  border: 1px solid whitesmoke;
-  border-radius: 3em;
-  background-color: rgba(255, 155, 0, 0.9);
-  color: whitesmoke;
-  transition: 0.5s;
-  font-size: 1.1em;
-}
-
 /********* MODALS **********/
 
 .editWorkoutBtn {
@@ -310,8 +260,6 @@
   font-weight: 600;
 }
 
-.modalBody {
-}
 
 .modalBodyWide {
   padding: 0;

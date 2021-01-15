@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Register from "./Register";
 import Login from "./Login";
-import { Button, Form, Modal } from "reactstrap";
+import { Form, Modal } from "reactstrap";
 import classes from "./Splash.module.css";
 
 const RegisterModal = (props) => {

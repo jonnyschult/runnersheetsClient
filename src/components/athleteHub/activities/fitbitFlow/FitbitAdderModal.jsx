@@ -38,10 +38,11 @@ const FitbitAdderModal = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
-        const fitbitId = await data.result.map((run) => {
+        let fitbitId = []
+        await data.result.forEach((run) => {          
           //Gets fitbit Ids so user can see runs already adder in the fitbitAdderModal
           if (run.fitbitId != null) {
-            return parseInt(run.fitbitId);
+            fitbitId.push(parseInt(run.fitbitId));
           }
         });
         await setAlreadyAdded(fitbitId);

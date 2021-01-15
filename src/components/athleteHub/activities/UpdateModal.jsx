@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useState } from "react";
 import APIURL from "../../../helpers/environment";
 import classes from "../Athlete.module.css";
 import {
   Button,
-  Table,
   Modal,
   ModalHeader,
   ModalBody,

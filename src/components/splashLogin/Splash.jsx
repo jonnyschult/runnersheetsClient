@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Jumbotron, Button } from "reactstrap";
+import React, { useState } from "react";
+import { Jumbotron } from "reactstrap";
 import RegisterModal from "./RegisterModal";
 import classes from "./Splash.module.css";
 import jumbotronMov from "../../Assets/bg-video-no-fade.mov";

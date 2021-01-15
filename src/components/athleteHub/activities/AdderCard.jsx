@@ -1,7 +1,7 @@
 import React from "react";
 import classes from "../Athlete.module.css";
 import FitbitAdderModal from "./fitbitFlow/FitbitAdderModal";
-import GarminAdderModal from "./garminFlow/GarminAdderModal";
+// import GarminAdderModal from "./garminFlow/GarminAdderModal";
 import ManualActivityAdder from "./ManualActivityAdder";
 import { Card, CardBody, CardTitle } from "reactstrap";
 

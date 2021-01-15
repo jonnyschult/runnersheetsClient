@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import classes from "./HeaderFooter.module.css";
 import {
   Navbar,
@@ -8,11 +8,6 @@ import {
   Nav,
   NavItem,
   NavLink,
-  NavbarText,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownItem,
-  DropdownMenu,
 } from "reactstrap";
 import RegisterModal from "../splashLogin/RegisterModal";
 
