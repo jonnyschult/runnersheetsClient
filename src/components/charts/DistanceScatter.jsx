@@ -10,13 +10,13 @@ const DistanceScatter = (props) => {
     let colors = [
       "Blue ",
       "Red",
-      "Yellow ",
       "Green",
       "Orange",
       "Violet",
       "Indigo",
       "#FF33FF",
       "#FFFF99",
+      "Yellow ",
       "#00B3E6",
       "#E6B333",
       "#3366E6",
@@ -79,7 +79,11 @@ const DistanceScatter = (props) => {
         pointBackgroundColor: colors[index],
         backgroundColor: colors[index],
         borderColor: colors[index],
+        hoverBorderColor: colors[index],
+        hoverBackgroundColor: "rgb(255, 155, 0)",
+        hoverBorderWidth: 40,
         showLine: true,
+        lineTension: 0.3,
         fill: false,
       };
     });

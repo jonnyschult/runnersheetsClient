@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import classes from "../Coach.module.css";
+import ChartsAndGraphs from "../../charts/ChartsAndGraphs";
 import {
   Button,
   Modal,
@@ -79,6 +80,7 @@ const ActivitiesModal = (props) => {
           </header>
         </ModalHeader>
         <ModalBody className={classes.modalBodyWide}>
+          <ChartsAndGraphs runs={props.athlete.activities} />
           <Table className={classes.table}>
             <thead className={classes.thead}>
               <tr className={classes.tr}>
@@ -102,7 +104,7 @@ const ActivitiesModal = (props) => {
                       {new Date(parseInt(activity.date)).toDateString()}
                     </td>
                     <td className={classes.td}>
-                      {activity.meters
+                      {Math.floor(activity.meters)
                         .toString()
                         .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                     </td>

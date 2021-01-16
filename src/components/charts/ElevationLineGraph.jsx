@@ -4,6 +4,7 @@ import { Line } from "react-chartjs-2";
 
 const ElevationLineGraph = (props) => {
   const [data, setData] = useState({});
+  const [options, setOptions] = useState();
   const lineGraphSetter = () => {
     let dates = props.runs.map((run) => {
       return new Date(parseInt(run.date)).toDateString();
@@ -18,7 +19,7 @@ const ElevationLineGraph = (props) => {
       labels: dates.reverse(),
       datasets: [
         {
-          label: "Meters",
+          label: "Elevation in Meters",
           data: elevations.reverse(),
           backgroundColor: "rgb(83, 83, 83,)",
           pointBackgroundColor: "rgb(43, 43, 43, 1)",
@@ -26,6 +27,18 @@ const ElevationLineGraph = (props) => {
           hoverBorderWidth: 40,
         },
       ],
+    });
+    setOptions({
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              beginAtZero: true,
+              min: 0,
+            },
+          },
+        ],
+      },
     });
   };
 
@@ -35,7 +48,7 @@ const ElevationLineGraph = (props) => {
   return (
     <div className={classes.lineGraph}>
       <div>
-        <Line data={data} />
+        <Line data={data} options={options} />
       </div>
     </div>
   );

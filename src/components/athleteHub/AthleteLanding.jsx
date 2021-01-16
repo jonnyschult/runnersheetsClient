@@ -74,45 +74,49 @@ const AthleteLanding = (props) => {
   }, [update]);
 
   return (
-    <div className={classes.wrapepr}>
-    <div className={classes.mainDiv}>
-      {loadingMain1 || loadingMain2 ? (
-        <Spinner></Spinner>
-      ) : (
-        <div>
-          <h1 className={classes.athleteLandingHeader}>
-            {`${athlete.firstName}'s Workouts`}
-          </h1>
-          <div style={{ display: "flex" }}>
-            <Container className={classes.leftContainer}>
-              <AthleteTeamList token={props.token} teams={teams} />
-              <AthleteInfo
-                token={props.token}
-                setUpdate={setUpdate}
-                athlete={athlete}
-              />
-            </Container>
-            <Container className={classes.middleContainer}>
-              <RunTable runs={runs} token={props.token} setUpdate={setUpdate} />
-              <ChartsAndGraphs runs={runs} />
-            </Container>
-            <Container className={classes.rightContainer}>
-              <AthleteDateFetch
-                setStartDate={setStartDate}
-                setEndDate={setEndDate}
-              />
-              <AdderCard
-                token={props.token}
-                fitbitRuns={fitbitRuns}
-                setFitbitRuns={setFitbitRuns}
-                setUpdate={setUpdate}
-                update={update}
-              />
-            </Container>
+    <div className={classes.wrapper}>
+      <div className={classes.mainDiv}>
+        {loadingMain1 || loadingMain2 ? (
+          <Spinner></Spinner>
+        ) : (
+          <div>
+            <h1 className={classes.athleteLandingHeader}>
+              {`${athlete.firstName}'s Workouts`}
+            </h1>
+            <div style={{ display: "flex" }}>
+              <Container className={classes.leftContainer}>
+                <AthleteTeamList token={props.token} teams={teams} />
+                <AthleteInfo
+                  token={props.token}
+                  setUpdate={setUpdate}
+                  athlete={athlete}
+                />
+              </Container>
+              <Container className={classes.middleContainer}>
+                <RunTable
+                  runs={runs}
+                  token={props.token}
+                  setUpdate={setUpdate}
+                />
+                <ChartsAndGraphs runs={runs} />
+              </Container>
+              <Container className={classes.rightContainer}>
+                <AthleteDateFetch
+                  setStartDate={setStartDate}
+                  setEndDate={setEndDate}
+                />
+                <AdderCard
+                  token={props.token}
+                  fitbitRuns={fitbitRuns}
+                  setFitbitRuns={setFitbitRuns}
+                  setUpdate={setUpdate}
+                  update={update}
+                />
+              </Container>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </div>
   );
 };

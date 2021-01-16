@@ -30,7 +30,7 @@ const DistanceBarChart = (props) => {
       datasets: [
         {
           maxBarThickness: 125,
-          label: "Meters",
+          label: "Distance in Meters",
           data: distances.reverse(),
           backgroundColor: "rgb(41, 41, 43,)",
           hoverBackgroundColor: "rgb(41, 41, 43,)",
