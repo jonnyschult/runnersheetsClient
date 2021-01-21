@@ -1,4 +1,4 @@
-.wrapper {
+.wrapper{
   min-height: calc(100vh - 60px);
 }
 
@@ -12,26 +12,26 @@
   animation: fadein 0.6s;
 }
 
-.athleteLandingHeader {
+.clubLandingHeader {
   font-weight: bold;
   color: rgb(41, 41, 43);
 }
 
 .leftContainer {
-  width: 20%;
+  width: 25%;
 }
 
 .middleContainer {
-  width: 60%;
+  width: 50%;
 }
 
 .rightContainer {
-  width: 20%;
+  width: 25%;
 }
 
 /********* LEFT CONTAINER ITEMS **********/
 
-.card {
+.leftContainerCard {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -39,14 +39,14 @@
   margin: 2em 0 2em 0;
 }
 
-.cardTitle {
+.leftContainerCardTitle {
   font-size: 1.5em;
   font-weight: bold;
   color: rgb(41, 41, 43);
   border-bottom: 1px solid rgb(41, 41, 43);
 }
 
-.cardBody {
+.leftContainerCardBody {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -55,48 +55,162 @@
 
 .cardItem {
   text-align: start;
-}
-
-.clubListItem {
-  display: flex;
-  justify-content: space-between;
-}
-
-.removeClub {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.5em;
-  height: 1em;
-  border: none;
-  border-radius: 3em;
-  /* border: 1px solid rgba(245, 245, 245, 0.918); */
-  background-color: transparent;
-  color: rgb(41, 41, 43);
-  transition: 0.5s;
-  font-size: 2em;
-}
-
-.removeClub:hover {
-  background-color: tomato !important;
-  color: whitesmoke !important;
-  box-shadow: 3px 3px 3px rgba(40, 40, 40, 0.6);
-  outline: none;
-}
-
-.removeClub:active {
-  box-shadow: 4px 4px 4px rgba(0, 200 0, 0) !important;
-  outline: none;
-}
-
-.removeClub:focus {
-  color: rgb(41, 41, 43);
-  outline: none;
-  border: none;
-  background-color: transparent;
+  cursor: pointer;
 }
 
 /********* MIDDLE CONTAINER ITEMS **********/
+
+.middleContainerCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 2em 0 2em 0;
+}
+
+.middleContainerCardHeader {
+  background-color: rgb(80, 80, 90);
+  width: 100%;
+  border: none;
+}
+
+.middleContainerCardTitle {
+  color: whitesmoke;
+  font-size: 1.6em;
+  font-weight: bold;
+}
+
+.middleContainerCardBody {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.thead {
+  background-color: rgb(100, 100, 115) !important;
+  color: whitesmoke;
+}
+
+.th {
+  border: none !important;
+}
+
+.tr:hover {
+  background-color: rgba(255, 155, 0, 1);
+}
+
+.td:hover {
+  background-color: rgba(250, 190, 97, 1);
+}
+
+.activitiesModalButton {
+  width: 15em;
+  height: 3em;
+  border-radius: 3em;
+  border: 1px solid rgba(245, 245, 245, 0.918);
+  background-color: rgb(100, 100, 115);
+  color: whitesmoke;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
+.activitiesModalButton:hover {
+  background-color: rgba(255, 155, 0, 1);
+  border: 1px solid white;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.6);
+  outline: none;
+}
+
+.activitiesModalButton:active {
+  box-shadow: 4px 4px 4px rgba(0, 200 0, 0) !important;
+  outline: none;
+}
+.activitiesModalButton:focus {
+  outline: none;
+}
+
+/********* LEFT CONTAINER ITEMS **********/
+
+.datesForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 2em 0 2em 0;
+}
+
+.datesLegend {
+  font-weight: bold;
+}
+
+.datesRadiosGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.datesRadios {
+  align-self: flex-start;
+}
+
+.customDates {
+  width: 100%;
+  border: 1px solid rgb(233, 231, 231);
+  border-radius: 3px;
+  padding: 1em;
+  padding-bottom: 2em;
+}
+
+.customDatesLegend {
+  font-weight: 600;
+}
+
+.collatedWorkoutsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  border: 1px solid rgb(233, 231, 231);
+  color: rgb(41, 41, 43);
+  border-radius: 5px;
+  padding: 1em;
+  padding-bottom: 2em;
+}
+
+.collatedWorkoutsLegend {
+  font-weight: 600;
+  margin-bottom: 1em;
+}
+
+.collatedWorkoutsModal {
+  width: 10em;
+  height: 3em;
+  border-radius: 3em;
+  border: 1px solid rgba(245, 245, 245, 0.918);
+  background-color: rgba(255, 155, 0, 1);
+  color: whitesmoke;
+  transition: 0.6s;
+  font-weight: bold;
+}
+
+.collatedWorkoutsModal:hover {
+  background-color: rgba(255, 155, 0, 1);
+  border: 1px solid white;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.6);
+  outline: none;
+}
+
+.collatedWorkoutsModal:active {
+  box-shadow: 4px 4px 4px rgba(0, 200 0, 0) !important;
+  outline: none;
+}
+.collatedWorkoutsModal:focus {
+  outline: none;
+  background-color: rgba(255, 155, 0, 1);
+}
+
+/********* TABLE **********/
 .tableContainer {
   display: flex;
   flex-direction: column;
@@ -139,10 +253,8 @@
 }
 
 .expand {
-  margin: auto;
   cursor: pointer;
-  margin-bottom: 1em;
-  font-size: 1.5em;
+  font-size: 1em;
   transition: 0.2s;
 }
 
@@ -176,82 +288,7 @@
   background-color: rgba(255, 155, 0, 1);
 }
 
-/********* RIGHT CONTAINER ITEMS **********/
-
-.datesForm {
-  margin: 2em 0 2em 0;
-}
-
-.activityCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.activityCard .cardTitle {
-  color: rgb(41, 41, 43);
-}
-
-.manualAdderForm {
-  width: 100%;
-}
-
-.timeGroup {
-  display: flex;
-}
-
 /********* MODALS **********/
-
-.editWorkoutBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.2em;
-  height: 2.2em;
-  border: none;
-  border-radius: 2em;
-  border: 1px solid rgba(245, 245, 245, 0.918);
-  background-color: rgba(83, 83, 83, 1);
-  color: whitesmoke;
-  transition: 0.5s;
-  font-size: 1em;
-  cursor: pointer;
-}
-
-.editWorkoutBtn:hover {
-  background-color: whitesmoke;
-  color: rgb(83, 83, 83);
-  font-weight: bold;
-  font-size: 1em;
-}
-
-.launchModalBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0.5em;
-  width: 12em;
-  height: 3em;
-  border: none;
-  border-radius: 3em;
-  border: 1px solid rgba(245, 245, 245, 0.918);
-  background-color: rgba(255, 155, 0, 1);
-  color: whitesmoke;
-  transition: 0.5s;
-  font-size: 1em;
-}
-
-.launchModalBtn:hover {
-  border: 1px solid rgba(245, 245, 245, 0.918);
-  background-color: rgba(255, 155, 0, 1);
-  box-shadow: 4px 4px 4px rgb(41, 41, 43);
-}
-
-.launchModalBtn:active,
-.launchModalBtn:focus {
-  border: 1px solid rgba(245, 245, 245, 0.918);
-  background-color: rgba(255, 155, 0, 1);
-}
 
 .adderModalButton {
   display: flex;
@@ -289,7 +326,7 @@
 
 .modalHeader {
   height: 4em;
-  background-color: rgb(83, 83, 83);
+  background-color: rgb(80, 80, 90);
   color: rgb(245, 245, 245);
   border: none;
   font-weight: 900;
@@ -297,6 +334,9 @@
 
 .headerText {
   font-weight: 600;
+}
+
+.modalBody {
 }
 
 .modalBodyWide {
@@ -350,7 +390,7 @@
 
 .cancelBtn,
 .printBtn {
-  background-color: rgb(83, 83, 83);
+  background-color: rgb(80, 80, 90);
 }
 
 .cancelBtn:hover,
@@ -366,23 +406,6 @@
 
 .deleteBtn:hover {
   background-color: tomato;
-}
-
-.fitbitBtn {
-  width: 13em;
-}
-
-.fitbitBtn:hover {
-  background-color: rgb(134, 216, 134);
-  border: 1px solid whitesmoke;
-}
-
-.fitbitRemoverBtn {
-  cursor: pointer;
-}
-
-.fitbitRemoverBtn:hover {
-  font-weight: bold;
 }
 
 .plusAthleteEmail {

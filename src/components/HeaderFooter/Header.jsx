@@ -4,6 +4,7 @@ import { Route, Link, Switch } from "react-router-dom";
 import AthleteLanding from "../athleteHub/AthleteLanding";
 import FitbitAuth from "../athleteHub/activities/fitbitFlow/FitbitAuth";
 import CoachLanding from "../coachHub/CoachLanding";
+import ClubLanding from '../clubHub/ClubLanding';
 import UpdateInfoLanding from "../updateInfo/UpdateInfoLanding";
 import GarminAuth from "../athleteHub/activities/garminFlow/GarminAuth";
 import {
@@ -41,6 +42,13 @@ const Header = (props) => {
               <NavbarText className={classes.navbarText}>
                 <Link className={classes.link} to="/athlete">
                   Athlete
+                </Link>
+              </NavbarText>
+            </NavItem>
+            <NavItem className={classes.navItem}>
+              <NavbarText className={classes.navbarText}>
+                <Link className={classes.link} to="/clubs">
+                  Clubs
                 </Link>
               </NavbarText>
             </NavItem>
@@ -89,6 +97,9 @@ const Header = (props) => {
           </Route>
           <Route exact path="/athlete">
             <AthleteLanding token={props.token} />
+          </Route>
+          <Route exact path="/clubs">
+            <ClubLanding token={props.token} />
           </Route>
           <Route exact path="/fitbit">
             <FitbitAuth token={props.token} />

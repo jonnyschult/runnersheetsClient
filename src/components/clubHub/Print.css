@@ -1,0 +1,15 @@
+@media print {
+  body {
+    visibility: hidden;
+  }
+
+  .modalButton {
+    visibility: hidden;
+  }
+  .print {
+    visibility: visible;
+  }
+  .sheetModal {
+    width: 130vw;
+  }
+}

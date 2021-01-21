@@ -4,6 +4,7 @@ import classes from "./Athlete.module.css";
 import AdderCard from "./activities/AdderCard";
 import RunTable from "./activities/RunTable";
 import AthleteTeamList from "./AthleteTeamLists";
+import AthleteClubsList from "./AthleteClubsList";
 import AthleteInfo from "./AthleteInfo";
 import AthleteDateFetch from "./AthleteDateFetcher";
 import ChartsAndGraphs from "../charts/ChartsAndGraphs";
@@ -14,6 +15,7 @@ const AthleteLanding = (props) => {
   const [runs, setRuns] = useState();
   const [update, setUpdate] = useState();
   const [teams, setTeams] = useState();
+  const [clubs, setClubs] = useState();
   const [athlete, setAthlete] = useState();
   const [startDate, setStartDate] = useState(
     new Date(Date.now() - 604800000).getTime()
@@ -63,8 +65,10 @@ const AthleteLanding = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {
+        console.log(data);
         await setAthlete(data.athlete);
         await setTeams(data.athlete.teams);
+        await setClubs(data.athlete.clubs);
         await setLoadingMain1(false);
       })
       .catch(async (err) => {
@@ -85,6 +89,11 @@ const AthleteLanding = (props) => {
             </h1>
             <div style={{ display: "flex" }}>
               <Container className={classes.leftContainer}>
+                <AthleteClubsList
+                  token={props.token}
+                  clubs={clubs}
+                  setUpdate={setUpdate}
+                />
                 <AthleteTeamList token={props.token} teams={teams} />
                 <AthleteInfo
                   token={props.token}
