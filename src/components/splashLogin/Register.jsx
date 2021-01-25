@@ -26,6 +26,7 @@ const Register = (props) => {
   const [weightInPounds, setWeightInPounds] = useState(null);
   const [DOB, setDOB] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState();
   const [err, setErr] = useState();
 
   const submitHandler = async (e) => {
@@ -63,8 +64,12 @@ const Register = (props) => {
           }
         })
         .then((data) => {
+          setResponse(data.message);
           props.updateToken(data.loginToken);
           setLoading(false);
+          setTimeout(() => {
+            setResponse("");
+          }, 1400);
         })
         .catch((err) => {
           setErr(err.messDOB);
@@ -180,6 +185,7 @@ const Register = (props) => {
             Submit
           </Button>
           {loading ? <Spinner></Spinner> : <></>}
+          {response ? <Alert>{response}</Alert> : <></>}
           {err ? <Alert>{err}</Alert> : <></>}
         </Form>
       </ModalBody>
