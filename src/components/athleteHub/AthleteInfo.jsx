@@ -4,6 +4,7 @@ import AthleteUpdaterModal from "./AthleteUpdaterModal";
 import { Card, CardBody, CardTitle, CardText } from "reactstrap";
 
 const TeamList = (props) => {
+  console.log(props.athlete.DOB.substring(10, 0));
   return (
     <div>
       <Card className={classes.card}>
@@ -19,7 +20,7 @@ const TeamList = (props) => {
           >{`Email: ${props.athlete.email}`}</CardText>
           <CardText
             className={classes.cardItem}
-          >{`Age: ${props.athlete.age}`}</CardText>
+          >{`DOB: ${props.athlete.DOB.substring(10, 0)}`}</CardText>
           <CardText className={classes.cardItem}>{`Height: ${Math.floor(
             props.athlete.heightInInches / 12
           )}'${props.athlete.heightInInches % 12}"`}</CardText>

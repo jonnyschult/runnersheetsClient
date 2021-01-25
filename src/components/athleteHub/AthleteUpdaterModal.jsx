@@ -21,7 +21,7 @@ const AthleteUpdater = (props) => {
   );
   const [inches, setInches] = useState(props.athlete.heightInInches % 12);
   const [weight, setWeight] = useState(props.athlete.weight);
-  const [age, setAge] = useState(props.athlete.age);
+  const [DOB, setDOB] = useState(props.athlete.DOB);
   const [err, setErr] = useState();
   const [response, setResponse] = useState();
   const [loading, setLoading] = useState(false);
@@ -45,7 +45,7 @@ const AthleteUpdater = (props) => {
       body: JSON.stringify({
         heightInInches: height,
         weightInPounds: weight,
-        age,
+        DOB,
       }),
     })
       .then((res) => {
@@ -117,12 +117,12 @@ const AthleteUpdater = (props) => {
               ></Input>
             </FormGroup>
             <FormGroup>
-              <Label htmlFor="age">Age</Label>
+              <Label htmlFor="DOB">DOB</Label>
               <Input
-                type="number"
-                name="age"
-                placeholder={props.athlete.age}
-                onChange={(e) => setAge(parseInt(e.target.value))}
+                type="date"
+                name="DOB"
+                placeholder={props.athlete.DOB}
+                onChange={(e) => setDOB(e.target.value)}
               ></Input>
             </FormGroup>
             <Button

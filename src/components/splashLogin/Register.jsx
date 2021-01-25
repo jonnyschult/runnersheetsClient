@@ -24,7 +24,7 @@ const Register = (props) => {
   const [feet, setFeet] = useState(null);
   const [inches, setInches] = useState(null);
   const [weightInPounds, setWeightInPounds] = useState(null);
-  const [age, setAge] = useState(null);
+  const [DOB, setDOB] = useState(null);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState();
 
@@ -48,7 +48,7 @@ const Register = (props) => {
           password,
           heightInInches: height,
           weightInPounds,
-          age,
+          DOB,
         }),
       })
         .then((res) => {
@@ -67,7 +67,7 @@ const Register = (props) => {
           setLoading(false);
         })
         .catch((err) => {
-          setErr(err.message);
+          setErr(err.messDOB);
           setLoading(false);
         });
     }
@@ -168,12 +168,12 @@ const Register = (props) => {
             ></Input>
           </FormGroup>
           <FormGroup>
-            <Label htmlFor="age">Age*</Label>
+            <Label htmlFor="DOB">DOB*</Label>
             <Input
               className={classes.input}
-              type="number"
-              name="age"
-              onChange={(e) => setAge(parseInt(e.target.value))}
+              type="date"
+              name="DOB"
+              onChange={(e) => setDOB(e.target.value)}
             ></Input>
           </FormGroup>
           <Button type="submit" className={classes.submitButton}>

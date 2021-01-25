@@ -25,7 +25,7 @@ const StaffModal = (props) => {
     Math.floor(props.athlete.heightInInches / 12)
   );
   const [inches, setInches] = useState(props.athlete.heightInInches % 12);
-  const [age, setAge] = useState();
+  const [DOB, setDOB] = useState();
   const [weight, setWeight] = useState();
 
   const toggle = () => setModal(!modal);
@@ -47,7 +47,7 @@ const StaffModal = (props) => {
         owner: props.athlete.id,
         heightInInches: feet * 12 + inches,
         weightInPounds: weight,
-        age,
+        DOB,
       }),
     })
       .then((res) => res.json())
@@ -138,7 +138,7 @@ const StaffModal = (props) => {
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
           <p>{`Email:   ${props.athlete.email}`}</p>
-          <p>{`Age:   ${props.athlete.age}`}</p>
+          <p>{`DOB:   ${props.athlete.DOB.substring(10, 0)}`}</p>
           {props.athlete.weightInPounds ? (
             <p>{`Weight:   ${props.athlete.weightInPounds}lbs`}</p>
           ) : (
@@ -184,12 +184,12 @@ const StaffModal = (props) => {
                 ></Input>
               </FormGroup>
               <FormGroup>
-                <Label htmlFor="age">Age*</Label>
+                <Label htmlFor="DOB">DOB*</Label>
                 <Input
                   type="number"
-                  name="age"
-                  placeholder={props.athlete.age}
-                  onChange={(e) => setAge(parseInt(e.target.value))}
+                  name="DOB"
+                  placeholder={props.athlete.DOB}
+                  onChange={(e) => setDOB(e.target.value)}
                 ></Input>
               </FormGroup>
               <div className={classes.btnGroup}>
