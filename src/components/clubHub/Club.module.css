@@ -1,4 +1,4 @@
-.wrapper{
+.wrapper {
   min-height: calc(100vh - 60px);
 }
 
@@ -56,6 +56,45 @@
 .cardItem {
   text-align: start;
   cursor: pointer;
+}
+
+.clubListItem {
+  display: flex;
+  justify-content: space-between;
+}
+
+.removeClub {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5em;
+  height: 1em;
+  border: none;
+  border-radius: 3em;
+  /* border: 1px solid rgba(245, 245, 245, 0.918); */
+  background-color: transparent;
+  color: rgb(41, 41, 43);
+  transition: 0.5s;
+  font-size: 2em;
+}
+
+.removeClub:hover {
+  background-color: tomato !important;
+  color: whitesmoke !important;
+  box-shadow: 3px 3px 3px rgba(40, 40, 40, 0.6);
+  outline: none;
+}
+
+.removeClub:active {
+  box-shadow: 4px 4px 4px rgba(0, 200 0, 0) !important;
+  outline: none;
+}
+
+.removeClub:focus {
+  color: rgb(41, 41, 43);
+  outline: none;
+  border: none;
+  background-color: transparent;
 }
 
 /********* MIDDLE CONTAINER ITEMS **********/
