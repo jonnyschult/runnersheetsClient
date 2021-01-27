@@ -41,7 +41,7 @@ const ClubLanding = (props) => {
       .then((res) => res.json())
       .then(async (data) => {
         const clubData = data.clubsInfo.map((club) => {
-          //function to collate club info with roles. Creates a new object and returns the combined info. 
+          //function to collate club info with roles. Creates a new object and returns the combined info.
           data.clubRostersInfo.forEach((roster) => {
             if (club.id === roster.clubId) {
               club.role = roster.role;
@@ -195,6 +195,7 @@ const ClubLanding = (props) => {
                   fetchAthletes={fetchAthletes}
                   setSelectedClub={setSelectedClub}
                   setChairpersons={setChairpersons}
+                  setAthletes={setAthletes}
                   setClubActivities={setClubActivities}
                   selectedClub={selectedClub}
                 />

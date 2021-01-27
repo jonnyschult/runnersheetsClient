@@ -32,6 +32,8 @@ const ClubList = (props) => {
                     club={club}
                     token={props.token}
                     setUpdate={props.setUpdate}
+                    setChairpersons={props.setChairpersons}
+                    setAthletes={props.setAthletes}
                     setSelectedClub={props.setSelectedClub}
                   />
                 </div>

@@ -93,6 +93,8 @@ ONCLICK DELETE CLUB
         .then((res) => res.json())
         .then(async (data) => {
           await props.setSelectedClub({});
+          await props.setChairpersons([]);
+          await props.setAthletes([]);
           await props.setUpdate(data);
           await setResponse(data.message);
           setLoading(false);
