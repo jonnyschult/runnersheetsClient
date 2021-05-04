@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import APIURL from "../../utilities/environment";
 import classes from "./UpdateInfo.module.css";
 import {
@@ -10,26 +10,37 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
+import { UserInfo } from "../../models";
 
-const UpdatePassword = (props) => {
-  const [password, setPassword] = useState();
-  const [newPassword, setNewPassword] = useState();
-  const [confirmNewPassword, setConfirmNewPassword] = useState();
-  const [response, setResponse] = useState();
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState();
+interface UpdatePasswordProps {
+  userInfo: UserInfo;
+}
+
+const UpdatePassword: React.FC<UpdatePasswordProps> = (props) => {
+  const [password, setPassword] = useState<string>();
+  const [newPassword, setNewPassword] = useState<string>();
+  const [confirmNewPassword, setConfirmNewPassword] = useState<string>();
+  const [response, setResponse] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const responseDivRef = useRef<HTMLDivElement>(null);
 
   /********************
     UPDATE USER PASSWORD
   ********************/
-  const passwordUpdater = async (e) => {
+  const passwordUpdater = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    const info = {
+      oldPassword: password,
+      newPassword: newPassword,
+    };
+    const data = await poster("notoken", "users/login", info);
+
     fetch(`${APIURL}/user/updatePassword`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: props.token,
+        Authorization: props.userInfo.token,
       },
       body: JSON.stringify({
         oldPassword: password,
@@ -54,10 +65,10 @@ const UpdatePassword = (props) => {
         }, 4000);
       })
       .catch((err) => {
-        setErr(err.message);
+        setResponse(err.message);
         setLoading(false);
         setTimeout(() => {
-          setErr("");
+          setResponse("");
         }, 4000);
       });
   };
@@ -101,9 +112,11 @@ const UpdatePassword = (props) => {
         <Button type="submit" style={{ width: "100%" }}>
           Submit
         </Button>
-        {loading ? <Spinner></Spinner> : <></>}
-        {response ? <Alert>{response}</Alert> : <></>}
-        {err ? <Alert color="danger">{err}</Alert> : <></>}
+        <div className={classes.responseDiv} ref={responseDivRef}>
+          {loading ? <Spinner className={classes.spinner}></Spinner> : <></>}
+          {error ? <p className={classes.alert}>{error}</p> : <></>}
+          {response ? <p className={classes.alert}>{response}</p> : <></>}
+        </div>
       </Form>
     </div>
   );
