@@ -95,6 +95,7 @@ const App: React.FC = () => {
             <UpdateInfoLanding
               userInfo={userInfo}
               logoutHandler={logoutHandler}
+              setUserInfo={setUserInfo}
             />
           </Route>
         </Switch>

@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react";
-import APIURL from "../../utilities/environment";
 import classes from "./UpdateInfo.module.css";
 import {
   Button,
@@ -10,16 +9,18 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
-import { UserInfo } from "../../models";
+import { PasswordUpdate, UserInfo } from "../../models";
+import updater from "../../utilities/updateFetcher";
+import expander from "../../utilities/expander";
 
 interface UpdatePasswordProps {
   userInfo: UserInfo;
 }
 
 const UpdatePassword: React.FC<UpdatePasswordProps> = (props) => {
-  const [password, setPassword] = useState<string>();
-  const [newPassword, setNewPassword] = useState<string>();
-  const [confirmNewPassword, setConfirmNewPassword] = useState<string>();
+  const [password, setPassword] = useState<string>('');
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState<string>('');
   const [response, setResponse] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const responseDivRef = useRef<HTMLDivElement>(null);
@@ -30,52 +31,45 @@ const UpdatePassword: React.FC<UpdatePasswordProps> = (props) => {
   const passwordUpdater = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    const info = {
-      oldPassword: password,
-      newPassword: newPassword,
-    };
-    const data = await poster("notoken", "users/login", info);
-
-    fetch(`${APIURL}/user/updatePassword`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.userInfo.token,
-      },
-      body: JSON.stringify({
+    if (responseDivRef.current !== null) {
+      expander(responseDivRef.current!, true);
+    }
+    try{
+      const info: PasswordUpdate = {
         oldPassword: password,
         newPassword: newPassword,
-      }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else if (res.status === 403) {
-          throw new Error("Wrong Password");
-        } else {
-          throw new Error("Something went wrong");
+      };
+      const response = await updater(props.userInfo.token, "users/login", info);
+       if (response.status === 403) {
+        throw new Error("Wrong Password");
+      }
+      setResponse('Login Successful');
+      setTimeout(() => {
+        setResponse('');
+      }, 1500);
+    } catch (error) {
+      console.log(error);
+      if (error['response'] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse('Server Error. Account not Updated');
+      }
+      setTimeout(() => {
+        setResponse('');
+      }, 2500);
+    } finally {
+      setLoading(false);
+      setTimeout(() => {
+        if (responseDivRef.current !== null) {
+          expander(responseDivRef.current!, false);
         }
-      })
-      .then((data) => {
-        setResponse(data.message);
-        setLoading(false);
-        props.setUpdate(data);
-        setTimeout(() => {
-          setResponse("");
-        }, 4000);
-      })
-      .catch((err) => {
-        setResponse(err.message);
-        setLoading(false);
-        setTimeout(() => {
-          setResponse("");
-        }, 4000);
-      });
-  };
+      }, 2200);
+    } 
+  }
 
   return (
     <div className={classes.subDiv}>
-      <h5>Update {props.user.firstName}'s Password</h5>
+      <h5>Update {props.userInfo.user.firstName}'s Password</h5>
       <Form className={classes.form} onSubmit={(e) => passwordUpdater(e)}>
         <FormGroup>
           <Label htmlFor="current password">Current Password</Label>
@@ -114,7 +108,6 @@ const UpdatePassword: React.FC<UpdatePasswordProps> = (props) => {
         </Button>
         <div className={classes.responseDiv} ref={responseDivRef}>
           {loading ? <Spinner className={classes.spinner}></Spinner> : <></>}
-          {error ? <p className={classes.alert}>{error}</p> : <></>}
           {response ? <p className={classes.alert}>{response}</p> : <></>}
         </div>
       </Form>

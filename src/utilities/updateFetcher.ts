@@ -1,32 +1,13 @@
 import APIURL from './environment';
 import {
-  Lesson,
-  UsersLesson,
-  Assignment,
-  UsersAssignment,
-  Video,
   User,
-  VideoTag,
-  Comment,
-  Tag,
-  PackageOption,
+  PasswordUpdate,
 } from '../models';
-import axios from 'axios';
+import axios , { AxiosResponse } from 'axios';
 
-type Info =
-  | Lesson
-  | UsersLesson
-  | Assignment
-  | UsersAssignment
-  | Video
-  | User
-  | VideoTag
-  | Comment
-  | Tag
-  | PackageOption
-  | { password: string; newPassword: string };
+type Info = User | Comment | PasswordUpdate
 
-const updater: (token: string, endPoint: string, info: Info) => Promise<any> = async (
+const updater: (token: string, endPoint: string, info: Info) => Promise<AxiosResponse> = async (
   token,
   endPoint,
   info
@@ -43,7 +24,7 @@ const updater: (token: string, endPoint: string, info: Info) => Promise<any> = a
         info,
       },
     });
-    return results.data;
+    return results;
   } catch (error) {
     throw error;
   }

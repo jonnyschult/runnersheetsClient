@@ -63,8 +63,8 @@ const Register:React.FC<RegisterProps> = (props) => {
           weightInPounds,
           DOB,
         }
-        const data = await poster('notoken', 'users/register', info);
-          await props.loginHandler(data.token);
+        const response = await poster('notoken', 'users/register', info);
+          await props.loginHandler(response.data.token);
           setResponse('Login Successful');
           //if the time is changed here, it will cause a race with loginHandler, which unmounts this modal. If you change time here, change time in loginHandler in App.tsx.
           setTimeout(() => {
@@ -73,7 +73,7 @@ const Register:React.FC<RegisterProps> = (props) => {
         } catch (error) {
           console.log(error);
           if (error['response'] !== undefined) {
-            setError(error.response.data.message);
+            setError(error.response.response.data.message);
           } else {
             setError('Problem creating your account. Please let site admin know');
           }

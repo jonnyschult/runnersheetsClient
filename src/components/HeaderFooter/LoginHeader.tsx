@@ -11,7 +11,11 @@ import {
 } from "reactstrap";
 import RegisterModal from "../splashLogin/RegisterModal";
 
-const Header = (props) => {
+interface HeaderProps{
+  loginHandler: (token:string)=>void;
+}
+
+const Header:React.FC<HeaderProps> = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeStyle, setActiveStyle] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
@@ -44,9 +48,7 @@ const Header = (props) => {
           <Nav className={classes.Nav}>
             <NavItem className={`${classes.NavItem} ${classes.Login}`}>
               <RegisterModal
-                className={`${classes.RegisterModal} ${classes.HeaderRegistModal}`}
-                updateToken={props.updateToken}
-                updateIsCoach={props.updateIsCoach}
+                loginHandler={props.loginHandler}
               />
             </NavItem>
           </Nav>

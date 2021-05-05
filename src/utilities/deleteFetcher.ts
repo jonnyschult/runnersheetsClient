@@ -1,7 +1,7 @@
 import APIURL from './environment';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
-const deleter: (token: string, endPoint: string, query?: string) => Promise<any> = async (
+const deleter: (token: string, endPoint: string, query?: string) => Promise<AxiosResponse> = async (
   token,
   endPoint,
   query
@@ -15,7 +15,7 @@ const deleter: (token: string, endPoint: string, query?: string) => Promise<any>
         Authorization: token,
       },
     });
-    return results.data;
+    return results;
   } catch (error) {
     throw error;
   }

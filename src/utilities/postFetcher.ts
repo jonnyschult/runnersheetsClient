@@ -1,14 +1,11 @@
 import APIURL from './environment';
-import {
-  Login,
-User
-} from '../models';
-import axios from 'axios';
+import {  Login, User, PasswordUpdate } from '../models';
+import axios, { AxiosResponse } from 'axios';
 
-type Info =  User | Login
+type Info =  User | Login | PasswordUpdate
 
 
-const poster: (token: string, endPoint: string, info: Info, extraInfo?: any) => Promise<any> = async (
+const poster: (token: string, endPoint: string, info: Info, extraInfo?: any) => Promise<AxiosResponse> = async (
   token,
   endPoint,
   info,
@@ -27,7 +24,7 @@ const poster: (token: string, endPoint: string, info: Info, extraInfo?: any) => 
         extraInfo,
       },
     });
-    return results.data;
+    return results;
   } catch (error) {
     throw error;
   }

@@ -1,12 +1,12 @@
 import APIURL from './environment';
-import axios, { CancelTokenSource } from 'axios';
+import axios, { AxiosResponse, CancelTokenSource } from 'axios';
 
 const getter: (
   token: string | null,
   endPoint: string,
   query?: string,
   source?: CancelTokenSource
-) => Promise<any> = async (token, endPoint, query, source) => {
+) => Promise<AxiosResponse> = async (token, endPoint, query, source) => {
   try {
     const result = await axios({
       url: `${APIURL}/${endPoint}${query ? `?${query}` : ''}`,
@@ -17,7 +17,7 @@ const getter: (
         Authorization: token,
       },
     });
-    return result.data;
+    return result;
   } catch (error) {
     throw error;
   }

@@ -9,16 +9,19 @@ import TeamStaff from "./TeamStaff/TeamStaff";
 import FetchDates from "./Activities/FetchDates";
 import Scatter from "../charts/DistanceScatter"
 import "./Print.css";
-
 import { Container, Spinner } from "reactstrap";
+import {Team} from '../../models'
 
-const CoachLanding = (props) => {
-  const [teams, setTeams] = useState([]);
-  const [update, setUpdate] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [loadingMain, setLoadingMain] = useState(false);
+interface CoachLandingProps {
+
+}
+
+const CoachLanding:React.FC<CoachLandingProps> = (props) => {
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [loadingMain, setLoadingMain] = useState<boolean>(false);
   const [coaches, setCoaches] = useState([]);
-  const [selectedTeam, setSelectedTeam] = useState(false);
+  const [selectedTeam, setSelectedTeam] = useState<Team>(teams[1]);
   const [athletes, setAthletes] = useState();
   const [teamActivities, setTeamActivities] = useState();
   const [startDate, setStartDate] = useState(

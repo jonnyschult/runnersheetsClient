@@ -48,7 +48,7 @@ const DeleteUser:React.FC<DeleteUserProps> = (props) => {
           setLoading(true);
         deleter(props.userInfo.token, 'user/removeUser')
           await props.logoutHandler();
-          setResponse('Login Successful');
+          setResponse('Account Deleted');
           //if the time is changed here, it will cause a race with loginHandler, which unmounts this modal. If you change time here, change time in loginHandler in App.tsx.
           setTimeout(() => {
             setResponse('');
