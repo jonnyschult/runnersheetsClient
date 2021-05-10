@@ -1,22 +1,27 @@
-import APIURL from './environment';
-import {  Login, User, PasswordUpdate } from '../models';
-import axios, { AxiosResponse } from 'axios';
+import APIURL from "./environment";
+import { Login, User, PasswordUpdate, Team, Club } from "../models";
+import axios, { AxiosResponse } from "axios";
 
-type Info =  User | Login | PasswordUpdate
+type Info =
+  | User
+  | Login
+  | PasswordUpdate
+  | Team
+  | Club
+  | { team_id: number; email: string; role: string };
 
-
-const poster: (token: string, endPoint: string, info: Info, extraInfo?: any) => Promise<AxiosResponse> = async (
-  token,
-  endPoint,
-  info,
-  extraInfo
-) => {
+const poster: (
+  token: string,
+  endPoint: string,
+  info: Info,
+  extraInfo?: any
+) => Promise<AxiosResponse> = async (token, endPoint, info, extraInfo) => {
   try {
     const results = await axios({
       url: `${APIURL}/${endPoint}`,
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: token,
       },
       data: {

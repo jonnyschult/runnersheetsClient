@@ -6,6 +6,7 @@ export class User {
     public date_of_birth: string,
     public premium_user: boolean,
     public coach: boolean,
+    public role?: string,
     public fitbit_refresh?: string,
     public strava_refresh?: string,
     public garmin_refresh?: string,

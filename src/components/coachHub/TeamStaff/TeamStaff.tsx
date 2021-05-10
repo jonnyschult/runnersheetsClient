@@ -2,13 +2,17 @@ import React from "react";
 import classes from "../Coach.module.css";
 import CoachAdderModal from "./CoachAdderModal";
 import StaffModal from "./StaffModal";
-import {
-  Card,
-  CardBody,
-  CardTitle,
-} from "reactstrap";
+import { Card, CardBody, CardTitle } from "reactstrap";
+import { Team, User, UserInfo } from "../../../models";
 
-const TeamStaff = (props) => {
+interface TeamStaffProps {
+  userInfo: UserInfo;
+  staff: User[];
+  selectedTeam: Team;
+  setStaff: React.Dispatch<React.SetStateAction<User[]>>;
+}
+
+const TeamStaff: React.FC<TeamStaffProps> = (props) => {
   return (
     <div>
       <Card className={classes.leftContainerCard}>
@@ -16,15 +20,16 @@ const TeamStaff = (props) => {
           <CardTitle className={classes.leftContainerCardTitle}>
             Staff
           </CardTitle>
-          {props.coaches.length > 0 ? (
-            props.coaches.map((coach, index) => {
+          {props.staff.length > 0 ? (
+            props.staff.map((staffer, index) => {
               return (
                 <StaffModal
                   key={index}
-                  coach={coach}
+                  staffer={staffer}
                   selectedTeam={props.selectedTeam}
-                  fetchStaff={props.fetchStaff}
-                  token={props.token}
+                  userInfo={props.userInfo}
+                  staff={props.staff}
+                  setStaff={props.setStaff}
                 />
               );
             })
@@ -33,9 +38,10 @@ const TeamStaff = (props) => {
           )}
         </CardBody>
         <CoachAdderModal
-          fetchStaff={props.fetchStaff}
+          staff={props.staff}
+          setStaff={props.setStaff}
           selectedTeam={props.selectedTeam}
-          token={props.token}
+          userInfo={props.userInfo}
         />
       </Card>
     </div>

@@ -1,6 +1,6 @@
 export class TeamsUsers {
   constructor(
-    public role: "athlete" | "coach" | "manager",
+    public role: string,
     public team_id: number,
     public user_id: number,
     public id?: number,

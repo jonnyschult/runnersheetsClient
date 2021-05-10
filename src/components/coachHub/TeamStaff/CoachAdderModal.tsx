@@ -14,66 +14,59 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
+import { Team, TeamsUsers, User, UserInfo } from "../../../models";
+import poster from "../../../utilities/postFetcher";
 
-const CoachAdderModal = (props) => {
-  const [response, setResponse] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState(false);
-  const [modal, setModal] = useState(false);
-  const [email, setEmail] = useState();
-  const [role, setRole] = useState();
+interface CoachAdderModalProps {
+  staff: User[];
+  setStaff: React.Dispatch<React.SetStateAction<User[]>>;
+  selectedTeam: Team;
+  userInfo: UserInfo;
+}
+
+const CoachAdderModal: React.FC<CoachAdderModalProps> = (props) => {
+  const token = props.userInfo.token;
+  const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [modal, setModal] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [role, setRole] = useState<string>("");
 
   const toggle = () => setModal(!modal);
 
-  /*************************
-  ADD COACH TO TEAM
-  *************************/
-  const addCoach = (e) => {
+  const addCoach = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    fetch(`${APIURL}/manager/addCoach`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-      body: JSON.stringify({
-        teamId: props.selectedTeam.id,
-        teammateEmail: email,
+
+    try {
+      setLoading(true);
+      const info = {
+        team_id: +props.selectedTeam.id!,
+        email,
         role,
-      }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          if (res.status === 401) {
-            throw new Error("Must be a manager to perform this function");
-          } else if (res.status === 403) {
-            throw new Error("Can't find user with that email");
-          } else if (res.status === 409) {
-            throw new Error("That user is already on the team");
-          } else {
-            throw new Error("Something went wrong");
-          }
-        }
-      })
-      .then(async (data) => {
-        await setResponse(data.message);
-        setLoading(false);
-        props.fetchStaff(props.selectedTeam.id);
-        setTimeout(() => {
-          toggle();
-          setResponse("");
-        }, 1200);
-      })
-      .catch(async (err) => {
-        await setErr(err.message);
-        setLoading(false);
-        setTimeout(() => {
-          setErr("");
-        }, 4000);
-      });
+      };
+      const results = await poster(token, "teams/addCoach", info);
+      const teamMember: User = results.data.teamMember;
+      teamMember.role = role;
+      setResponse(results.data.message);
+      setTimeout(() => {
+        props.setStaff([...props.staff, teamMember]);
+        setResponse("");
+        toggle();
+      }, 2200);
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Could not create team team. Server error");
+      }
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -86,7 +79,7 @@ const CoachAdderModal = (props) => {
       <Modal className={classes.modal} isOpen={modal} toggle={toggle}>
         <ModalHeader className={classes.modalHeader} toggle={toggle}>
           <header className={classes.headerText}>
-            Add Coach to {props.selectedTeam.teamName}
+            Add Coach to {props.selectedTeam.team_name}
           </header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
@@ -142,7 +135,6 @@ const CoachAdderModal = (props) => {
             ) : (
               <></>
             )}
-            {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
           </Form>
         </ModalBody>
         <ModalFooter>

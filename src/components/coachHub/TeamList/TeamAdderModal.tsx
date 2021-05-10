@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 import classes from "../Coach.module.css";
 import APIURL from "../../../utilities/environment";
 import {
@@ -13,151 +13,143 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
+import { UserInfo, Team, TeamsUsers } from "../../../models";
+import poster from "../../../utilities/postFetcher";
+import updater from "../../../utilities/updateFetcher";
+import deleter from "../../../utilities/deleteFetcher";
 
-const TeamAdderModal = (props) => {
-  const [modal, setModal] = useState(false);
-  const [teamTitle, setTeamTitle] = useState();
-  const [modalContent, setModalContent] = useState(false);
-  const [response, setResponse] = useState();
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState();
+interface TeamAdderModalProps {
+  userInfo: UserInfo;
+  selectedTeam: Team;
+  teams: Team[];
+  setSelectedTeam: React.Dispatch<React.SetStateAction<Team>>;
+  setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
+}
+
+const TeamAdderModal: React.FC<TeamAdderModalProps> = (props) => {
+  const token = props.userInfo.token;
+  const [modal, setModal] = useState<boolean>(false);
+  const [teamTitle, setTeamTitle] = useState<string>("");
+  const [modalContent, setModalContent] = useState<boolean>(false);
+  const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const toggle = () => setModal(!modal);
 
-  /************************
-  ONCLICK CREATE TEAM
-  ************************/
-  const createTeam = (e) => {
+  const createTeam = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    fetch(`${APIURL}/team/create`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-      body: JSON.stringify({
-        teamName: teamTitle,
-      }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          if (res.status === 409) {
-            throw new Error("Name Already Taken");
-          } else {
-            throw new Error("Something went wrong");
-          }
-        }
-      })
-      .then(async (data) => {
-        console.log(data);
-        await props.setSelectedTeam(data.result.newTeam);
-        await setLoading(false);
-        await props.setUpdate(data);
-        setTimeout(() => {
-          setResponse(data.message);
-          toggle();
-        }, 1400);
-      })
-      .catch(async (err) => {
-        setLoading(false);
-        setErr(err.message);
-        setTimeout(() => {
-          setErr("");
-        }, 4000);
-      });
+    try {
+      setLoading(true);
+      const info: Team = {
+        team_name: teamTitle,
+      };
+      const teamResults = await poster(token, "teams/create", info);
+      const newTeam: Team = teamResults.data.newTeam;
+      setResponse(teamResults.data.message);
+      setTimeout(() => {
+        props.setTeams([...props.teams, newTeam]);
+        props.setSelectedTeam(newTeam);
+        props.userInfo.setUserInfo!(teamResults.data.updatedUser);
+        setResponse("");
+        toggle();
+      }, 2200);
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Could not create team team. Server error");
+      }
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /************************
-  ONCLICK UPDATE TEAM
-  ************************/
-  const updateTeam = (e) => {
+  const updateTeam = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    fetch(`${APIURL}/manager/updateTeam`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-      body: JSON.stringify({
-        newTeamName: teamTitle,
-        teamId: props.selectedTeam.id,
-      }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          if (res.status === 409) {
-            throw new Error("Name Already Taken");
-          } else {
-            throw new Error("Something went wrong");
-          }
-        }
-      })
-      .then(async (data) => {
-        await props.setSelectedTeam(data.updatedTeam);
-        await props.setUpdate(data);
-        setLoading(false);
-        setResponse(data.message);
-        setTimeout(() => {
-          setResponse("");
-          toggle();
-        }, 1400);
-      })
-      .catch(async (err) => {
-        setLoading(false);
-        setErr(err.message);
-        setTimeout(() => {
-          setErr("");
-        }, 4000);
-      });
+    try {
+      setLoading(true);
+      const info: Team = {
+        team_name: teamTitle,
+        id: props.selectedTeam.id,
+      };
+      const teamResults = await updater(token, "teams/updateTeam", info);
+      const updatedTeam: Team = teamResults.data.updatedTeam.id;
+      setResponse(teamResults.data.message);
+      setTimeout(() => {
+        props.setTeams(
+          props.teams.map((team) => {
+            if (team.id === updatedTeam.id) {
+              return updatedTeam;
+            } else {
+              return team;
+            }
+          })
+        );
+        props.setSelectedTeam(teamResults.data.updatedTeam);
+        setResponse("");
+        toggle();
+      }, 2200);
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Could not update team. Server error");
+      }
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /************************
-  ONCLICK DELETE TEAM
-  ************************/
-  const deleteTeam = (e) => {
+  const deleteTeam = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
+
     let confirmation = window.confirm(
       "Are you certain you wish to delete this team?"
     );
     if (confirmation) {
-      setLoading(true);
-      fetch(`${APIURL}/manager/removeTeam`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: props.token,
-        },
-        body: JSON.stringify({
-          teamId: props.selectedTeam.id,
-        }),
-      })
-        .then((res) => res.json())
-        .then(async (data) => {
-          await props.setSelectedTeam({});
-          await props.setUpdate(data);
-          await setResponse(data.message);
-          setLoading(false);
-          setTimeout(() => {
-            setResponse("");
-            toggle();
-          }, 1200);
-        })
-        .catch(async (err) => {
-          setLoading(false);
-          setErr(err.message);
-          setTimeout(() => {
-            setErr("");
-            toggle();
-          }, 4000);
-        });
+      try {
+        setLoading(true);
+        const teamResults = await deleter(
+          token,
+          `teams/removeTeam/${props.selectedTeam.id}`
+        );
+        setResponse(teamResults.data.message);
+        setTimeout(() => {
+          props.setTeams(
+            props.teams.filter((team) => team.id !== props.selectedTeam.id)
+          );
+          props.setSelectedTeam(teamResults.data.updatedTeam);
+          setResponse("");
+          toggle();
+        }, 2200);
+      } catch (error) {
+        console.log(error);
+        setResponse(error.message);
+        setTimeout(() => {
+          setResponse("");
+          toggle();
+        }, 2200);
+      } finally {
+        setLoading(false);
+      }
     } else {
-      toggle();
+      setResponse("Deletion Cancelled");
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
     }
   };
 
@@ -176,13 +168,13 @@ const TeamAdderModal = (props) => {
           <ModalBody className={classes.modalBody}>
             <Form onSubmit={(e) => updateTeam(e)} className={classes.form}>
               <Label htmlFor="team name">
-                Rename Team or Delete <b>{props.selectedTeam.teamName}</b>
+                Rename Team or Delete <b>{props.selectedTeam.team_name}</b>
               </Label>
               <Input
                 required
                 type="text"
                 name="team name"
-                defaultValue={props.selectedTeam.teamName}
+                defaultValue={props.selectedTeam.team_name}
                 onChange={(e) => setTeamTitle(e.target.value)}
               ></Input>
               <div className={classes.btnGroup}>
@@ -205,7 +197,11 @@ const TeamAdderModal = (props) => {
               ) : (
                 <></>
               )}
-              {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
+              {response ? (
+                <Alert className={classes.responseAlert}>{response}</Alert>
+              ) : (
+                <></>
+              )}
               <h6
                 className={classes.modalSwitch}
                 onClick={(e) => setModalContent(!modalContent)}
@@ -252,7 +248,11 @@ const TeamAdderModal = (props) => {
               ) : (
                 <></>
               )}
-              {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
+              {response ? (
+                <Alert className={classes.responseAlert}>{response}</Alert>
+              ) : (
+                <></>
+              )}
               <h6
                 className={classes.modalSwitch}
                 onClick={(e) => setModalContent(!modalContent)}

@@ -14,128 +14,145 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
+import { Team, TeamsUsers, User, UserInfo } from "../../../models";
+import updater from "../../../utilities/updateFetcher";
+import deleter from "../../../utilities/deleteFetcher";
 
-const StaffModal = (props) => {
-  const [response, setResponse] = useState("");
-  const [err, setErr] = useState();
-  const [loading, setLoading] = useState();
-  const [modal, setModal] = useState(false);
-  const [expand, setExpand] = useState(false);
-  const [role, setRole] = useState();
+interface StaffModalProps {
+  staffer: User;
+  staff: User[];
+  selectedTeam: Team;
+  userInfo: UserInfo;
+  setStaff: React.Dispatch<React.SetStateAction<User[]>>;
+}
+
+const StaffModal: React.FC<StaffModalProps> = (props) => {
+  const token = props.userInfo.token;
+  const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>();
+  const [modal, setModal] = useState<boolean>(false);
+  const [updateOpen, setOpenUpdate] = useState<boolean>(false);
+  const [role, setRole] = useState<string>("");
 
   const toggle = () => setModal(!modal);
-  const toggle2 = () => setExpand(!expand);
+  const updateFormOpener = () => setOpenUpdate(!updateOpen);
 
-  /**********************
-  UPDATE COACH ROLE
-  **********************/
-  const updateInfo = (e) => {
+  const updateInfo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(role);
-    fetch(`${APIURL}/manager/updateCoach`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-      body: JSON.stringify({
-        teamId: props.selectedTeam.id,
-        userId: props.coach.id,
-        newRole: role,
-      }),
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        console.log(data);
-        setLoading(true);
-        await setResponse(data.message);
-        setLoading(false);
-        props.fetchStaff(props.selectedTeam.id);
-        setTimeout(() => {
-          toggle();
-          toggle2();
-          setResponse("");
-        }, 1200);
-      })
-      .catch(async (err) => {
-        setLoading(true);
-        await setErr(err.message);
-        setLoading(false);
-      });
+    try {
+      setLoading(true);
+      const info: TeamsUsers = {
+        team_id: props.selectedTeam.id!,
+        user_id: props.staffer.id!,
+        role: role,
+      };
+      const results = await updater(token, "teams/updateCoach", info);
+      props.staffer.role = results.data.updatedTeamsUsersItem.role;
+      setResponse(results.data.message);
+      setTimeout(() => {
+        props.setStaff(
+          props.staff.map((person: User) => {
+            if (person.id === props.staffer.id) {
+              return props.staffer;
+            } else {
+              return person;
+            }
+          })
+        );
+        setResponse("");
+        toggle();
+      }, 2200);
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Could not update user. Server error");
+      }
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /**********************
-  DELETE COACH
-  **********************/
-  const deleteCoach = (e) => {
+  const deleteStaffer = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     let confirmation = window.confirm(
-      "Are you certain you wish to delete this user?"
+      `Are you certain you wish to delete ${props.staffer.first_name} from ${props.selectedTeam.team_name}?`
     );
     if (confirmation) {
-      fetch(`${APIURL}/manager/removeCoach`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: props.token,
-        },
-        body: JSON.stringify({
-          teamId: props.selectedTeam.id,
-          coachId: props.coach.id,
-        }),
-      })
-        .then((res) => res.json())
-        .then(async (data) => {
-          setLoading(true);
-          await setResponse(data.message);
-          setLoading(false);
-          setTimeout(() => {
-            toggle();
-            toggle2();
-            setResponse("");
-            props.fetchStaff(props.selectedTeam.id);
-          }, 1200);
-        })
-        .catch(async (err) => {
-          setLoading(true);
-          await setErr(err.message);
-          setLoading(false);
-        });
+      try {
+        setLoading(true);
+        const results = await deleter(
+          token,
+          "teams/removeCoach",
+          `team_id=${props.selectedTeam.id}&user_id=${props.staffer.id}`
+        );
+        setResponse(results.data.message);
+        setTimeout(() => {
+          props.setStaff(
+            props.staff.filter((person: User) => person.id !== props.staffer.id)
+          );
+          setResponse("");
+          toggle();
+        }, 2200);
+      } catch (error) {
+        console.log(error);
+        if (error.status < 500 && error["response"] !== undefined) {
+          setResponse(error.response.data.message);
+        } else {
+          setResponse("Could not update user. Server error");
+        }
+        setTimeout(() => {
+          setResponse("");
+          toggle();
+        }, 2200);
+      } finally {
+        setLoading(false);
+      }
     } else {
-      toggle();
-      toggle2();
+      setResponse("Deletion Cancelled");
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
     }
   };
 
   return (
     <div>
-      <Form inline onSubmit={(e) => updateInfo(e)}>
+      <Form inline>
         <p onClick={toggle} className={classes.cardItem}>
-          <b>{`${props.coach.firstName} ${props.coach.lastName}: `}</b>
-          <i> {props.coach.role}</i>
+          <b>{`${props.staffer.first_name} ${props.staffer.last_name}: `}</b>
+          <i> {props.staffer.role}</i>
         </p>
       </Form>
       <Modal
         className={classes.modal}
         isOpen={modal}
-        toggle={(e) => {
+        toggle={(e: any) => {
           toggle();
-          if (expand) {
-            toggle2();
+          if (updateOpen) {
+            updateFormOpener();
           }
         }}
       >
         <ModalHeader className={classes.modalHeader} toggle={toggle}>
           <header
             className={classes.headerText}
-          >{`${props.coach.firstName} ${props.coach.lastName}`}</header>
+          >{`${props.staffer.first_name} ${props.staffer.last_name}`}</header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
-          <p>{`Email:   ${props.coach.email}`}</p>
-          <p>{`Role:   ${props.coach.role}`}</p>
-          <h6 className={classes.modalExpand} onClick={toggle2}>
+          <p>{`Email:   ${props.staffer.email}`}</p>
+          <p>{`Role:   ${props.staffer.role}`}</p>
+          <h6 className={classes.modalExpand} onClick={updateFormOpener}>
             Update
           </h6>
-          {expand ? (
+          {updateOpen ? (
             <Form className={classes.form} onSubmit={(e) => updateInfo(e)}>
               <FormGroup tag="fieldset">
                 <legend>New Coaches Role</legend>
@@ -171,7 +188,7 @@ const StaffModal = (props) => {
                 </Button>
                 <Button
                   className={`${classes.modalBtn} ${classes.deleteBtn}`}
-                  onClick={(e) => deleteCoach(e)}
+                  onClick={(e) => deleteStaffer(e)}
                 >
                   Delete
                 </Button>
@@ -179,11 +196,6 @@ const StaffModal = (props) => {
               {loading ? <Spinner color="primary" /> : <></>}
               {response ? (
                 <Alert className={classes.responseAlert}>{response}</Alert>
-              ) : (
-                <></>
-              )}
-              {err ? (
-                <Alert className={classes.responseAlert}>{err}</Alert>
               ) : (
                 <></>
               )}
@@ -197,8 +209,8 @@ const StaffModal = (props) => {
             className={`${classes.modalBtn} ${classes.cancelBtn}`}
             onClick={(e) => {
               toggle();
-              if (expand) {
-                toggle2();
+              if (updateOpen) {
+                updateFormOpener();
               }
             }}
           >

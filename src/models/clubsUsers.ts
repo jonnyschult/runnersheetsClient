@@ -1,6 +1,6 @@
 export class ClubsUsers {
   constructor(
-    public role: "athlete" | "vice_chair" | "chair",
+    public role: string,
     public club_id: number,
     public user_id: number,
     public id?: number,

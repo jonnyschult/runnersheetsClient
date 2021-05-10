@@ -1,8 +1,18 @@
 import TeamAdderModal from "./TeamAdderModal";
 import classes from "../Coach.module.css";
 import { Card, CardBody, CardTitle, CardText } from "reactstrap";
+import { Team, UserInfo } from "../../../models";
 
-const TeamList = (props) => {
+interface TeamListProps {
+  userInfo: UserInfo;
+  teams: Team[];
+  loading: boolean;
+  selectedTeam: Team;
+  setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
+  setSelectedTeam: React.Dispatch<React.SetStateAction<Team>>;
+}
+
+const TeamList: React.FC<TeamListProps> = (props) => {
   return (
     <div>
       <Card className={classes.leftContainerCard}>
@@ -17,14 +27,10 @@ const TeamList = (props) => {
                   className={classes.cardItem}
                   key={index}
                   onClick={async (e) => {
-                    await props.setCoaches([]); //prevents error for TeamStaff  <i>{props.coachRole[index].role}</i>. Without, it would index too many times.
-                    props.fetchStaff(team.id);
-                    props.fetchAthletes(team.id);
                     props.setSelectedTeam(team);
-                    props.setTeamActivities([]);
                   }}
                 >
-                  <b>{team.teamName}</b> <i>{team.role}</i>
+                  <b>{team.team_name}</b> <i>{team.role}</i>
                 </CardText>
               );
             })
@@ -33,13 +39,11 @@ const TeamList = (props) => {
           )}
         </CardBody>
         <TeamAdderModal
-          token={props.token}
-          setLoading={props.setLoading}
-          loading={props.loading}
-          setUpdate={props.setUpdate}
-          update={props.update}
-          selectedTeam={props.selectedTeam}
+          userInfo={props.userInfo}
+          teams={props.teams}
           setSelectedTeam={props.setSelectedTeam}
+          setTeams={props.setTeams}
+          selectedTeam={props.selectedTeam}
         />
       </Card>
     </div>
