@@ -14,6 +14,7 @@ import {
 } from "reactstrap";
 import poster from '../../utilities/postFetcher'
 import expander from '../../utilities/expander'
+import { User } from "../../models";
 
 interface RegisterProps{
   loginHandler: (token:string)=>void;
@@ -22,15 +23,15 @@ interface RegisterProps{
 
 const Register:React.FC<RegisterProps> = (props) => {
   const [email, setEmail] = useState<string>('');
-  const [firstName, setFirstName] = useState<string>('');
-  const [lastName, setLastName] = useState<string>('');
+  const [first_name, setFirstName] = useState<string>('');
+  const [last_name, setLastName] = useState<string>('');
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>();
-  // const [heightInInches, setHeightInInches] = useState('');
+  // const [height_inches, setHeightInInches] = useState('');
   const [feet, setFeet] = useState<number | null>(null);
   const [inches, setInches] = useState<number | null>(null);
-  const [weightInPounds, setWeightInPounds] = useState<number | null>(null);
-  const [DOB, setDOB] = useState<string>('');
+  const [weight_pounds, setWeight] = useState<number>();
+  const [date_of_birth, setDOB] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<string>();
   const [error, setError] = useState<string>();
@@ -54,14 +55,16 @@ const Register:React.FC<RegisterProps> = (props) => {
           height = feet * 12 + inches;
         }
         
-        const info={
+        const info: User={
           email,
-          firstName,
-          lastName,
+          first_name,
+          last_name,
           password,
-          heightInInches: height,
-          weightInPounds,
-          DOB,
+          height_inches: height,
+          weight_pounds,
+          date_of_birth,
+          premium_user: false, 
+          coach: false, 
         }
         const response = await poster('notoken', 'users/register', info);
           await props.loginHandler(response.data.token);
@@ -183,15 +186,15 @@ const Register:React.FC<RegisterProps> = (props) => {
               className={classes.input}
               type="number"
               name="weight"
-              onChange={(e) => setWeightInPounds(parseInt(e.target.value))}
+              onChange={(e) => setWeight(parseInt(e.target.value))}
             ></Input>
           </FormGroup>
           <FormGroup>
-            <Label htmlFor="DOB">DOB*</Label>
+            <Label htmlFor="date_of_birth">date_of_birth*</Label>
             <Input
               className={classes.input}
               type="date"
-              name="DOB"
+              name="date_of_birth"
               onChange={(e) => setDOB(e.target.value)}
             ></Input>
           </FormGroup>

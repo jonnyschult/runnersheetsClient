@@ -14,13 +14,12 @@ import updater from '../../utilities/updateFetcher'
 
 interface UpdateInfoProps {
   userInfo: UserInfo
-  setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>
 }
 
 const UpdateInfo:React.FC<UpdateInfoProps> = (props) => {
   const [email, setEmail] = useState<string>(props.userInfo.user.email);
-  const [firstName, setFirstName] = useState<string>(props.userInfo.user.firstName);
-  const [lastName, setLastName] = useState<string>(props.userInfo.user.lastName);
+  const [first_name, setFirstName] = useState<string>(props.userInfo.user.first_name);
+  const [last_name, setLastName] = useState<string>(props.userInfo.user.last_name);
   const [response, setResponse] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const responseDivRef = useRef<HTMLDivElement>(null);
@@ -37,18 +36,18 @@ const UpdateInfo:React.FC<UpdateInfoProps> = (props) => {
     try{
       const info: User = {
         email,
-        firstName,
-        lastName,
-        DOB: props.userInfo.user.DOB,
-        isPremium: props.userInfo.user.isPremium,
-        isCoach: props.userInfo.user.isCoach,
+        first_name,
+        last_name,
+        date_of_birth: props.userInfo.user.date_of_birth,
+        premium_user: props.userInfo.user.premium_user,
+        coach: props.userInfo.user.coach,
       };
       const response = await updater(props.userInfo.token, "users/login", info);
       if (response.status === 404) {
         throw new Error("Error finding your account");
       }
       props.userInfo.user = response.data.updatedUser
-      props.setUserInfo(props.userInfo)
+      props.userInfo.setUserInfo!(props.userInfo)
       setResponse('Update Successful');
       setTimeout(() => {
         setResponse('');
@@ -75,7 +74,7 @@ const UpdateInfo:React.FC<UpdateInfoProps> = (props) => {
 
   return (
     <div className={classes.subDiv}>
-      <h5>Update {props.userInfo.user.firstName}'s Info</h5>
+      <h5>Update {props.userInfo.user.first_name}'s Info</h5>
       <Form className={classes.form} onSubmit={(e) => userUpdater(e)}>
         <FormGroup>
           <Label htmlFor="email">Email</Label>
@@ -91,7 +90,7 @@ const UpdateInfo:React.FC<UpdateInfoProps> = (props) => {
           <Input
             type="text"
             name="first name"
-            placeholder={props.userInfo.user.firstName}
+            placeholder={props.userInfo.user.first_name}
             onChange={(e) => setFirstName(e.target.value)}
           ></Input>
         </FormGroup>
@@ -100,7 +99,7 @@ const UpdateInfo:React.FC<UpdateInfoProps> = (props) => {
           <Input
             type="text"
             name="last name"
-            placeholder={props.userInfo.user.lastName}
+            placeholder={props.userInfo.user.last_name}
             onChange={(e) => setLastName(e.target.value)}
           ></Input>
         </FormGroup>

@@ -1,6 +1,6 @@
-export class Team {
+export class Club {
   constructor(
-    public team_name: string,
+    public club_name: string,
     public role: string,
     public id?: number,
     public created_at?: string,

@@ -24,13 +24,23 @@ interface decodedToken {
 const App: React.FC = () => {
   const [userInfo, setUserInfo] = useState<UserInfo>({
     loggedIn: false,
-    user: {email:'', firstName:'', lastName:'', DOB:'', isPremium:false, isCoach:false},
-    token: '',
+      user: {
+        email: "",
+        first_name: "",
+        last_name: "",
+        date_of_birth: "",
+        premium_user: false,
+        coach: false,
+      },
+      teams: [],
+      clubs: [],
+      activities: [],
+      token: "",
   });
 
   const loginHandler: (userToken: string) => void = async (userToken) => {
     localStorage.setItem('token', userToken);
-    let userData = await userDataFetcher(userToken);
+    let userData = await userDataFetcher(userToken, setUserInfo);
     //prevents unmounting login modal before login message is set in that modal.
     setTimeout(() => {
       setUserInfo(userData);
@@ -41,8 +51,18 @@ const App: React.FC = () => {
     localStorage.clear();
     setUserInfo({
       loggedIn: false,
-      user: {email:'', firstName:'', lastName:'', DOB:'', isPremium:false, isCoach:false},
-      token: '',
+      user: {
+        email: "",
+        first_name: "",
+        last_name: "",
+        date_of_birth: "",
+        premium_user: false,
+        coach: false,
+      },
+      teams: [],
+      clubs: [],
+      activities: [],
+      token: "",
     });
   };
   
@@ -70,7 +90,7 @@ const App: React.FC = () => {
             <Header logoutHandler={logoutHandler}/>
             <Switch>
           <Route exact path="/">
-            {userInfo.user.isCoach ? (
+            {userInfo.user.coach ? (
               <CoachLanding userInfo={userInfo} />
             ) : (
               <AthleteLanding userInfo={userInfo} />
@@ -95,7 +115,6 @@ const App: React.FC = () => {
             <UpdateInfoLanding
               userInfo={userInfo}
               logoutHandler={logoutHandler}
-              setUserInfo={setUserInfo}
             />
           </Route>
         </Switch>

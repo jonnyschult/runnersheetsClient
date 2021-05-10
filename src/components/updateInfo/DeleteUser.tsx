@@ -77,7 +77,7 @@ const DeleteUser:React.FC<DeleteUserProps> = (props) => {
 
   return (
     <div className={classes.subDiv}>
-      <h5>Delete {props.userInfo.user.firstName}'s Account</h5>
+      <h5>Delete {props.userInfo.user.first_name}'s Account</h5>
       <Form className={classes.form} onSubmit={(e) => userRemover(e)}>
         <FormGroup>
           <Label htmlFor="password">Password</Label>

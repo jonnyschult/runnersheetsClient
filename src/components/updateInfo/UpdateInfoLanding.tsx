@@ -10,7 +10,6 @@ import { UserInfo } from "../../models";
 interface UpdateInfoLandingProps {
   userInfo: UserInfo;
   logoutHandler: () => void;
-  setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>
 }
 
 const UpdateInfoLanding: React.FC<UpdateInfoLandingProps> = (props) => {
@@ -52,7 +51,7 @@ const UpdateInfoLanding: React.FC<UpdateInfoLandingProps> = (props) => {
             </p>
           </div>
           {updateUserInfo ? (
-            <UpdateUserInfo userInfo={props.userInfo} setUserInfo={props.setUserInfo} />
+            <UpdateUserInfo userInfo={props.userInfo}/>
           ) : (
             <></>
           )}
