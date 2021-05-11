@@ -7,6 +7,7 @@ import RunCard from "./Activities/RunCard";
 import TeamAthletes from "./TeamAthletes/TeamAthletes";
 import TeamStaff from "./TeamStaff/TeamStaff";
 import FetchDates from "./Activities/FetchDates";
+import CollatedWorkouts from "./Activities/CollatedWorkouts";
 import Scatter from "../charts/DistanceScatter";
 import "./Print.css";
 import { Container, Spinner } from "reactstrap";
@@ -29,7 +30,7 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
     props.userInfo.teams[0]
   );
   const [athletes, setAthletes] = useState<User[]>([]);
-  const [teamActivities, setTeamActivities] = useState<Activity[]>();
+  const [teamActivities, setTeamActivities] = useState<Activity[]>([]);
   const [startDate, setStartDate] = useState<number>(
     new Date(Date.now() - 604800000).getTime()
   );
@@ -46,7 +47,16 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
           `teams/getTeamActivities/${selectedTeam.id}`,
           `start_date=${startDate}&end_date=${endDate}`
         );
-        setTeamActivities(activitiesResults.data.activities);
+        const sortedActivities = activitiesResults.data.activities.sort(
+          (a: Activity, b: Activity) => {
+            if (new Date(a.date).getTime() > new Date(b.date).getTime()) {
+              return 1;
+            } else {
+              return -1;
+            }
+          }
+        );
+        setTeamActivities(sortedActivities);
       } catch (error) {
         console.log(error);
         setErrorPage(true);
@@ -60,7 +70,7 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
         setLoading(false);
       }
     };
-  }, [startDate, endDate]);
+  }, [startDate, endDate, athletes]);
 
   useEffect(() => {
     const loadUpHandler = async () => {
@@ -81,10 +91,36 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
         const managersWithRoles = teamsResults.data.managers.map(
           (manager: User) => (manager.role = "manager")
         );
-
-        setStaff([...managersWithRoles, ...coachesWithRoles]);
-        setAthletes(teamsResults.data.athletes);
-        setTeamActivities(activitiesResults.data.activities);
+        const sortedStaff = [...managersWithRoles, ...coachesWithRoles].sort(
+          (a: User, b: User) => {
+            if (a.last_name > b.last_name) {
+              return 1;
+            } else {
+              return -1;
+            }
+          }
+        );
+        const sortedAthletes = teamsResults.data.athletes.sort(
+          (a: User, b: User) => {
+            if (a.last_name > b.last_name) {
+              return 1;
+            } else {
+              return -1;
+            }
+          }
+        );
+        const sortedActivities = activitiesResults.data.activities.sort(
+          (a: Activity, b: Activity) => {
+            if (new Date(a.date).getTime() > new Date(b.date).getTime()) {
+              return 1;
+            } else {
+              return -1;
+            }
+          }
+        );
+        setStaff(sortedStaff);
+        setAthletes(sortedAthletes);
+        setTeamActivities(sortedActivities);
       } catch (error) {
         console.log(error);
         setErrorPage(true);
@@ -111,61 +147,79 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
   } else {
     return (
       <div className={classes.wrapper}>
-        <div className={classes.mainDiv}>
-          <div>
-            <h2 className={classes.coachLandingHeader}>
-              {selectedTeam === null
-                ? props.userInfo.teams[0].team_name
-                : selectedTeam.team_name}
-            </h2>
-            <div style={{ display: "flex" }}>
-              <Container className={classes.leftContainer}>
-                <TeamList
-                  userInfo={props.userInfo}
-                  teams={teams}
-                  loading={loading}
-                  selectedTeam={selectedTeam}
-                  setSelectedTeam={setSelectedTeam}
-                  setTeams={setTeams}
-                />
-                <TeamStaff
-                  userInfo={props.userInfo}
-                  staff={staff}
-                  setStaff={setStaff}
-                  selectedTeam={selectedTeam}
-                />
-                <TeamAthletes
-                  userInfo={props.userInfo}
-                  athletes={athletes}
-                  setAthletes={setAthletes}
-                  selectedTeam={selectedTeam}
-                />
-              </Container>
-              <Container className={classes.middleContainer}>
-                {teamActivities ? (
-                  <Scatter teamActivities={teamActivities} />
-                ) : (
-                  <></>
-                )}
-                {teamActivities ? (
-                  teamActivities.map((athlete, index) => {
-                    return <RunCard athlete={athlete} key={index} />;
-                  })
-                ) : (
-                  <></>
-                )}
-              </Container>
-              <Container className={classes.rightContainer}>
-                <FetchDates
-                  setStartDate={setStartDate}
-                  setEndDate={setEndDate}
-                  teamActivities={teamActivities}
-                />
-                {/* <TeamPlans /> */}
-              </Container>
+        {loading ? (
+          <Spinner></Spinner>
+        ) : (
+          <div className={classes.mainDiv}>
+            <div>
+              <h2 className={classes.coachLandingHeader}>
+                {selectedTeam === null
+                  ? props.userInfo.teams[0].team_name
+                  : selectedTeam.team_name}
+              </h2>
+              <div style={{ display: "flex" }}>
+                <Container className={classes.leftContainer}>
+                  <TeamList
+                    userInfo={props.userInfo}
+                    teams={teams}
+                    selectedTeam={selectedTeam}
+                    setSelectedTeam={setSelectedTeam}
+                    setTeams={setTeams}
+                  />
+                  <TeamStaff
+                    userInfo={props.userInfo}
+                    staff={staff}
+                    selectedTeam={selectedTeam}
+                    setStaff={setStaff}
+                  />
+                  <TeamAthletes
+                    userInfo={props.userInfo}
+                    athletes={athletes}
+                    selectedTeam={selectedTeam}
+                    setAthletes={setAthletes}
+                  />
+                </Container>
+                <Container className={classes.middleContainer}>
+                  {teamActivities ? (
+                    <Scatter activities={teamActivities} athletes={athletes} />
+                  ) : (
+                    <></>
+                  )}
+                  {athletes && teamActivities ? (
+                    athletes.map((athlete, index) => {
+                      return (
+                        <RunCard
+                          athleteActivities={teamActivities.filter(
+                            (activity) => activity.user_id === athlete.id
+                          )}
+                          athlete={athlete}
+                          key={index}
+                        />
+                      );
+                    })
+                  ) : (
+                    <></>
+                  )}
+                </Container>
+                <Container className={classes.rightContainer}>
+                  <FetchDates
+                    setStartDate={setStartDate}
+                    setEndDate={setEndDate}
+                  />
+                  <div className={classes.collatedWorkoutsContainer}>
+                    <legend className={classes.collatedWorkoutsLegend}>
+                      View Collated Workouts
+                    </legend>
+                    <CollatedWorkouts
+                      activities={teamActivities}
+                      athletes={athletes}
+                    />
+                  </div>
+                </Container>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     );
   }

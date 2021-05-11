@@ -1,7 +1,7 @@
 export class Activity {
   constructor(
     public email: string,
-    public date: Date,
+    public date: string,
     public distance_meters: number,
     public duration_seconds: number,
     public user_id: number,

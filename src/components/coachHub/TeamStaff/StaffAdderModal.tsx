@@ -17,14 +17,14 @@ import {
 import { Team, TeamsUsers, User, UserInfo } from "../../../models";
 import poster from "../../../utilities/postFetcher";
 
-interface CoachAdderModalProps {
+interface StaffAdderModal {
   staff: User[];
   setStaff: React.Dispatch<React.SetStateAction<User[]>>;
   selectedTeam: Team;
   userInfo: UserInfo;
 }
 
-const CoachAdderModal: React.FC<CoachAdderModalProps> = (props) => {
+const StaffAdderModal: React.FC<StaffAdderModal> = (props) => {
   const token = props.userInfo.token;
   const [response, setResponse] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -49,7 +49,15 @@ const CoachAdderModal: React.FC<CoachAdderModalProps> = (props) => {
       teamMember.role = role;
       setResponse(results.data.message);
       setTimeout(() => {
-        props.setStaff([...props.staff, teamMember]);
+        props.setStaff(
+          [...props.staff, teamMember].sort((a: User, b: User) => {
+            if (a.last_name > b.last_name) {
+              return 1;
+            } else {
+              return -1;
+            }
+          })
+        );
         setResponse("");
         toggle();
       }, 2200);
@@ -150,4 +158,4 @@ const CoachAdderModal: React.FC<CoachAdderModalProps> = (props) => {
   );
 };
 
-export default CoachAdderModal;
+export default StaffAdderModal;

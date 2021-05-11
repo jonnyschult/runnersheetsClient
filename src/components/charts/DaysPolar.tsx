@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import classes from "./Charts.module.css";
 import { Polar } from "react-chartjs-2";
+import { Activity } from "../../models";
 
-const PolarChart = (props) => {
+interface PolarChartProps {
+  runs: Activity[];
+}
+
+const PolarChart: React.FC<PolarChartProps> = (props) => {
   const [data, setData] = useState({});
   const [options, setOptions] = useState({});
 

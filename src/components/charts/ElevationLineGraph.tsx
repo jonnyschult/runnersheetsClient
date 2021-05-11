@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import classes from "./Charts.module.css";
 import { Line } from "react-chartjs-2";
+import { Activity } from "../../models";
 
-const ElevationLineGraph = (props) => {
-  const [data, setData] = useState({});
-  const [options, setOptions] = useState();
+interface ElevationLineGraphProps {
+  runs: Activity[];
+}
+
+const ElevationLineGraph: React.FC<ElevationLineGraphProps> = (props) => {
+  const [data, setData] = useState<any>({});
+  const [options, setOptions] = useState<any>();
   const lineGraphSetter = () => {
     let dates = props.runs.map((run) => {
       return new Date(parseInt(run.date)).toDateString();
     });
     let elevations = props.runs.map((run) => {
-      if (!run.elevationMeters) {
+      if (!run.elevation_meters) {
         return 0;
       }
-      return run.elevationMeters;
+      return run.elevation_meters;
     });
     setData({
       labels: dates.reverse(),

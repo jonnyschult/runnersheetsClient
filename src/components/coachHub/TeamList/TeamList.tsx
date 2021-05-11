@@ -6,7 +6,6 @@ import { Team, UserInfo } from "../../../models";
 interface TeamListProps {
   userInfo: UserInfo;
   teams: Team[];
-  loading: boolean;
   selectedTeam: Team;
   setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
   setSelectedTeam: React.Dispatch<React.SetStateAction<Team>>;

@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import classes from "./Charts.module.css";
 import { Bar } from "react-chartjs-2";
+import { Activity } from "../../models";
 
-const DistanceBarChart = (props) => {
+interface DistanceBarChartProps {
+  runs: Activity[];
+}
+
+const DistanceBarChart: React.FC<DistanceBarChartProps> = (props) => {
   const [data, setData] = useState({});
   const [options, setOptions] = useState({});
 
@@ -11,7 +16,7 @@ const DistanceBarChart = (props) => {
       return new Date(parseInt(run.date)).toDateString();
     });
     let distances = props.runs.map((run) => {
-      return run.meters;
+      return run.distance_meters;
     });
     setOptions({
       scales: {

@@ -47,7 +47,15 @@ const TeamAdderModal: React.FC<TeamAdderModalProps> = (props) => {
       const newTeam: Team = teamResults.data.newTeam;
       setResponse(teamResults.data.message);
       setTimeout(() => {
-        props.setTeams([...props.teams, newTeam]);
+        props.setTeams(
+          [...props.teams, newTeam].sort((a: Team, b: Team) => {
+            if (a.team_name > b.team_name) {
+              return 1;
+            } else {
+              return -1;
+            }
+          })
+        );
         props.setSelectedTeam(newTeam);
         props.userInfo.setUserInfo!(teamResults.data.updatedUser);
         setResponse("");

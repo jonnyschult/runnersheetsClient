@@ -9,8 +9,16 @@ import {
   Form,
   Table,
 } from "reactstrap";
+import { Activity, User } from "../../../models";
 
-const ActivitiesModal = (props) => {
+interface CollatedWorkoutsProps {
+  activities: Activity[];
+  athletes: User[];
+}
+
+const ActivitiesModal: React.FC<CollatedWorkoutsProps> = (props) => {
+  const activities = props.activities;
+  const athletes = props.athletes;
   const [modal, setModal] = useState(false);
 
   const toggle = () => setModal(!modal);
@@ -32,62 +40,63 @@ const ActivitiesModal = (props) => {
           <header className={classes.headerText}>Collated Workouts</header>
         </ModalHeader>
         <ModalBody className={classes.modalBodyWide}>
-          {props.teamActivities ? (
-            props.teamActivities.map((athlete, index) => {
-              return (
-                <>
-                  <h5>{`${athlete.firstName} ${athlete.lastName}`}</h5>
-                  <Table className={classes.table} key={index}>
-                    <thead className={classes.thead}>
-                      <tr className={classes.tr}>
-                        <th className={classes.th}>#</th>
-                        <th className={classes.th}>Date</th>
-                        <th className={classes.th}>Meters</th>
-                        <th className={classes.th}>Time</th>
-                        <th className={classes.th}>Pace km</th>
-                        <th className={classes.th}>Elevation/m</th>
-                        <th className={classes.th}>Average HR</th>
-                        <th className={classes.th}>Max HR</th>
-                        <th className={classes.th}>Description</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {athlete.activities.map((activity, index) => {
+          {athletes.map((athlete, index) => {
+            return (
+              <>
+                <h5>{`${athlete.first_name} ${athlete.last_name}`}</h5>
+                <Table className={classes.table} key={index}>
+                  <thead className={classes.thead}>
+                    <tr className={classes.tr}>
+                      <th className={classes.th}>#</th>
+                      <th className={classes.th}>Date</th>
+                      <th className={classes.th}>Meters</th>
+                      <th className={classes.th}>Time</th>
+                      <th className={classes.th}>Pace km</th>
+                      <th className={classes.th}>Elevation/m</th>
+                      <th className={classes.th}>Average HR</th>
+                      <th className={classes.th}>Max HR</th>
+                      <th className={classes.th}>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {activities
+                      .filter((activity) => activity.user_id === athlete.id)
+                      .map((activity, index) => {
                         return (
-                          <tr className={classes.tr}>
+                          <tr className={classes.tr} key={index}>
                             <th scope="row">{index + 1}</th>
                             <td className={classes.td}>
                               {new Date(parseInt(activity.date)).toDateString()}
                             </td>
                             <td className={classes.td}>
-                              {activity.meters
+                              {activity.distance_meters
                                 .toString()
                                 .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                             </td>
                             <td className={classes.td}>
-                              {new Date(activity.durationSecs * 1000)
+                              {new Date(activity.duration_seconds * 1000)
                                 .toISOString()
                                 .substr(11, 8)}
                             </td>
                             <td className={classes.td}>
                               {new Date(
-                                (activity.durationSecs /
-                                  (activity.meters / 1000)) *
+                                (activity.duration_seconds /
+                                  (activity.distance_meters / 1000)) *
                                   1000
                               )
                                 .toISOString()
                                 .substr(11, 8)}
                             </td>
                             <td className={classes.td}>
-                              {activity.elevationMeters
-                                ? activity.elevationMeters
+                              {activity.elevation_meters
+                                ? activity.elevation_meters
                                 : "--"}
                             </td>
                             <td className={classes.td}>
-                              {activity.avgHR ? activity.avgHR : "--"}
+                              {activity.avg_hr ? activity.avg_hr : "--"}
                             </td>
                             <td className={classes.td}>
-                              {activity.maxHR ? activity.maxHR : "--"}
+                              {activity.max_hr ? activity.max_hr : "--"}
                             </td>
                             <td className={classes.td}>
                               {activity.description
@@ -97,14 +106,11 @@ const ActivitiesModal = (props) => {
                           </tr>
                         );
                       })}
-                    </tbody>
-                  </Table>
-                </>
-              );
-            })
-          ) : (
-            <div>Choose a team!</div>
-          )}
+                  </tbody>
+                </Table>
+              </>
+            );
+          })}
         </ModalBody>
         <ModalFooter>
           <Button

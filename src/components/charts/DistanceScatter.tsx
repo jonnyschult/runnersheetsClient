@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import classes from "./Charts.module.css";
 import { Scatter } from "react-chartjs-2";
-import moment from "react-moment";
+import { Activity, User } from "../../models";
 
-const DistanceScatter = (props) => {
+interface DistanceScatterProps {
+  activities: Activity[];
+  athletes: User[];
+}
+
+const DistanceScatter: React.FC<DistanceScatterProps> = (props) => {
   const [data, setData] = useState({});
-  const [options, setOptions] = useState();
+  const [options, setOptions] = useState<any>();
   const ScatterSetter = () => {
     let colors = [
       "Blue ",
@@ -67,15 +72,17 @@ const DistanceScatter = (props) => {
       "#6666FF",
     ];
 
-    let athleteData = props.teamActivities.map((athlete, index) => {
+    let athleteData = props.athletes.map((athlete, index) => {
       return {
-        label: `${athlete.firstName} ${athlete.lastName}`,
-        data: athlete.activities.map((activity) => {
-          return {
-            x: parseInt(activity.date),
-            y: activity.meters,
-          };
-        }),
+        label: `${athlete.first_name} ${athlete.last_name}`,
+        data: props.activities
+          .filter((activity) => activity.user_id === athlete.id)
+          .map((activity) => {
+            return {
+              x: parseInt(activity.date),
+              y: activity.distance_meters,
+            };
+          }),
         pointBackgroundColor: colors[index],
         backgroundColor: colors[index],
         borderColor: colors[index],
@@ -91,7 +98,7 @@ const DistanceScatter = (props) => {
     setOptions({
       tooltips: {
         callbacks: {
-          label: function (tooltipItem) {
+          label: function (tooltipItem: any) {
             let label = [
               new Date(tooltipItem.xLabel).toLocaleDateString("en-US"),
               `Meters: ${Math.floor(tooltipItem.yLabel)}`,
@@ -106,7 +113,7 @@ const DistanceScatter = (props) => {
             ticks: {
               source: "data",
               autoSkiip: false,
-              callback: (value) =>
+              callback: (value: any) =>
                 new Date(parseInt(value)).toISOString().substr(0, 10),
             },
           },
@@ -122,7 +129,7 @@ const DistanceScatter = (props) => {
 
   useEffect(() => {
     ScatterSetter();
-  }, [props.teamActivities]);
+  }, [props.activities]);
 
   return (
     <div className={classes.lineGraph}>

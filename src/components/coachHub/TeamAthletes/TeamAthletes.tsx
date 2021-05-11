@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from "react";
 import classes from "../Coach.module.css";
-import AthleteAddedModal from "./AthleteAdderModal";
+import AthleteAdderModal from "./AthleteAdderModal";
 import AthleteModal from "./AthleteModal";
 import { Card, CardBody, CardTitle } from "reactstrap";
+import { Team, User, UserInfo } from "../../../models";
 
-const TeamAthletes = (props) => {
+interface TeamAthletesProps {
+  userInfo: UserInfo;
+  athletes: User[];
+  selectedTeam: Team;
+  setAthletes: React.Dispatch<React.SetStateAction<User[]>>;
+}
+
+const TeamAthletes: React.FC<TeamAthletesProps> = (props) => {
   return (
     <div>
       <Card className={classes.leftContainerCard}>
@@ -19,9 +27,9 @@ const TeamAthletes = (props) => {
                   key={index}
                   athlete={athlete}
                   selectedTeam={props.selectedTeam}
-                  fetchAthletes={props.fetchAthletes}
-                  token={props.token}
-                  setUpdate={props.setUpdate}
+                  userInfo={props.userInfo}
+                  athletes={props.athletes}
+                  setAthletes={props.setAthletes}
                 />
               );
             })
@@ -29,11 +37,11 @@ const TeamAthletes = (props) => {
             <></>
           )}
         </CardBody>
-        <AthleteAddedModal
-          fetchAthletes={props.fetchAthletes}
+        <AthleteAdderModal
+          athletes={props.athletes}
+          setAthletes={props.setAthletes}
           selectedTeam={props.selectedTeam}
-          token={props.token}
-          setUpdate={props.setUpdate}
+          userInfo={props.userInfo}
         />
       </Card>
     </div>

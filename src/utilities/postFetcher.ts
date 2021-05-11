@@ -8,7 +8,7 @@ type Info =
   | PasswordUpdate
   | Team
   | Club
-  | { team_id: number; email: string; role: string };
+  | { team_id: number; email: string; role?: string };
 
 const poster: (
   token: string,

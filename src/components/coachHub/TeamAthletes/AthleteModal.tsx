@@ -14,19 +14,36 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
+import { Team, TeamsUsers, User, UserInfo } from "../../../models";
+import updater from "../../../utilities/updateFetcher";
+import deleter from "../../../utilities/deleteFetcher";
 
-const StaffModal = (props) => {
-  const [response, setResponse] = useState("");
-  const [loading, setLoading] = useState();
-  const [err, setErr] = useState("");
-  const [modal, setModal] = useState(false);
-  const [expand, setExpand] = useState(false);
-  const [feet, setFeet] = useState(
-    Math.floor(props.athlete.heightInInches / 12)
+interface AthleteModalProps {
+  userInfo: UserInfo;
+  athlete: User;
+  athletes: User[];
+  selectedTeam: Team;
+  setAthletes: React.Dispatch<React.SetStateAction<User[]>>;
+}
+
+const AthleteModal: React.FC<AthleteModalProps> = (props) => {
+  const athlete = props.athlete;
+  const token = props.userInfo.token;
+  const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>();
+  const [err, setErr] = useState<string>("");
+  const [modal, setModal] = useState<boolean>(false);
+  const [expand, setExpand] = useState<boolean>(false);
+  const [feet, setFeet] = useState<number | undefined>(
+    athlete.height_inches ? Math.floor(athlete.height_inches / 12) : undefined
   );
-  const [inches, setInches] = useState(props.athlete.heightInInches % 12);
-  const [DOB, setDOB] = useState();
-  const [weight, setWeight] = useState();
+  const [inches, setInches] = useState<number | undefined>(
+    athlete.height_inches ? athlete.height_inches % 12 : undefined
+  );
+  const [date_of_birth, setDOB] = useState<string>(athlete.date_of_birth);
+  const [weight, setWeight] = useState<number | undefined>(
+    athlete.weight_pounds
+  );
 
   const toggle = () => setModal(!modal);
   const toggle2 = () => setExpand(!expand);
@@ -34,83 +51,101 @@ const StaffModal = (props) => {
   /**********************
   UPDATE ATHLETE
   **********************/
-  const updateInfo = async (e) => {
+  const updateInfo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    fetch(`${APIURL}/coach/updateAthlete`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-      body: JSON.stringify({
-        owner: props.athlete.id,
-        heightInInches: feet * 12 + inches,
-        weightInPounds: weight,
-        DOB,
-      }),
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        await setResponse(data.message);
-        props.fetchAthletes(props.selectedTeam.id);
-        setLoading(false);
-        setTimeout(() => {
-          toggle();
-          toggle2();
-          setResponse("");
-        }, 1400);
-      })
-      .catch(async (err) => {
-        await setErr(err.message);
-        setLoading(false);
-        setTimeout(() => {
-          setErr("");
-        }, 2400);
-      });
+
+    const height_inches =
+      feet && inches ? feet * 12 + inches : athlete.height_inches;
+
+    try {
+      setLoading(true);
+      const info: User = {
+        first_name: athlete.first_name,
+        last_name: athlete.last_name,
+        email: athlete.email,
+        coach: athlete.coach,
+        premium_user: athlete.premium_user,
+        height_inches: height_inches,
+        weight_pounds: weight,
+        date_of_birth,
+      };
+      const results = await updater(token, "teams/updateAthlete", info);
+      const updatedAthlete = results.data.updatedAthlete;
+      setResponse(results.data.message);
+      setTimeout(() => {
+        props.setAthletes(
+          props.athletes.map((person: User) => {
+            if (person.id === updatedAthlete.id) {
+              return updatedAthlete;
+            } else {
+              return person;
+            }
+          })
+        );
+        setResponse("");
+        toggle();
+      }, 2200);
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Could not update user. Server error");
+      }
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } finally {
+      setLoading(false);
+    }
   };
 
   /**********************
   DELETE ATHLETE
   **********************/
-  const deleteAthlete = (e) => {
+  const deleteAthlete = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     let confirmation = window.confirm(
       "Are you certain you wish to delete this athlete?"
     );
     if (confirmation) {
-      setLoading(true);
-      fetch(`${APIURL}/coach/removeAthlete`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: props.token,
-        },
-        body: JSON.stringify({
-          teamId: props.selectedTeam.id,
-          athleteId: props.athlete.id,
-        }),
-      })
-        .then((res) => res.json())
-        .then(async (data) => {
-          await setResponse(data.message);
-          setLoading(false);
-          setTimeout(() => {
-            props.setUpdate(data);
-            toggle();
-            toggle2();
-            setResponse("");
-          }, 1400);
-        })
-        .catch(async (err) => {
-          await setErr(err.message);
-          setLoading(false);
-          setTimeout(() => {
-            setErr("");
-          }, 2400);
-        });
+      try {
+        setLoading(true);
+        const results = await deleter(
+          token,
+          "teams/removeAthlete",
+          `team_id=${props.selectedTeam.id}&athlete_id=${athlete.id}`
+        );
+        setResponse(results.data.message);
+        setTimeout(() => {
+          props.setAthletes(
+            props.athletes.filter((person: User) => person.id !== athlete.id)
+          );
+          setResponse("");
+          toggle();
+        }, 2200);
+      } catch (error) {
+        console.log(error);
+        if (error.status < 500 && error["response"] !== undefined) {
+          setResponse(error.response.data.message);
+        } else {
+          setResponse("Could not update user. Server error");
+        }
+        setTimeout(() => {
+          setResponse("");
+          toggle();
+        }, 2200);
+      } finally {
+        setLoading(false);
+      }
     } else {
-      toggle();
-      toggle2();
+      setResponse("Deletion Cancelled");
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
     }
   };
 
@@ -118,13 +153,13 @@ const StaffModal = (props) => {
     <div>
       <Form inline onSubmit={(e) => updateInfo(e)}>
         <p className={classes.cardItem} onClick={toggle}>
-          <b>{`${props.athlete.firstName} ${props.athlete.lastName}`}</b>
+          <b>{`${athlete.first_name} ${athlete.last_name}`}</b>
         </p>
       </Form>
       <Modal
         className={classes.modal}
         isOpen={modal}
-        toggle={(e) => {
+        toggle={(e: any) => {
           toggle();
           if (expand) {
             toggle2();
@@ -134,24 +169,24 @@ const StaffModal = (props) => {
         <ModalHeader className={classes.modalHeader} toggle={toggle}>
           <header
             className={classes.headerText}
-          >{`${props.athlete.firstName} ${props.athlete.lastName}`}</header>
+          >{`${athlete.first_name} ${athlete.last_name}`}</header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
-          <p>{`Email:   ${props.athlete.email}`}</p>
-          <p>{`DOB:   ${props.athlete.DOB.substring(10, 0)}`}</p>
-          {props.athlete.weightInPounds ? (
-            <p>{`Weight:   ${props.athlete.weightInPounds}lbs`}</p>
+          <p>{`Email:   ${athlete.email}`}</p>
+          <p>{`DOB:   ${athlete.date_of_birth.substring(10, 0)}`}</p>
+          {athlete.weight_pounds ? (
+            <p>{`Weight:   ${athlete.weight_pounds}lbs`}</p>
           ) : (
             <></>
           )}
-          {props.athlete.heightInInches ? (
-            <p>{`Height:   ${Math.floor(props.athlete.heightInInches / 12)}' ${
-              props.athlete.heightInInches % 12
+          {athlete.height_inches ? (
+            <p>{`Height:   ${Math.floor(athlete.height_inches / 12)}' ${
+              athlete.height_inches % 12
             }"`}</p>
           ) : (
             <></>
           )}
-          <h6 className={classes.modalExpand} onClick={toggle2} caret>
+          <h6 className={classes.modalExpand} onClick={toggle2}>
             Update
           </h6>
           {expand ? (
@@ -163,14 +198,14 @@ const StaffModal = (props) => {
                 <Input
                   type="number"
                   name="feet"
-                  placeholder={Math.floor(props.athlete.heightInInches / 12)}
+                  placeholder={`${feet}`}
                   onChange={(e) => setFeet(parseInt(e.target.value))}
                 ></Input>
                 <Label htmlFor="feet">Inches</Label>
                 <Input
                   type="number"
                   name="feet"
-                  placeholder={props.athlete.heightInInches % 12}
+                  placeholder={`${inches}`}
                   onChange={(e) => setInches(parseInt(e.target.value))}
                 ></Input>
               </FormGroup>
@@ -179,16 +214,16 @@ const StaffModal = (props) => {
                 <Input
                   type="number"
                   name="weight"
-                  placeholder={props.athlete.weightInPounds}
+                  placeholder={`${athlete.weight_pounds}`}
                   onChange={(e) => setWeight(parseInt(e.target.value))}
                 ></Input>
               </FormGroup>
               <FormGroup>
-                <Label htmlFor="DOB">DOB*</Label>
+                <Label htmlFor="date_of_birth">date_of_birth*</Label>
                 <Input
                   type="number"
-                  name="DOB"
-                  placeholder={props.athlete.DOB}
+                  name="date_of_birth"
+                  placeholder={athlete.date_of_birth}
                   onChange={(e) => setDOB(e.target.value)}
                 ></Input>
               </FormGroup>
@@ -237,4 +272,4 @@ const StaffModal = (props) => {
   );
 };
 
-export default StaffModal;
+export default AthleteModal;

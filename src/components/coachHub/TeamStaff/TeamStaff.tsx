@@ -1,6 +1,6 @@
 import React from "react";
 import classes from "../Coach.module.css";
-import CoachAdderModal from "./CoachAdderModal";
+import CoachAdderModal from "./StaffAdderModal";
 import StaffModal from "./StaffModal";
 import { Card, CardBody, CardTitle } from "reactstrap";
 import { Team, User, UserInfo } from "../../../models";

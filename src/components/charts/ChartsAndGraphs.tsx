@@ -5,12 +5,16 @@ import ElevationLineGraph from "./ElevationLineGraph";
 import Doughnut from "./DistanceDoughnut";
 import PolarChart from "./DaysPolar";
 import { Container, Spinner } from "reactstrap";
+import { Activity } from "../../models";
 
-const ChartsAndGraphs = (props) => {
-  const [loadingMain, setLoadingMain] = useState(false);
-  const [timeRan, setTimeRan] = useState();
-  const [distanceCovered, setDistanceCovered] = useState();
-  const [loading, setLoading] = useState(true);
+interface ChartsAndGraphsProps {
+  runs: Activity[];
+}
+
+const ChartsAndGraphs: React.FC<ChartsAndGraphsProps> = (props) => {
+  const [timeRan, setTimeRan] = useState<number>();
+  const [distanceCovered, setDistanceCovered] = useState<number>();
+  const [loading, setLoading] = useState<boolean>(true);
 
   /**********************
   SET DISTANCE AND DURATION
@@ -19,8 +23,8 @@ const ChartsAndGraphs = (props) => {
     let time = 0;
     let distance = 0;
     props.runs.forEach((run) => {
-      time += run.durationSecs;
-      distance += run.meters;
+      time += run.duration_seconds;
+      distance += run.distance_meters;
     });
     setTimeRan(time);
     setDistanceCovered(distance);

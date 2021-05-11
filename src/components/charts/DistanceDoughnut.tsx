@@ -1,21 +1,26 @@
 import React, { useEffect, useState } from "react";
 import classes from "./Charts.module.css";
 import { Doughnut } from "react-chartjs-2";
+import { Activity } from "../../models";
 
-const DoughnutChart = (props) => {
+interface DoughnutChartProps {
+  runs: Activity[];
+}
+
+const DoughnutChart: React.FC<DoughnutChartProps> = (props) => {
   const [data, setData] = useState({});
   const [options, setOptions] = useState({});
 
   const doughnutChartSetter = () => {
     let durations = [0, 0, 0, 0, 0, 0, 0];
     props.runs.forEach((run) => {
-      if (run.durationSecs < 1200) durations[0]++;
-      else if (run.durationSecs < 2400) durations[1]++;
-      else if (run.durationSecs < 3600) durations[2]++;
-      else if (run.durationSecs < 4800) durations[3]++;
-      else if (run.durationSecs < 6000) durations[4]++;
-      else if (run.durationSecs < 7200) durations[5]++;
-      else if (run.durationSecs >= 7200) durations[6]++;
+      if (run.duration_seconds < 1200) durations[0]++;
+      else if (run.duration_seconds < 2400) durations[1]++;
+      else if (run.duration_seconds < 3600) durations[2]++;
+      else if (run.duration_seconds < 4800) durations[3]++;
+      else if (run.duration_seconds < 6000) durations[4]++;
+      else if (run.duration_seconds < 7200) durations[5]++;
+      else if (run.duration_seconds >= 7200) durations[6]++;
     });
     setOptions({
       cutoutPercentage: 65,

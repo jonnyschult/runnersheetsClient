@@ -1,4 +1,4 @@
-.wrapper{
+.wrapper {
   min-height: calc(100vh - 60px);
 }
 
@@ -334,9 +334,6 @@
 
 .headerText {
   font-weight: 600;
-}
-
-.modalBody {
 }
 
 .modalBodyWide {
