@@ -1,14 +1,15 @@
 import APIURL from "./environment";
-import { Login, User, PasswordUpdate, Team, Club } from "../models";
+import { Login, User, PasswordUpdate, Team, Club, Activity } from "../models";
 import axios, { AxiosResponse } from "axios";
 
 type Info =
   | User
+  | Activity
   | Login
   | PasswordUpdate
   | Team
   | Club
-  | { team_id: number; email: string; role?: string };
+  | { club_id?: number; team_id?: number; email: string; role?: string };
 
 const poster: (
   token: string,

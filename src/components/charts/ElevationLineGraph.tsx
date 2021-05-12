@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import classes from "./Charts.module.css";
 import { Line } from "react-chartjs-2";
 import { Activity } from "../../models";
@@ -10,9 +10,10 @@ interface ElevationLineGraphProps {
 const ElevationLineGraph: React.FC<ElevationLineGraphProps> = (props) => {
   const [data, setData] = useState<any>({});
   const [options, setOptions] = useState<any>();
-  const lineGraphSetter = () => {
+
+  const lineGraphSetter = useCallback(() => {
     let dates = props.runs.map((run) => {
-      return new Date(parseInt(run.date)).toDateString();
+      return new Date(run.date).toDateString();
     });
     let elevations = props.runs.map((run) => {
       if (!run.elevation_meters) {
@@ -45,11 +46,11 @@ const ElevationLineGraph: React.FC<ElevationLineGraphProps> = (props) => {
         ],
       },
     });
-  };
+  }, [props.runs]);
 
   useEffect(() => {
     lineGraphSetter();
-  }, [props.runs]);
+  }, [lineGraphSetter]);
   return (
     <div className={classes.lineGraph}>
       <div>

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import APIURL from "../../../utilities/environment";
 import classes from "../Coach.module.css";
 import {
   Button,
@@ -21,7 +20,7 @@ import deleter from "../../../utilities/deleteFetcher";
 interface StaffModalProps {
   staffer: User;
   staff: User[];
-  selectedTeam: Team;
+  selectedTeam: Team | null;
   userInfo: UserInfo;
   setStaff: React.Dispatch<React.SetStateAction<User[]>>;
 }
@@ -42,7 +41,7 @@ const StaffModal: React.FC<StaffModalProps> = (props) => {
     try {
       setLoading(true);
       const info: TeamsUsers = {
-        team_id: props.selectedTeam.id!,
+        team_id: props.selectedTeam!.id!,
         user_id: props.staffer.id!,
         role: role,
       };
@@ -82,7 +81,9 @@ const StaffModal: React.FC<StaffModalProps> = (props) => {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     let confirmation = window.confirm(
-      `Are you certain you wish to delete ${props.staffer.first_name} from ${props.selectedTeam.team_name}?`
+      `Are you certain you wish to delete ${props.staffer.first_name} from ${
+        props.selectedTeam!.team_name
+      }?`
     );
     if (confirmation) {
       try {
@@ -90,7 +91,7 @@ const StaffModal: React.FC<StaffModalProps> = (props) => {
         const results = await deleter(
           token,
           "teams/removeCoach",
-          `team_id=${props.selectedTeam.id}&user_id=${props.staffer.id}`
+          `team_id=${props.selectedTeam!.id}&user_id=${props.staffer.id}`
         );
         setResponse(results.data.message);
         setTimeout(() => {

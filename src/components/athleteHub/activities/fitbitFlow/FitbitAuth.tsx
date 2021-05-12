@@ -12,8 +12,14 @@ import {
   CardBody,
   CardText,
 } from "reactstrap";
+import { UserInfo } from "../../../../models";
 
-const FitbitAuth = (props) => {
+interface FibitAuthProps {
+  userInfo: UserInfo;
+}
+
+const FitbitAuth: React.FC<FibitAuthProps> = (props) => {
+  const token = props.userInfo.token;
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState();
   const [response, setResponse] = useState();
@@ -23,7 +29,7 @@ const FitbitAuth = (props) => {
       //checks for query parameter, which fitbit returns in their callback uri
 
       setLoading(true);
-      const stringParser = (str) => {
+      const stringParser = (str: string) => {
         //Gets token from window.location.href
         const query = str.split("?");
         const codePlusHash = query[1].split("code=");
@@ -36,7 +42,7 @@ const FitbitAuth = (props) => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: props.token,
+          Authorization: token,
         },
       })
         .then((res) => res.json())
@@ -59,7 +65,7 @@ const FitbitAuth = (props) => {
                 method: "PUT",
                 headers: {
                   "Content-Type": "application/json",
-                  Authorization: props.token,
+                  Authorization: token,
                 },
                 body: JSON.stringify({
                   fitbitRefresh: data.refresh_token,
@@ -87,14 +93,14 @@ const FitbitAuth = (props) => {
     } else {
       console.log("No query parameter");
     }
-  }, []);
+  }, [token]);
 
   const fitbitFetcher = () => {
     fetch(`${APIURL}/fitbit/getAuth`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: props.token,
+        token,
       },
     })
       .then((res) => res.json())
@@ -109,35 +115,35 @@ const FitbitAuth = (props) => {
   };
   return (
     <div className={classes.wrapper}>
-    <div className={classes.mainDiv}>
-      <Card className={classes.fitbitCard}>
-        <CardHeader className={classes.fitbitCardHeader}>
-          <h1 className={classes.headerText}>Connect Fitbit</h1>{" "}
-        </CardHeader>
-        <CardBody className={classes.fitbitCardBody}>
-          <CardImg src={Fitbit} className={classes.fitbitCardImg} />
-          <CardText>
-            Connecting Fitbit with RunnerSheets enables you to easily share your
-            activities with your coach and fellow runners!
-          </CardText>
-          <Button
-            className={classes.fitbitBtn}
-            onClick={(e) => fitbitFetcher()}
-          >
-            Connect to Fitbit
-          </Button>
-        </CardBody>
-        {response ? (
-          <Alert>
-            {response} Please return to Athlete page to upload workouts.
-          </Alert>
-        ) : (
-          <></>
-        )}
-        {loading ? <Spinner></Spinner> : <></>}
-        {err ? <Alert>{err}</Alert> : <></>}
-      </Card>
-    </div>
+      <div className={classes.mainDiv}>
+        <Card className={classes.fitbitCard}>
+          <CardHeader className={classes.fitbitCardHeader}>
+            <h1 className={classes.headerText}>Connect Fitbit</h1>{" "}
+          </CardHeader>
+          <CardBody className={classes.fitbitCardBody}>
+            <CardImg src={Fitbit} className={classes.fitbitCardImg} />
+            <CardText>
+              Connecting Fitbit with RunnerSheets enables you to easily share
+              your activities with your coach and fellow runners!
+            </CardText>
+            <Button
+              className={classes.fitbitBtn}
+              onClick={(e) => fitbitFetcher()}
+            >
+              Connect to Fitbit
+            </Button>
+          </CardBody>
+          {response ? (
+            <Alert>
+              {response} Please return to Athlete page to upload workouts.
+            </Alert>
+          ) : (
+            <></>
+          )}
+          {loading ? <Spinner></Spinner> : <></>}
+          {err ? <Alert>{err}</Alert> : <></>}
+        </Card>
+      </div>
     </div>
   );
 };

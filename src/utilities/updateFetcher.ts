@@ -6,11 +6,13 @@ import {
   Team,
   TeamsUsers,
   ClubsUsers,
+  Activity,
 } from "../models";
 import axios, { AxiosResponse } from "axios";
 
 type Info =
   | User
+  | Activity
   | Comment
   | PasswordUpdate
   | Team

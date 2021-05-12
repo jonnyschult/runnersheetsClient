@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import classes from "./Modal.module.css";
+import classes from "./Modal.module.scss";
 import {
   Button,
   Form,
@@ -12,50 +12,49 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
-import poster from '../../utilities/postFetcher'
-import expander from '../../utilities/expander'
+import poster from "../../utilities/postFetcher";
+import expander from "../../utilities/expander";
 import { User } from "../../models";
 
-interface RegisterProps{
-  loginHandler: (token:string)=>void;
+interface RegisterProps {
+  loginHandler: (token: string) => void;
   registerToggle: () => void;
 }
 
-const Register:React.FC<RegisterProps> = (props) => {
-  const [email, setEmail] = useState<string>('');
-  const [first_name, setFirstName] = useState<string>('');
-  const [last_name, setLastName] = useState<string>('');
+const Register: React.FC<RegisterProps> = (props) => {
+  const [email, setEmail] = useState<string>("");
+  const [first_name, setFirstName] = useState<string>("");
+  const [last_name, setLastName] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>();
   // const [height_inches, setHeightInInches] = useState('');
   const [feet, setFeet] = useState<number | null>(null);
   const [inches, setInches] = useState<number | null>(null);
   const [weight_pounds, setWeight] = useState<number>();
-  const [date_of_birth, setDOB] = useState<string>('');
+  const [date_of_birth, setDOB] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState<string>();
   const [error, setError] = useState<string>();
   const responseDivRef = useRef<HTMLDivElement>(null);
 
-
-  const submitHandler = async (e:React.FormEvent<HTMLFormElement>) => {
+  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    
+
     if (password !== confirmPassword) {
       setLoading(false);
-      setError('Passwords must match');
+      setError("Passwords must match");
       setTimeout(() => {
-        setError('');
+        setError("");
       }, 2500);
     } else {
-      try{
+      try {
         let height = 0;
         if (feet && inches) {
           height = feet * 12 + inches;
         }
-        
-        const info: User={
+
+        const info: User = {
           email,
           first_name,
           last_name,
@@ -63,37 +62,37 @@ const Register:React.FC<RegisterProps> = (props) => {
           height_inches: height,
           weight_pounds,
           date_of_birth,
-          premium_user: false, 
-          coach: false, 
+          premium_user: false,
+          coach: false,
+        };
+        const response = await poster("notoken", "users/register", info);
+        await props.loginHandler(response.data.token);
+        setResponse("Login Successful");
+        //if the time is changed here, it will cause a race with loginHandler, which unmounts this modal. If you change time here, change time in loginHandler in App.tsx.
+        setTimeout(() => {
+          setResponse("");
+        }, 1500);
+      } catch (error) {
+        console.log(error);
+        if (error["response"] !== undefined) {
+          setError(error.response.data.message);
+        } else {
+          setError("Problem creating your account. Please let site admin know");
         }
-        const response = await poster('notoken', 'users/register', info);
-          await props.loginHandler(response.data.token);
-          setResponse('Login Successful');
-          //if the time is changed here, it will cause a race with loginHandler, which unmounts this modal. If you change time here, change time in loginHandler in App.tsx.
-          setTimeout(() => {
-            setResponse('');
-          }, 1500);
-        } catch (error) {
-          console.log(error);
-          if (error['response'] !== undefined) {
-            setError(error.response.response.data.message);
-          } else {
-            setError('Problem creating your account. Please let site admin know');
+        setTimeout(() => {
+          setError("");
+        }, 2500);
+      } finally {
+        setLoading(false);
+        setTimeout(() => {
+          if (responseDivRef.current !== null) {
+            expander(responseDivRef.current!, false);
           }
-          setTimeout(() => {
-            setError('');
-          }, 2500);
-        } finally {
-          setLoading(false);
-          setTimeout(() => {
-            if (responseDivRef.current !== null) {
-              expander(responseDivRef.current!, false);
-            }
-          }, 2200);
-        }
+        }, 2200);
       }
+    }
   };
-  
+
   return (
     <>
       <ModalHeader className={classes.modalHeader}>

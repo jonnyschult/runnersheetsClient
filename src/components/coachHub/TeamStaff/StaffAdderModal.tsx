@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import APIURL from "../../../utilities/environment";
 import classes from "../Coach.module.css";
 import {
   Button,
@@ -14,17 +13,17 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
-import { Team, TeamsUsers, User, UserInfo } from "../../../models";
+import { Team, User, UserInfo } from "../../../models";
 import poster from "../../../utilities/postFetcher";
 
-interface StaffAdderModal {
+interface StaffAdderModalProps {
   staff: User[];
   setStaff: React.Dispatch<React.SetStateAction<User[]>>;
-  selectedTeam: Team;
+  selectedTeam: Team | null;
   userInfo: UserInfo;
 }
 
-const StaffAdderModal: React.FC<StaffAdderModal> = (props) => {
+const StaffAdderModal: React.FC<StaffAdderModalProps> = (props) => {
   const token = props.userInfo.token;
   const [response, setResponse] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -40,7 +39,7 @@ const StaffAdderModal: React.FC<StaffAdderModal> = (props) => {
     try {
       setLoading(true);
       const info = {
-        team_id: +props.selectedTeam.id!,
+        team_id: +props.selectedTeam!.id!,
         email,
         role,
       };
@@ -87,7 +86,9 @@ const StaffAdderModal: React.FC<StaffAdderModal> = (props) => {
       <Modal className={classes.modal} isOpen={modal} toggle={toggle}>
         <ModalHeader className={classes.modalHeader} toggle={toggle}>
           <header className={classes.headerText}>
-            Add Coach to {props.selectedTeam.team_name}
+            {props.selectedTeam === null
+              ? "Select a team first"
+              : `Add Coach to ${props.selectedTeam.team_name}`}
           </header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
@@ -134,6 +135,7 @@ const StaffAdderModal: React.FC<StaffAdderModal> = (props) => {
             <Button
               className={`${classes.modalBtn} ${classes.addBtn}`}
               type="submit"
+              disabled={props.selectedTeam === null ? true : false}
             >
               Add
             </Button>

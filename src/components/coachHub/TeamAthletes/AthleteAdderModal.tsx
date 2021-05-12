@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import classes from "../Coach.module.css";
-import APIURL from "../../../utilities/environment";
 import {
   Button,
   Modal,
@@ -14,13 +13,13 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
-import { Team, TeamsUsers, User, UserInfo } from "../../../models";
+import { Team, User, UserInfo } from "../../../models";
 import poster from "../../../utilities/postFetcher";
 
 interface AthleteAdderModalProps {
   userInfo: UserInfo;
   athletes: User[];
-  selectedTeam: Team;
+  selectedTeam: Team | null;
   setAthletes: React.Dispatch<React.SetStateAction<User[]>>;
 }
 
@@ -39,7 +38,7 @@ const AthleteAdderModal: React.FC<AthleteAdderModalProps> = (props) => {
     try {
       setLoading(true);
       const info = {
-        team_id: +props.selectedTeam.id!,
+        team_id: +props.selectedTeam!.id!,
         email,
       };
       const results = await poster(token, "teams/addAthlete", info);
@@ -84,8 +83,9 @@ const AthleteAdderModal: React.FC<AthleteAdderModalProps> = (props) => {
       <Modal className={classes.modal} isOpen={modal} toggle={toggle}>
         <ModalHeader className={classes.modalHeader} toggle={toggle}>
           <header className={classes.headerText}>
-            {" "}
-            Add Athlete to {props.selectedTeam.team_name}{" "}
+            {props.selectedTeam === null
+              ? "Select a team first"
+              : `Add Athlete to ${props.selectedTeam.team_name}`}
           </header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
@@ -107,6 +107,7 @@ const AthleteAdderModal: React.FC<AthleteAdderModalProps> = (props) => {
             <Button
               className={`${classes.modalBtn} ${classes.addBtn}`}
               type="submit"
+              disabled={props.selectedTeam === null ? true : false}
             >
               Add
             </Button>

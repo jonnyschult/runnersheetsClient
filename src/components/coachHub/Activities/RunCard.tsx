@@ -52,7 +52,7 @@ const RunCard: React.FC<RunCardProps> = (props) => {
                   >
                     <th scope="row">{index + 1}</th>
                     <td className={classes.td}>
-                      {new Date(parseInt(activity.date)).toDateString()}
+                      {new Date(activity.date).toDateString()}
                     </td>
                     <td className={classes.td}>
                       {Math.floor(activity.distance_meters)

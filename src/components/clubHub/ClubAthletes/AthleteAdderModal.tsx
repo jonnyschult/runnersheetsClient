@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import classes from "../Club.module.css";
-import APIURL from "../../../utilities/environment";
 import {
   Button,
   Modal,
@@ -14,63 +13,64 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
+import { Club, User, UserInfo } from "../../../models";
+import { poster } from "../../../utilities";
 
-const AthleteAdderModal = (props) => {
-  const [response, setResponse] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState("");
-  const [modal, setModal] = useState(false);
-  const [email, setEmail] = useState();
+interface AthleteAdderModalProps {
+  userInfo: UserInfo;
+  athletes: User[];
+  setAthletes: React.Dispatch<React.SetStateAction<User[]>>;
+  selectedClub: Club | null;
+}
+
+const AthleteAdderModal: React.FC<AthleteAdderModalProps> = (props) => {
+  const token = props.userInfo.token;
+  const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [modal, setModal] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
 
   const toggle = () => setModal(!modal);
 
-  /****************************
-   ADD ATHLETE TO CLUB
-   ***************************/
-  const addAthlete = (e) => {
+  const addAthlete = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    fetch(`${APIURL}/viceChair/addAthlete`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-      body: JSON.stringify({
-        clubId: props.selectedClub.id,
-        clubAthleteEmail: email,
-      }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          if (res.status === 403) {
-            throw new Error("Can't find user with that email");
-          } else if (res.status === 409) {
-            throw new Error("That user is already in the club");
+
+    try {
+      setLoading(true);
+      const info = {
+        club_id: +props.selectedClub!.id!,
+        email,
+      };
+      const results = await poster(token, "clubs/addAthlete", info);
+      const clubMember: User = results.data.clubMember;
+      setResponse(results.data.message);
+      props.setAthletes(
+        [...props.athletes, clubMember].sort((a: User, b: User) => {
+          if (a.last_name > b.last_name) {
+            return 1;
           } else {
-            throw new Error("Something went wrong");
+            return -1;
           }
-        }
-      })
-      .then(async (data) => {
-        await props.setUpdate(data);
-        await setResponse(data.message);
-        setLoading(false);
-        // props.fetchAthletes(props.selectedClub.id);
-        setTimeout(() => {
-          toggle();
-          setResponse("");
-        }, 1200);
-      })
-      .catch(async (err) => {
-        await setErr(err.message);
-        setLoading(false);
-        setTimeout(() => {
-          setErr("");
-        }, 2500);
-      });
+        })
+      );
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Could not create team team. Server error");
+      }
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -84,7 +84,7 @@ const AthleteAdderModal = (props) => {
         <ModalHeader className={classes.modalHeader} toggle={toggle}>
           <header className={classes.headerText}>
             {" "}
-            Add Athlete to {props.selectedClub.clubName}{" "}
+            Add Athlete to {props.selectedClub!.club_name}{" "}
           </header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
@@ -115,7 +115,6 @@ const AthleteAdderModal = (props) => {
             ) : (
               <></>
             )}
-            {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
           </Form>
         </ModalBody>
         <ModalFooter className={classes.modalFooter}>

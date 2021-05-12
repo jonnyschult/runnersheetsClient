@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import classes from "../Coach.module.css";
 import { Form, FormGroup, Label, Input } from "reactstrap";
-import { Activity } from "../../../models";
 
 interface SetDatesProps {
   setStartDate: React.Dispatch<React.SetStateAction<number>>;
@@ -104,7 +103,6 @@ const SetDates: React.FC<SetDatesProps> = (props) => {
           innerRef={(el: HTMLInputElement) => (dateInputRefs.current[0] = el!)}
           onChange={(e) => {
             props.setStartDate(new Date(e.target.value).getTime());
-            document;
             radioInputRefs.current.forEach((radio) => (radio.checked = false)); //Deselects all radios to prevent confusion.
           }}
         ></Input>
@@ -116,7 +114,6 @@ const SetDates: React.FC<SetDatesProps> = (props) => {
           innerRef={(el: HTMLInputElement) => (dateInputRefs.current[1] = el!)}
           onChange={(e) => {
             props.setEndDate(new Date(e.target.value).getTime());
-            document;
             radioInputRefs.current.forEach((radio) => (radio.checked = false)); //Deselects all radios to prevent confusion.
           }}
         ></Input>

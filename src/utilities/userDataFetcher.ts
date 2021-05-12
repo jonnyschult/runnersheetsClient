@@ -1,4 +1,4 @@
-import { UserInfo, User, Team, Club, Activity } from "../models";
+import { UserInfo, Team, Club } from "../models";
 import getter from "./getFetcher";
 
 const userDataFetcher: (
@@ -8,11 +8,26 @@ const userDataFetcher: (
   try {
     const userData = await getter(token, "users/getUser");
 
+    const sortedTeams = userData.data.teams.sort((a: Team, b: Team) => {
+      if (a.team_name > b.team_name) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+    const sortedClubs = userData.data.clubs.sort((a: Club, b: Club) => {
+      if (a.club_name > b.club_name) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+
     return {
       loggedIn: true,
       user: userData.data.user,
-      teams: userData.data.teams,
-      clubs: userData.data.clubs,
+      teams: sortedTeams,
+      clubs: sortedClubs,
       activities: userData.data.activities,
       setUserInfo: setUserInfo,
       token: token,

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import APIURL from "../../utilities/environment";
 import classes from "./Athlete.module.css";
 import {
   Button,
@@ -14,62 +13,77 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
+import { User, UserInfo } from "../../models";
+import { updater } from "../../utilities";
 
-const AthleteUpdater = (props) => {
-  const [feet, setFeet] = useState(
-    Math.floor(props.athlete.heightInInches / 12)
+interface AthleteUpdaterProps {
+  userInfo: UserInfo;
+  athlete: User;
+  setAthlete: React.Dispatch<React.SetStateAction<User>>;
+}
+
+const AthleteUpdater: React.FC<AthleteUpdaterProps> = (props) => {
+  const athlete = props.athlete;
+  const [feet, setFeet] = useState<number | undefined>(
+    athlete.height_inches ? Math.floor(athlete.height_inches / 12) : undefined
   );
-  const [inches, setInches] = useState(props.athlete.heightInInches % 12);
-  const [weight, setWeight] = useState(props.athlete.weight);
-  const [DOB, setDOB] = useState(props.athlete.DOB);
-  const [err, setErr] = useState();
-  const [response, setResponse] = useState();
-  const [loading, setLoading] = useState(false);
-  const [modal, setModal] = useState(false);
+  const [inches, setInches] = useState<number | undefined>(
+    athlete.height_inches ? athlete.height_inches % 12 : undefined
+  );
+  const [weight, setWeight] = useState<number | undefined>(
+    athlete.weight_pounds
+  );
+  const [DOB, setDOB] = useState<string>(athlete.date_of_birth);
+  const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [modal, setModal] = useState<boolean>(false);
 
   const toggle = () => setModal(!modal);
 
-  const updateInfo = async (e) => {
+  const updateInfo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    let height = 0;
-    if (feet && inches) {
-      height = feet * 12 + inches;
+    try {
+      let height: undefined | number = undefined;
+      if (feet && inches) {
+        height = feet * 12 + inches;
+      }
+      const info: User = {
+        email: athlete.email,
+        first_name: athlete.first_name,
+        last_name: athlete.last_name,
+        date_of_birth: DOB,
+        weight_pounds: weight,
+        height_inches: height,
+        premium_user: athlete.premium_user,
+        coach: athlete.coach,
+      };
+      const response = await updater(
+        props.userInfo.token,
+        "users/updateUser",
+        info
+      );
+
+      props.userInfo.user = response.data.updatedUser;
+      props.userInfo.setUserInfo!(props.userInfo);
+      setResponse("Update Successful");
+      setTimeout(() => {
+        setResponse("");
+      }, 1500);
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Could not update user. Server error");
+      }
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } finally {
+      setLoading(false);
     }
-    fetch(`${APIURL}/user/updateUser`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-      body: JSON.stringify({
-        heightInInches: height,
-        weightInPounds: weight,
-        DOB,
-      }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else if (res.status === 404) {
-          throw new Error("No User Found");
-        } else {
-          throw new Error("Something went wrong");
-        }
-      })
-      .then(async (data) => {
-        await props.setUpdate(data);
-        await setResponse(data.message);
-        setLoading(false);
-        setTimeout(() => {
-          toggle();
-          setResponse("");
-        }, 1200);
-      })
-      .catch((err) => {
-        setErr(err.message);
-        setLoading(false);
-      });
   };
 
   return (
@@ -96,14 +110,14 @@ const AthleteUpdater = (props) => {
               <Input
                 type="number"
                 name="feet"
-                defaultValue={Math.floor(props.athlete.heightInInches / 12)}
+                defaultValue={feet}
                 onChange={(e) => setFeet(parseInt(e.target.value))}
               ></Input>
               <Label htmlFor="inches">Inches</Label>
               <Input
                 type="number"
                 name="inches"
-                defaultValue={Math.floor(props.athlete.heightInInches % 12)}
+                defaultValue={inches}
                 onChange={(e) => setInches(parseInt(e.target.value))}
               ></Input>
             </FormGroup>
@@ -112,7 +126,7 @@ const AthleteUpdater = (props) => {
               <Input
                 type="number"
                 name="weight"
-                placeholder={props.athlete.weightInPounds}
+                placeholder={`${athlete.weight_pounds}`}
                 onChange={(e) => setWeight(parseInt(e.target.value))}
               ></Input>
             </FormGroup>
@@ -121,7 +135,7 @@ const AthleteUpdater = (props) => {
               <Input
                 type="date"
                 name="DOB"
-                placeholder={props.athlete.DOB}
+                placeholder={athlete.date_of_birth}
                 onChange={(e) => setDOB(e.target.value)}
               ></Input>
             </FormGroup>
@@ -136,7 +150,6 @@ const AthleteUpdater = (props) => {
             ) : (
               <></>
             )}
-            {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
             {loading ? <Spinner></Spinner> : <></>}
           </Form>
         </ModalBody>

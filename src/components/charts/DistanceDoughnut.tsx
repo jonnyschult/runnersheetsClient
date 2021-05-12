@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import classes from "./Charts.module.css";
 import { Doughnut } from "react-chartjs-2";
 import { Activity } from "../../models";
@@ -11,7 +11,7 @@ const DoughnutChart: React.FC<DoughnutChartProps> = (props) => {
   const [data, setData] = useState({});
   const [options, setOptions] = useState({});
 
-  const doughnutChartSetter = () => {
+  const doughnutChartSetter = useCallback(() => {
     let durations = [0, 0, 0, 0, 0, 0, 0];
     props.runs.forEach((run) => {
       if (run.duration_seconds < 1200) durations[0]++;
@@ -53,11 +53,11 @@ const DoughnutChart: React.FC<DoughnutChartProps> = (props) => {
         },
       ],
     });
-  };
+  }, [props.runs]);
 
   useEffect(() => {
     doughnutChartSetter();
-  }, [props.runs]);
+  }, [doughnutChartSetter]);
   return (
     <div className={classes.doughnut}>
       <Doughnut data={data} options={options} />

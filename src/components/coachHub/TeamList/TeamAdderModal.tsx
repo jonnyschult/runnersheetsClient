@@ -1,6 +1,5 @@
-import React, { FormEvent, useState } from "react";
+import React, { useState } from "react";
 import classes from "../Coach.module.css";
-import APIURL from "../../../utilities/environment";
 import {
   Button,
   Modal,
@@ -13,16 +12,16 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
-import { UserInfo, Team, TeamsUsers } from "../../../models";
+import { UserInfo, Team } from "../../../models";
 import poster from "../../../utilities/postFetcher";
 import updater from "../../../utilities/updateFetcher";
 import deleter from "../../../utilities/deleteFetcher";
 
 interface TeamAdderModalProps {
   userInfo: UserInfo;
-  selectedTeam: Team;
+  selectedTeam: Team | null;
   teams: Team[];
-  setSelectedTeam: React.Dispatch<React.SetStateAction<Team>>;
+  setSelectedTeam: React.Dispatch<React.SetStateAction<Team | null>>;
   setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
 }
 
@@ -46,16 +45,17 @@ const TeamAdderModal: React.FC<TeamAdderModalProps> = (props) => {
       const teamResults = await poster(token, "teams/create", info);
       const newTeam: Team = teamResults.data.newTeam;
       setResponse(teamResults.data.message);
+      const sortedTeams = [...props.teams, newTeam].sort((a: Team, b: Team) => {
+        if (a.team_name > b.team_name) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+      props.setTeams(sortedTeams);
+      props.userInfo.teams = sortedTeams;
+      props.userInfo.setUserInfo!(props.userInfo);
       setTimeout(() => {
-        props.setTeams(
-          [...props.teams, newTeam].sort((a: Team, b: Team) => {
-            if (a.team_name > b.team_name) {
-              return 1;
-            } else {
-              return -1;
-            }
-          })
-        );
         props.setSelectedTeam(newTeam);
         props.userInfo.setUserInfo!(teamResults.data.updatedUser);
         setResponse("");
@@ -83,21 +83,24 @@ const TeamAdderModal: React.FC<TeamAdderModalProps> = (props) => {
       setLoading(true);
       const info: Team = {
         team_name: teamTitle,
-        id: props.selectedTeam.id,
+        id: props.selectedTeam!.id,
       };
       const teamResults = await updater(token, "teams/updateTeam", info);
       const updatedTeam: Team = teamResults.data.updatedTeam.id;
+      const sortedTeams = [...props.teams, updatedTeam].sort(
+        (a: Team, b: Team) => {
+          if (a.team_name > b.team_name) {
+            return 1;
+          } else {
+            return -1;
+          }
+        }
+      );
+      props.setTeams(sortedTeams);
+      props.userInfo.teams = sortedTeams;
+      props.userInfo.setUserInfo!(props.userInfo);
       setResponse(teamResults.data.message);
       setTimeout(() => {
-        props.setTeams(
-          props.teams.map((team) => {
-            if (team.id === updatedTeam.id) {
-              return updatedTeam;
-            } else {
-              return team;
-            }
-          })
-        );
         props.setSelectedTeam(teamResults.data.updatedTeam);
         setResponse("");
         toggle();
@@ -131,14 +134,17 @@ const TeamAdderModal: React.FC<TeamAdderModalProps> = (props) => {
         setLoading(true);
         const teamResults = await deleter(
           token,
-          `teams/removeTeam/${props.selectedTeam.id}`
+          `teams/removeTeam/${props.selectedTeam!.id}`
         );
         setResponse(teamResults.data.message);
+        const filteredTeams = props.teams.filter(
+          (team) => team.id !== props.selectedTeam!.id
+        );
+        props.setTeams(filteredTeams);
+        props.userInfo.teams = filteredTeams;
+        props.userInfo.setUserInfo!(props.userInfo);
         setTimeout(() => {
-          props.setTeams(
-            props.teams.filter((team) => team.id !== props.selectedTeam.id)
-          );
-          props.setSelectedTeam(teamResults.data.updatedTeam);
+          props.setSelectedTeam(props.teams.length > 0 ? props.teams[0] : null);
           setResponse("");
           toggle();
         }, 2200);
@@ -176,13 +182,19 @@ const TeamAdderModal: React.FC<TeamAdderModalProps> = (props) => {
           <ModalBody className={classes.modalBody}>
             <Form onSubmit={(e) => updateTeam(e)} className={classes.form}>
               <Label htmlFor="team name">
-                Rename Team or Delete <b>{props.selectedTeam.team_name}</b>
+                <b>
+                  {props.selectedTeam
+                    ? `Rename Team or Delete ${props.selectedTeam.team_name}`
+                    : ""}
+                </b>
               </Label>
               <Input
                 required
                 type="text"
                 name="team name"
-                defaultValue={props.selectedTeam.team_name}
+                defaultValue={
+                  props.selectedTeam ? props.selectedTeam.team_name : ""
+                }
                 onChange={(e) => setTeamTitle(e.target.value)}
               ></Input>
               <div className={classes.btnGroup}>

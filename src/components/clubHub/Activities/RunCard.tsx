@@ -2,35 +2,31 @@ import React, { useState } from "react";
 import ActivitiesModal from "./ActivitiesModal";
 import classes from "../Club.module.css";
 import { Card, CardBody, CardTitle, Table, CardHeader } from "reactstrap";
+import { Activity, User } from "../../../models";
+import { metersAdder, timeAdder } from "../../../utilities";
 
-const RunCard = (props) => {
+interface RunCardProps {
+  clubMember: User;
+  activities: Activity[];
+}
+
+const RunCard: React.FC<RunCardProps> = (props) => {
+  const clubMember = props.clubMember;
+  const activities = props.activities.sort(
+    (runA, runB) =>
+      new Date(runB.date).getTime() - new Date(runA.date).getTime()
+  );
+
   const [expand, setExpand] = useState(true);
 
   const toggle = () => setExpand(!expand);
-
-  const activities = props.athlete.activities.sort(
-    //Sorts runs by date in descending order
-    (runA, runB) => runB.date - runA.date
-  );
-
-  const metersAdder = (arr) => {
-    let totalNum = 0;
-    arr.forEach((run) => (totalNum += run.meters));
-    return totalNum;
-  };
-
-  const timeAdder = (arr) => {
-    let totalNum = 0;
-    arr.forEach((run) => (totalNum += run.durationSecs));
-    return totalNum;
-  };
 
   return (
     <div>
       <Card className={classes.middleContainerCard}>
         <CardHeader className={classes.middleContainerCardHeader}>
           <CardTitle className={classes.middleContainerCardTitle}>
-            {`${props.athlete.firstName} ${props.athlete.lastName}`}
+            {`${clubMember.first_name} ${clubMember.last_name}`}
           </CardTitle>
         </CardHeader>
         <CardBody className={classes.middleContainerCardBody}>
@@ -56,21 +52,21 @@ const RunCard = (props) => {
                   >
                     <th scope="row">{index + 1}</th>
                     <td className={classes.td}>
-                      {new Date(parseInt(activity.date)).toDateString()}
+                      {new Date(activity.date).toDateString()}
                     </td>
                     <td className={classes.td}>
-                      {Math.floor(activity.meters)
+                      {Math.floor(activity.distance_meters)
                         .toString()
                         .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                     </td>
                     <td className={classes.td}>
-                      {new Date(activity.durationSecs * 1000)
+                      {new Date(activity.duration_seconds * 1000)
                         .toISOString()
                         .substr(11, 8)}
                     </td>
                     {/* prettier-ignore */}
                     <td className={classes.td}>{new Date(
-                        (activity.durationSecs / (activity.meters / 1000)) *
+                        (activity.duration_seconds / (activity.distance_meters / 1000)) *
                           1000
                       )
                         .toISOString()
@@ -83,11 +79,8 @@ const RunCard = (props) => {
               <tr className={`${classes.tr} ${classes.totals}`}>
                 <th>Totals</th>
                 <td className={classes.td}>
-                  {new Date(parseInt(activities[0].date))
-                    .toDateString()
-                    .substr(4, 6)}{" "}
-                  -
-                  {new Date(parseInt(activities[activities.length - 1].date))
+                  {new Date(activities[0].date).toDateString().substr(4, 6)} -
+                  {new Date(activities[activities.length - 1].date)
                     .toDateString()
                     .substr(4, 6)}
                 </td>
@@ -106,11 +99,8 @@ const RunCard = (props) => {
               <tr className={`${classes.tr} ${classes.averages}`}>
                 <th>Averages</th>
                 <td className={classes.td}>
-                  {new Date(parseInt(activities[0].date))
-                    .toDateString()
-                    .substr(4, 6)}{" "}
-                  -
-                  {new Date(parseInt(activities[activities.length - 1].date))
+                  {new Date(activities[0].date).toDateString().substr(4, 6)} -
+                  {new Date(activities[activities.length - 1].date)
                     .toDateString()
                     .substr(4, 6)}
                 </td>
@@ -142,7 +132,7 @@ const RunCard = (props) => {
           ) : (
             <></>
           )}
-          <ActivitiesModal athlete={props.athlete} />
+          <ActivitiesModal clubMember={clubMember} activities={activities} />
         </CardBody>
       </Card>
     </div>

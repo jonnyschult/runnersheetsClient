@@ -2,11 +2,10 @@ import React, { useState, useEffect, useCallback } from "react";
 import classes from "./Coach.module.css";
 import ErrorPage from "../ErrorPage/ErrorPage";
 import TeamList from "./TeamList/TeamList";
-// import TeamPlans from "./TeamPlans";
 import RunCard from "./Activities/RunCard";
 import TeamAthletes from "./TeamAthletes/TeamAthletes";
 import TeamStaff from "./TeamStaff/TeamStaff";
-import FetchDates from "./Activities/FetchDates";
+import FetchDates from "./Activities/SetDates";
 import CollatedWorkouts from "./Activities/CollatedWorkouts";
 import Scatter from "../charts/DistanceScatter";
 import "./Print.css";
@@ -26,8 +25,8 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
   const [error, setError] = useState<string>("");
   const [loadingMain, setLoadingMain] = useState<boolean>(true);
   const [staff, setStaff] = useState<User[]>([]);
-  const [selectedTeam, setSelectedTeam] = useState<Team>(
-    props.userInfo.teams[0]
+  const [selectedTeam, setSelectedTeam] = useState<Team | null>(
+    props.userInfo.teams.length > 0 ? props.userInfo.teams[0] : null
   );
   const [athletes, setAthletes] = useState<User[]>([]);
   const [teamActivities, setTeamActivities] = useState<Activity[]>([]);
@@ -38,8 +37,8 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
     new Date(Date.now()).getTime()
   );
 
-  const getActivities = useCallback(() => {
-    async () => {
+  useCallback(async () => {
+    if (selectedTeam !== null) {
       try {
         setLoading(true);
         const activitiesResults = await getter(
@@ -69,15 +68,15 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
       } finally {
         setLoading(false);
       }
-    };
-  }, [startDate, endDate, athletes]);
+    }
+  }, [startDate, endDate, selectedTeam, token]);
 
   useEffect(() => {
     const loadUpHandler = async () => {
       try {
-        const teamsResults = await getter(
+        const teamMembersResults = await getter(
           token,
-          `teams/getTeamMembers/${selectedTeam}`
+          `teams/getTeamMembers/${selectedTeam!.id}`
         );
         const activitiesResults = await getter(
           token,
@@ -85,10 +84,10 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
           `start_date=${new Date(Date.now() - 604800000).getTime()}
           &end_date=${new Date(Date.now()).getTime()}`
         );
-        const coachesWithRoles = teamsResults.data.coaches.map(
+        const coachesWithRoles = teamMembersResults.data.coaches.map(
           (coach: User) => (coach.role = "coach")
         );
-        const managersWithRoles = teamsResults.data.managers.map(
+        const managersWithRoles = teamMembersResults.data.managers.map(
           (manager: User) => (manager.role = "manager")
         );
         const sortedStaff = [...managersWithRoles, ...coachesWithRoles].sort(
@@ -100,7 +99,7 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
             }
           }
         );
-        const sortedAthletes = teamsResults.data.athletes.sort(
+        const sortedAthletes = teamMembersResults.data.athletes.sort(
           (a: User, b: User) => {
             if (a.last_name > b.last_name) {
               return 1;
@@ -133,8 +132,11 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
         setLoadingMain(false);
       }
     };
-    loadUpHandler();
-  }, [selectedTeam]);
+
+    if (selectedTeam !== null) {
+      loadUpHandler();
+    }
+  }, [selectedTeam, token]);
 
   if (errorPage) {
     return <ErrorPage errMessage={error} />;
@@ -153,9 +155,11 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
           <div className={classes.mainDiv}>
             <div>
               <h2 className={classes.coachLandingHeader}>
-                {selectedTeam === null
-                  ? props.userInfo.teams[0].team_name
-                  : selectedTeam.team_name}
+                {selectedTeam !== null
+                  ? selectedTeam.team_name
+                  : props.userInfo.teams.length > 0
+                  ? props.userInfo.teams[0]
+                  : "Select or Create a Team"}
               </h2>
               <div style={{ display: "flex" }}>
                 <Container className={classes.leftContainer}>

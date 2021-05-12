@@ -6,9 +6,9 @@ import { Team, UserInfo } from "../../../models";
 interface TeamListProps {
   userInfo: UserInfo;
   teams: Team[];
-  selectedTeam: Team;
+  selectedTeam: Team | null;
   setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
-  setSelectedTeam: React.Dispatch<React.SetStateAction<Team>>;
+  setSelectedTeam: React.Dispatch<React.SetStateAction<Team | null>>;
 }
 
 const TeamList: React.FC<TeamListProps> = (props) => {

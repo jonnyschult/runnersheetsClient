@@ -1,8 +1,15 @@
 import React from "react";
 import classes from "./Athlete.module.css";
 import { Card, CardBody, CardTitle, CardText } from "reactstrap";
+import { Team, UserInfo } from "../../models";
 
-const TeamList = (props) => {
+interface TeamListProps {
+  userInfo: UserInfo;
+  teams: Team[];
+  setTeams: React.Dispatch<React.SetStateAction<Team[]>>;
+}
+
+const TeamList: React.FC<TeamListProps> = (props) => {
   return (
     <div>
       <Card className={classes.card}>
@@ -14,7 +21,7 @@ const TeamList = (props) => {
             props.teams.map((team, index) => {
               return (
                 <CardText className={classes.cardItem}>
-                  <b>{team.teamName}</b>
+                  <b>{team.team_name}</b>
                 </CardText>
               );
             })

@@ -2,60 +2,29 @@ import React, { useState } from "react";
 import classes from "../Athlete.module.css";
 import UpdateModal from "./UpdateModal";
 import { Table } from "reactstrap";
+import { Activity, UserInfo } from "../../../models";
+import {
+  avgHRAdder,
+  elevationAdder,
+  maxHRAdder,
+  metersAdder,
+  timeAdder,
+} from "../../../utilities";
 
-const ActivitiesModal = (props) => {
+interface RunTableProps {
+  userInfo: UserInfo;
+  activities: Activity[];
+  setActivities: React.Dispatch<React.SetStateAction<Activity[]>>;
+}
+
+const RunTable: React.FC<RunTableProps> = (props) => {
   const [expand, setExpand] = useState(true);
 
   const toggle = () => setExpand(!expand);
 
-  const metersAdder = (arr) => {
-    let totalNum = 0;
-    arr.forEach((run) => (totalNum += run.meters));
-    return totalNum;
-  };
-
-  const timeAdder = (arr) => {
-    let totalNum = 0;
-    arr.forEach((run) => (totalNum += run.durationSecs));
-    return totalNum;
-  };
-
-  const elevationAdder = (arr) => {
-    let totalNum = 0;
-    let counter = 0;
-    arr.forEach((run) => {
-      if (typeof run.elevationMeters === "number")
-        totalNum += run.elevationMeters;
-      counter++;
-    });
-    return { total: totalNum, average: totalNum / counter };
-  };
-
-  const avgHRAdder = (arr) => {
-    let totalNum = 0;
-    let counter = 0;
-    arr.forEach((run) => {
-      if (typeof run.avgHR === "number") totalNum += run.avgHR;
-      counter++;
-    });
-    return totalNum / counter;
-  };
-
-  const maxHRAdder = (arr) => {
-    let totalNum = 0;
-    let counter = 0;
-    arr.forEach((run) => {
-      if (typeof run.maxHR === "number") {
-        totalNum += run.maxHR;
-        counter++;
-      }
-    });
-    return totalNum / counter;
-  };
-
   return (
     <div className={classes.tableContainer}>
-      {props.runs ? (
+      {props.activities ? (
         <Table className={classes.table}>
           <thead className={classes.thead}>
             <tr className={classes.trHead}>
@@ -72,7 +41,7 @@ const ActivitiesModal = (props) => {
             </tr>
           </thead>
           <tbody>
-            {props.runs.map((run, index) => {
+            {props.activities.map((activity, index) => {
               return (
                 <>
                   <tr
@@ -85,40 +54,44 @@ const ActivitiesModal = (props) => {
                   >
                     <th scope="row">{index + 1}</th>
                     <td className={classes.td}>
-                      {new Date(parseInt(run.date)).toDateString()}
+                      {new Date(activity.date).toDateString()}
                     </td>
                     <td className={classes.td}>
-                      {Math.floor(run.meters)
+                      {Math.floor(activity.distance_meters)
                         .toString()
                         .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                     </td>
                     <td className={classes.td}>
-                      {new Date(run.durationSecs * 1000)
+                      {new Date(activity.duration_seconds * 1000)
                         .toISOString()
                         .substr(11, 8)}
                     </td>
                     <td className={classes.td}>
-                      {new Date((run.durationSecs / (run.meters / 1000)) * 1000)
+                      {new Date(
+                        (activity.duration_seconds /
+                          (activity.distance_meters / 1000)) *
+                          1000
+                      )
                         .toISOString()
                         .substr(11, 8)}
                     </td>
                     <td className={classes.td}>
-                      {run.elevationMeters
-                        ? Math.round(run.elevationMeters)
+                      {activity.elevation_meters
+                        ? Math.round(activity.elevation_meters)
                         : "--"}
                     </td>
                     <td className={classes.td}>
-                      {run.avgHR ? run.avgHR : "--"}
+                      {activity.avg_hr ? activity.avg_hr : "--"}
                     </td>
                     <td className={classes.td}>
-                      {run.maxHR ? run.maxHR : "--"}
+                      {activity.max_hr ? activity.max_hr : "--"}
                     </td>
                     <td className={classes.td}>
-                      {run.description ? (
+                      {activity.description ? (
                         <>
                           <p className={classes.descriptionExpander}>more...</p>
-                          <div className={classes.runDescription}>
-                            {run.description}
+                          <div className={classes.activityDescription}>
+                            {activity.description}
                           </div>
                         </>
                       ) : (
@@ -127,9 +100,10 @@ const ActivitiesModal = (props) => {
                     </td>
                     <td>
                       <UpdateModal
-                        run={run}
-                        setUpdate={props.setUpdate}
-                        token={props.token}
+                        userInfo={props.userInfo}
+                        activity={activity}
+                        activities={props.activities}
+                        setActivities={props.setActivities}
                       />
                     </td>
                   </tr>
@@ -137,32 +111,32 @@ const ActivitiesModal = (props) => {
               );
             })}
           </tbody>
-          {props.runs.length > 0 ? (
+          {props.activities.length > 0 ? (
             <tfoot className={classes.tfoot}>
               <tr className={`${classes.tr} ${classes.totals}`}>
                 <th>Totals</th>
                 <td className={classes.td}>
-                  {new Date(parseInt(props.runs[0].date))
+                  {new Date(props.activities[0].date)
                     .toDateString()
                     .substr(4, 6)}{" "}
                   -
-                  {new Date(parseInt(props.runs[props.runs.length - 1].date))
+                  {new Date(props.activities[props.activities.length - 1].date)
                     .toDateString()
                     .substr(4, 6)}
                 </td>
                 <td className={classes.td}>
-                  {Math.floor(metersAdder(props.runs))
+                  {Math.floor(metersAdder(props.activities))
                     .toString()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                 </td>
                 <td className={classes.td}>
-                  {new Date(timeAdder(props.runs) * 1000)
+                  {new Date(timeAdder(props.activities) * 1000)
                     .toISOString()
                     .substr(11, 8)}
                 </td>
                 <td className={classes.td}>N/A</td>
                 <td className={classes.td}>
-                  {Math.floor(elevationAdder(props.runs).total)
+                  {Math.floor(elevationAdder(props.activities).total)
                     .toString()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                 </td>
@@ -174,42 +148,48 @@ const ActivitiesModal = (props) => {
               <tr className={`${classes.tr} ${classes.averages}`}>
                 <th>Averages</th>
                 <td className={classes.td}>
-                  {new Date(parseInt(props.runs[0].date))
+                  {new Date(props.activities[0].date)
                     .toDateString()
                     .substr(4, 6)}{" "}
                   -
-                  {new Date(parseInt(props.runs[props.runs.length - 1].date))
+                  {new Date(props.activities[props.activities.length - 1].date)
                     .toDateString()
                     .substr(4, 6)}
                 </td>
                 <td className={classes.td}>
-                  {Math.floor(metersAdder(props.runs) / props.runs.length)
+                  {Math.floor(
+                    metersAdder(props.activities) / props.activities.length
+                  )
                     .toString()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                 </td>
                 <td className={classes.td}>
-                  {new Date((timeAdder(props.runs) * 1000) / props.runs.length)
+                  {new Date(
+                    (timeAdder(props.activities) * 1000) /
+                      props.activities.length
+                  )
                     .toISOString()
                     .substr(11, 8)}
                 </td>
                 <td className={classes.td}>
                   {new Date(
-                    (timeAdder(props.runs) / (metersAdder(props.runs) / 1000)) *
+                    (timeAdder(props.activities) /
+                      (metersAdder(props.activities) / 1000)) *
                       1000
                   )
                     .toISOString()
                     .substr(11, 8)}
                 </td>
                 <td className={classes.td}>
-                  {Math.floor(elevationAdder(props.runs).average)
+                  {Math.floor(elevationAdder(props.activities).average)
                     .toString()
                     .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
                 </td>
                 <td className={classes.td}>
-                  {Math.floor(avgHRAdder(props.runs))}
+                  {Math.floor(avgHRAdder(props.activities))}
                 </td>
                 <td className={classes.td}>
-                  {Math.floor(maxHRAdder(props.runs))}
+                  {Math.floor(maxHRAdder(props.activities))}
                 </td>
                 <td className={classes.td}>N/A</td>
                 <td></td>
@@ -222,7 +202,7 @@ const ActivitiesModal = (props) => {
       ) : (
         <p>Enter data or change dates to see activites.</p>
       )}
-      {props.runs.length > 8 ? (
+      {props.activities.length > 8 ? (
         <p className={classes.expand} onClick={(e) => toggle()}>
           {expand ? "More" : "Less"}
         </p>
@@ -233,4 +213,4 @@ const ActivitiesModal = (props) => {
   );
 };
 
-export default ActivitiesModal;
+export default RunTable;

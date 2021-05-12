@@ -2,8 +2,15 @@ import React from "react";
 import classes from "./Athlete.module.css";
 import RemoveClubModal from "./RemoveClubModal";
 import { Card, CardBody, CardTitle, CardText } from "reactstrap";
+import { Club, UserInfo } from "../../models";
 
-const Clubslist = (props) => {
+interface ClubListProps {
+  userInfo: UserInfo;
+  clubs: Club[];
+  setClubs: React.Dispatch<React.SetStateAction<Club[]>>;
+}
+
+const ClubList: React.FC<ClubListProps> = (props) => {
   return (
     <div>
       <Card className={classes.card}>
@@ -15,13 +22,15 @@ const Clubslist = (props) => {
             props.clubs.map((club, index) => {
               return (
                 <CardText
+                  key={index}
                   className={`${classes.cardItem} ${classes.clubListItem}`}
                 >
-                  <b>{club.clubName}</b>
+                  <b>{club.club_name}</b>
                   <RemoveClubModal
                     club={club}
-                    token={props.token}
-                    setUpdate={props.setUpdate}
+                    userInfo={props.userInfo}
+                    clubs={props.clubs}
+                    setClubs={props.setClubs}
                   />
                 </CardText>
               );
@@ -35,4 +44,4 @@ const Clubslist = (props) => {
   );
 };
 
-export default Clubslist;
+export default ClubList;

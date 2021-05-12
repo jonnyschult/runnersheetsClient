@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import classes from "../Club.module.css";
-import APIURL from "../../../utilities/environment";
 import {
   Button,
   Modal,
@@ -13,61 +12,67 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
+import { Club, UserInfo } from "../../../models";
+import { poster } from "../../../utilities";
 
-const ClubAdderModal = (props) => {
-  const [modal, setModal] = useState(false);
-  const [clubTitle, setClubTitle] = useState();
-  const [modalContent, setModalContent] = useState(false);
-  const [response, setResponse] = useState();
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState();
+interface ClubAdderModalProps {
+  clubs: Club[];
+  userInfo: UserInfo;
+  selectedClub: Club | null;
+  setSelectedClub: React.Dispatch<React.SetStateAction<Club | null>>;
+  setClubs: React.Dispatch<React.SetStateAction<Club[]>>;
+}
+
+const ClubAdderModal: React.FC<ClubAdderModalProps> = (props) => {
+  const token = props.userInfo.token;
+  const [modal, setModal] = useState<boolean>(false);
+  const [clubTitle, setClubTitle] = useState<string>("");
+  const [modalContent, setModalContent] = useState<boolean>(false);
+  const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const toggle = () => setModal(!modal);
 
-  /************************
-  CREATE CLUB
-  ************************/
-  const createClub = (e) => {
+  const createClub = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    fetch(`${APIURL}/club/create`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-      body: JSON.stringify({
-        clubName: clubTitle,
-      }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
+    try {
+      setLoading(true);
+      const info: Club = {
+        club_name: clubTitle,
+      };
+      const clubResults = await poster(token, "clubs/create", info);
+      const newClub: Club = clubResults.data.newClub;
+      setResponse(clubResults.data.message);
+      const sortedClubs = [...props.clubs, newClub].sort((a: Club, b: Club) => {
+        if (a.club_name > b.club_name) {
+          return 1;
         } else {
-          if (res.status === 409) {
-            throw new Error("Name Already Taken");
-          } else {
-            throw new Error("Something went wrong");
-          }
+          return -1;
         }
-      })
-      .then(async (data) => {
-        console.log(data);
-        await props.setSelectedClub(data.result.newClub);
-        await setLoading(false);
-        await props.setUpdate(data);
-        setTimeout(() => {
-          setResponse(data.message);
-          toggle();
-        }, 1400);
-      })
-      .catch(async (err) => {
-        setLoading(false);
-        setErr(err.message);
-        setTimeout(() => {
-          setErr("");
-        }, 4000);
       });
+      props.setClubs(sortedClubs);
+      props.userInfo.clubs = sortedClubs;
+      props.userInfo.setUserInfo!(props.userInfo);
+      setTimeout(() => {
+        props.setSelectedClub(newClub);
+        props.userInfo.setUserInfo!(clubResults.data.updatedUser);
+        setResponse("");
+        toggle();
+      }, 2200);
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Could not create Club Club. Server error");
+      }
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -103,7 +108,6 @@ const ClubAdderModal = (props) => {
             ) : (
               <></>
             )}
-            {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
             <h6
               className={classes.modalSwitch}
               onClick={(e) => setModalContent(!modalContent)}

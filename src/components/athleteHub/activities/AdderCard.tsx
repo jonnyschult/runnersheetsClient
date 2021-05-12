@@ -4,8 +4,19 @@ import FitbitAdderModal from "./fitbitFlow/FitbitAdderModal";
 // import GarminAdderModal from "./garminFlow/GarminAdderModal";
 import ManualActivityAdder from "./ManualActivityAdder";
 import { Card, CardBody, CardTitle } from "reactstrap";
+import { Activity, UserInfo } from "../../../models";
 
-const AdderCard = (props) => {
+interface AdderCardProps {
+  userInfo: UserInfo;
+  fitbitRuns: any[];
+  activities: Activity[];
+  endDate: number;
+  startDate: number;
+  setFitbitRuns: React.Dispatch<any[]>;
+  setActivities: React.Dispatch<React.SetStateAction<Activity[]>>;
+}
+
+const AdderCard: React.FC<AdderCardProps> = (props) => {
   return (
     <div>
       <Card className={classes.card}>
@@ -14,17 +25,16 @@ const AdderCard = (props) => {
             <header className={classes.headerText}>Add Activities</header>
           </CardTitle>
           <FitbitAdderModal
-            token={props.token}
+            userInfo={props.userInfo}
             fitbitRuns={props.fitbitRuns}
             setFitbitRuns={props.setFitbitRuns}
-            setUpdate={props.setUpdate}
-            update={props.update}
           />
-          {/* <GarminAdderModal /> */}
           <ManualActivityAdder
-            token={props.token}
-            setUpdate={props.setUpdate}
-            response={props.response}
+            userInfo={props.userInfo}
+            activities={props.activities}
+            setActivities={props.setActivities}
+            endDate={props.endDate}
+            startDate={props.startDate}
           />
         </CardBody>
       </Card>

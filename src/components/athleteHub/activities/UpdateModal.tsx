@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import APIURL from "../../../utilities/environment";
 import classes from "../Athlete.module.css";
 import {
   Button,
@@ -14,108 +13,147 @@ import {
   Spinner,
   Alert,
 } from "reactstrap";
+import { Activity, UserInfo } from "../../../models";
+import { deleter, updater } from "../../../utilities";
 
-const FitbitAdderModal = (props) => {
-  const [response, setResponse] = useState();
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState();
-  const [modal, setModal] = useState(false);
-  const [date, setDate] = useState(new Date(parseInt(props.run.date)).toISOString().substr(0, 10));
-  const [time, setTime] = useState(new Date(parseInt(props.run.date)).toISOString().substr(11, 5));
-  const [distance, setDistance] = useState();
-  const [hours, setHours] = useState();
-  const [minutes, setMinutes] = useState();
-  const [seconds, setSeconds] = useState();
-  const [maxHR, setMaxHR] = useState();
-  const [avgHR, setAvgHR] = useState();
-  const [elevation, setElevation] = useState();
-  const [description, setDescription] = useState();
+interface UpdateModalProps {
+  userInfo: UserInfo;
+  activity: Activity;
+  activities: Activity[];
+  setActivities: React.Dispatch<React.SetStateAction<Activity[]>>;
+}
+
+const UpdateModal: React.FC<UpdateModalProps> = (props) => {
+  const activity = props.activity;
+  const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [modal, setModal] = useState<boolean>(false);
+  const [date, setDate] = useState<string>(
+    new Date(activity.date / 1000).toISOString().substr(0, 10)
+  );
+  const [time, setTime] = useState<string>(
+    new Date(activity.date / 1000).toISOString().substr(11, 5)
+  );
+  const [distance, setDistance] = useState<number>(activity.distance_meters);
+  const [hours, setHours] = useState<number>(0);
+  const [minutes, setMinutes] = useState<number>(0);
+  const [seconds, setSeconds] = useState<number>(0);
+  const [maxHR, setMaxHR] = useState<number | undefined>(activity.max_hr);
+  const [avgHR, setAvgHR] = useState<number | undefined>(activity.avg_hr);
+  const [elevation, setElevation] = useState<number | undefined>(
+    activity.elevation_meters
+  );
+  const [description, setDescription] = useState<string | undefined>(
+    activity.description
+  );
 
   const toggle = () => setModal(!modal);
   /***************************
   UPDATE ACTIVITY 
   ***************************/
-  const updateInfo = async (e) => {
-    console.log(time)
+  const updateInfo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    let dateTime =
-      new Date(`${date}T${time}:00.000Z`).getTime() +
-      new Date(`${date}T${time}:00.000Z`).getTimezoneOffset() * 60 * 1000;
-    let duration;
-    if(hours || minutes || seconds){
-      duration = ((hours * 60 * 60) + (minutes * 60) + seconds)
-    } else {duration = props.run.durationSecs}
-    fetch(`${APIURL}/activity/update`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-      body: JSON.stringify({
-        activityId: props.run.id,
+    try {
+      setLoading(true);
+      let dateTime =
+        new Date(`${date}T${time}:00.000Z`).getTime() +
+        new Date(`${date}T${time}:00.000Z`).getTimezoneOffset() * 60 * 1000;
+      let duration;
+      if (hours || minutes || seconds) {
+        duration = hours * 60 * 60 + minutes * 60 + seconds;
+      } else {
+        duration = activity.duration_seconds;
+      }
+
+      const info: Activity = {
+        id: activity.id,
+        user_id: activity.user_id,
         date: dateTime,
-        meters: distance,
-        durationSecs: duration,
-        elevationMeters: elevation,
-        avgHR: avgHR,
-        maxHR: maxHR,
+        distance_meters: distance,
+        duration_seconds: duration,
+        elevation_meters: elevation,
+        avg_hr: avgHR,
+        max_hr: maxHR,
         description: description,
-      }),
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        await setResponse(data.message);
-        setLoading(false);
-        setTimeout(() => {
-          props.setUpdate(data);
-          toggle();
-          setResponse("");
-        }, 1200);
-      })
-      .catch((err) => {
-        console.log(err)
-        setErr(err.message);
-        setLoading(false);
-      });
+      };
+      const results = await updater(
+        props.userInfo.token,
+        "activities/updateActivity",
+        info
+      );
+      const updatedActivity: Activity = results.data.updatedActivity;
+      props.setActivities(
+        props.activities.map((activityItem) => {
+          if (activityItem.id === updatedActivity.id) {
+            return updatedActivity;
+          } else {
+            return activityItem;
+          }
+        })
+      );
+      setResponse("Update Successful");
+      setTimeout(() => {
+        setResponse("");
+      }, 1500);
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Could not update user. Server error");
+      }
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } finally {
+      setLoading(false);
+    }
   };
 
   /***************************
   REMOVE ACTIVITY FROM DATABASE
   ***************************/
-  const runRemover = async (e) => {
+  const runRemover = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
     const confirm = window.confirm(
       "Are your sure you want to delete this activity?"
     );
     if (confirm) {
-      setLoading(true);
-      fetch(`${APIURL}/activity/removeActivity`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: props.token,
-        },
-        body: JSON.stringify({
-          activityId: props.run.id,
-        }),
-      })
-        .then((res) => res.json())
-        .then(async (data) => {
-          await setResponse(data.message);
-          setLoading(false);
-          setTimeout(() => {
-            props.setUpdate(data);
-            toggle();
-            setResponse("");
-          }, 1200);
-        })
-        .catch((err) => {
-          setErr(err.message);
-          setLoading(false);
-        });
+      try {
+        setLoading(true);
+        await deleter(
+          props.userInfo.token,
+          `activities/removeActivity/${activity.id}`
+        );
+
+        props.setActivities(
+          props.activities.filter(
+            (activityItem) => activityItem.id !== activity.id
+          )
+        );
+        setResponse("Update Successful");
+        setTimeout(() => {
+          setResponse("");
+        }, 1500);
+      } catch (error) {
+        console.log(error);
+        if (error.status < 500 && error["response"] !== undefined) {
+          setResponse(error.response.data.message);
+        } else {
+          setResponse("Could not update user. Server error");
+        }
+        setTimeout(() => {
+          setResponse("");
+          toggle();
+        }, 2200);
+      } finally {
+        setLoading(false);
+      }
     } else {
-      setResponse("Deletion disconfirmed");
+      setResponse("Deletion cancelled");
       setTimeout(() => {
         toggle();
         setResponse("");
@@ -136,7 +174,7 @@ const FitbitAdderModal = (props) => {
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
           <Form className={classes.form} onSubmit={(e) => updateInfo(e)}>
-          <FormGroup>
+            <FormGroup>
               <Label htmlFor="date">Date</Label>
               <Input
                 type="date"
@@ -161,7 +199,7 @@ const FitbitAdderModal = (props) => {
               <Input
                 type="number"
                 name="distance"
-                placeholder={props.run.meters}
+                placeholder={`${activity.distance_meters}`}
                 onChange={(e) => setDistance(parseInt(e.target.value))}
               ></Input>
             </FormGroup>
@@ -171,7 +209,9 @@ const FitbitAdderModal = (props) => {
                 <Input
                   type="number"
                   name="hours"
-                  placeholder={new Date(props.run.durationSecs * 1000).toISOString().substr(11, 2)}
+                  placeholder={new Date(activity.duration_seconds * 1000)
+                    .toISOString()
+                    .substr(11, 2)}
                   onChange={(e) => setHours(parseInt(e.target.value))}
                 ></Input>
               </FormGroup>
@@ -180,7 +220,9 @@ const FitbitAdderModal = (props) => {
                 <Input
                   type="number"
                   name="minutes"
-                  placeholder={new Date(props.run.durationSecs * 1000).toISOString().substr(14, 2)}
+                  placeholder={new Date(activity.duration_seconds * 1000)
+                    .toISOString()
+                    .substr(14, 2)}
                   onChange={(e) => setMinutes(parseInt(e.target.value))}
                 ></Input>
               </FormGroup>
@@ -189,7 +231,9 @@ const FitbitAdderModal = (props) => {
                 <Input
                   type="number"
                   name="seconds"
-                  placeholder={new Date(props.run.durationSecs * 1000).toISOString().substr(17, 2)}
+                  placeholder={new Date(activity.duration_seconds * 1000)
+                    .toISOString()
+                    .substr(17, 2)}
                   onChange={(e) => setSeconds(parseInt(e.target.value))}
                 ></Input>
               </FormGroup>
@@ -199,7 +243,7 @@ const FitbitAdderModal = (props) => {
               <Input
                 type="number"
                 name="elevation"
-                placeholder={props.run.elevationMeters}
+                placeholder={`${activity.elevation_meters}`}
                 onChange={(e) => setElevation(parseInt(e.target.value))}
               ></Input>
             </FormGroup>
@@ -208,7 +252,7 @@ const FitbitAdderModal = (props) => {
               <Input
                 type="textarea"
                 name="description"
-                placeholder={props.run.description}
+                placeholder={activity.description}
                 onChange={(e) => setDescription(e.target.value)}
               ></Input>
             </FormGroup>
@@ -217,7 +261,7 @@ const FitbitAdderModal = (props) => {
               <Input
                 type="number"
                 name="maxHR"
-                placeholder={props.run.maxHR}
+                placeholder={`${activity.max_hr}`}
                 onChange={(e) => setMaxHR(parseInt(e.target.value))}
               ></Input>
             </FormGroup>
@@ -226,7 +270,7 @@ const FitbitAdderModal = (props) => {
               <Input
                 type="number"
                 name="avgHR"
-                placeholder={props.run.avgHR}
+                placeholder={`${activity.avg_hr}`}
                 onChange={(e) => setAvgHR(parseInt(e.target.value))}
               ></Input>
             </FormGroup>
@@ -249,7 +293,6 @@ const FitbitAdderModal = (props) => {
             ) : (
               <></>
             )}
-            {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
             {loading ? <Spinner></Spinner> : <></>}
           </Form>
         </ModalBody>
@@ -266,4 +309,4 @@ const FitbitAdderModal = (props) => {
   );
 };
 
-export default FitbitAdderModal;
+export default UpdateModal;

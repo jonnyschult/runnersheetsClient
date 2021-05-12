@@ -16,7 +16,7 @@ interface CollatedWorkoutsProps {
   athletes: User[];
 }
 
-const ActivitiesModal: React.FC<CollatedWorkoutsProps> = (props) => {
+const CollatedWorkouts: React.FC<CollatedWorkoutsProps> = (props) => {
   const activities = props.activities;
   const athletes = props.athletes;
   const [modal, setModal] = useState(false);
@@ -66,7 +66,7 @@ const ActivitiesModal: React.FC<CollatedWorkoutsProps> = (props) => {
                           <tr className={classes.tr} key={index}>
                             <th scope="row">{index + 1}</th>
                             <td className={classes.td}>
-                              {new Date(parseInt(activity.date)).toDateString()}
+                              {new Date(activity.date).toDateString()}
                             </td>
                             <td className={classes.td}>
                               {activity.distance_meters
@@ -131,4 +131,4 @@ const ActivitiesModal: React.FC<CollatedWorkoutsProps> = (props) => {
   );
 };
 
-export default ActivitiesModal;
+export default CollatedWorkouts;

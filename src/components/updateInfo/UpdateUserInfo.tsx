@@ -1,25 +1,22 @@
 import React, { useState, useRef } from "react";
-import classes from "./UpdateInfo.module.css";
-import {
-  Button,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  Spinner,
-} from "reactstrap";
+import classes from "./UpdateInfo.module.scss";
+import { Button, Form, FormGroup, Label, Input, Spinner } from "reactstrap";
 import { UserInfo, User } from "../../models";
-import expander from '../../utilities/expander'
-import updater from '../../utilities/updateFetcher'
+import expander from "../../utilities/expander";
+import updater from "../../utilities/updateFetcher";
 
 interface UpdateInfoProps {
-  userInfo: UserInfo
+  userInfo: UserInfo;
 }
 
-const UpdateInfo:React.FC<UpdateInfoProps> = (props) => {
+const UpdateInfo: React.FC<UpdateInfoProps> = (props) => {
   const [email, setEmail] = useState<string>(props.userInfo.user.email);
-  const [first_name, setFirstName] = useState<string>(props.userInfo.user.first_name);
-  const [last_name, setLastName] = useState<string>(props.userInfo.user.last_name);
+  const [first_name, setFirstName] = useState<string>(
+    props.userInfo.user.first_name
+  );
+  const [last_name, setLastName] = useState<string>(
+    props.userInfo.user.last_name
+  );
   const [response, setResponse] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const responseDivRef = useRef<HTMLDivElement>(null);
@@ -33,7 +30,7 @@ const UpdateInfo:React.FC<UpdateInfoProps> = (props) => {
     if (responseDivRef.current !== null) {
       expander(responseDivRef.current!, true);
     }
-    try{
+    try {
       const info: User = {
         email,
         first_name,
@@ -42,25 +39,29 @@ const UpdateInfo:React.FC<UpdateInfoProps> = (props) => {
         premium_user: props.userInfo.user.premium_user,
         coach: props.userInfo.user.coach,
       };
-      const response = await updater(props.userInfo.token, "users/login", info);
+      const response = await updater(
+        props.userInfo.token,
+        "users/updateUser",
+        info
+      );
       if (response.status === 404) {
         throw new Error("Error finding your account");
       }
-      props.userInfo.user = response.data.updatedUser
-      props.userInfo.setUserInfo!(props.userInfo)
-      setResponse('Update Successful');
+      props.userInfo.user = response.data.updatedUser;
+      props.userInfo.setUserInfo!(props.userInfo);
+      setResponse("Update Successful");
       setTimeout(() => {
-        setResponse('');
+        setResponse("");
       }, 1500);
     } catch (error) {
       console.log(error);
-      if (error['response'] !== undefined) {
+      if (error["response"] !== undefined) {
         setResponse(error.response.data.message);
       } else {
-        setResponse('Server Error. Account not Updated');
+        setResponse("Server Error. Account not Updated");
       }
       setTimeout(() => {
-        setResponse('');
+        setResponse("");
       }, 2500);
     } finally {
       setLoading(false);
@@ -69,7 +70,7 @@ const UpdateInfo:React.FC<UpdateInfoProps> = (props) => {
           expander(responseDivRef.current!, false);
         }
       }, 2200);
-    } 
+    }
   };
 
   return (

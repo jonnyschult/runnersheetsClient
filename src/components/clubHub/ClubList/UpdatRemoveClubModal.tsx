@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import APIURL from "../../../utilities/environment";
 import classes from "../Club.module.css";
 import {
   Form,
@@ -13,106 +12,113 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
+import { Club, UserInfo } from "../../../models";
+import { deleter, updater } from "../../../utilities";
 
-const AthleteUpdater = (props) => {
-  const [err, setErr] = useState();
-  const [response, setResponse] = useState();
-  const [loading, setLoading] = useState(false);
-  const [modal, setModal] = useState(false);
-  const [clubTitle, setClubTitle] = useState();
+interface UpdateRemoveClubProps {
+  club: Club;
+  clubs: Club[];
+  userInfo: UserInfo;
+  setSelectedClub: React.Dispatch<React.SetStateAction<Club | null>>;
+  setClubs: React.Dispatch<React.SetStateAction<Club[]>>;
+}
+
+const UpdateRemoveClubModal: React.FC<UpdateRemoveClubProps> = (props) => {
+  const token = props.userInfo.token;
+  const [response, setResponse] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [modal, setModal] = useState<boolean>(false);
+  const [clubTitle, setClubTitle] = useState<string>("");
 
   const toggle = () => setModal(!modal);
 
-  /************************
-  UPDATE CLUB
-  ************************/
-  const updateClub = (e) => {
+  const updateClub = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    fetch(`${APIURL}/chairperson/updateClub`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-      body: JSON.stringify({
-        newClubName: clubTitle,
-        clubId: props.club.id,
-      }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          if (res.status === 409) {
-            throw new Error("Name Already Taken");
+    try {
+      setLoading(true);
+      const info: Club = {
+        club_name: clubTitle,
+        id: props.club.id,
+      };
+      const clubResults = await updater(token, "clubs/updateClub", info);
+      const updatedClub: Club = clubResults.data.updatedClub.id;
+      setResponse(clubResults.data.message);
+      const sortedClubs = [...props.clubs, updatedClub].sort(
+        (a: Club, b: Club) => {
+          if (a.club_name > b.club_name) {
+            return 1;
           } else {
-            throw new Error("Something went wrong");
+            return -1;
           }
         }
-      })
-      .then(async (data) => {
-        await props.setSelectedClub(data.updatedClub);
-        await props.setUpdate(data);
-        setLoading(false);
-        setResponse(data.message);
-        setTimeout(() => {
-          setResponse("");
-          toggle();
-        }, 1400);
-      })
-      .catch(async (err) => {
-        setLoading(false);
-        setErr(err.message);
-        setTimeout(() => {
-          setErr("");
-        }, 4000);
-      });
+      );
+      props.setClubs(sortedClubs);
+      props.userInfo.clubs = sortedClubs;
+      props.userInfo.setUserInfo!(props.userInfo);
+      setTimeout(() => {
+        props.setSelectedClub(clubResults.data.updatedClub);
+        setResponse("");
+        toggle();
+      }, 2200);
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Could not update club. Server error");
+      }
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /************************
-ONCLICK DELETE CLUB
-************************/
-  const deleteClub = (e) => {
+  const deleteClub = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
+
     let confirmation = window.confirm(
       "Are you certain you wish to delete this club?"
     );
     if (confirmation) {
-      setLoading(true);
-      fetch(`${APIURL}/chairperson/removeClub`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: props.token,
-        },
-        body: JSON.stringify({
-          clubId: props.club.id,
-        }),
-      })
-        .then((res) => res.json())
-        .then(async (data) => {
-          await props.setSelectedClub({});
-          await props.setChairpersons([]);
-          await props.setAthletes([]);
-          await props.setUpdate(data);
-          await setResponse(data.message);
-          setLoading(false);
-          setTimeout(() => {
-            setResponse("");
-            toggle();
-          }, 1200);
-        })
-        .catch(async (err) => {
-          setLoading(false);
-          setErr(err.message);
-          setTimeout(() => {
-            setErr("");
-            toggle();
-          }, 4000);
-        });
+      try {
+        setLoading(true);
+        const clubResults = await deleter(
+          token,
+          `clubs/removeClub/${props.club.id}`
+        );
+        setResponse(clubResults.data.message);
+        const filteredClubs = props.clubs.filter(
+          (club) => club.id !== props.club.id
+        );
+        props.setClubs(filteredClubs);
+        props.userInfo.clubs = filteredClubs;
+        props.userInfo.setUserInfo!(props.userInfo);
+        setTimeout(() => {
+          props.setSelectedClub(props.clubs.length > 0 ? props.clubs[0] : null);
+          setResponse("");
+          toggle();
+        }, 2200);
+      } catch (error) {
+        console.log(error);
+        setResponse(error.message);
+        setTimeout(() => {
+          setResponse("");
+          toggle();
+        }, 2200);
+      } finally {
+        setLoading(false);
+      }
     } else {
-      toggle();
+      setResponse("Deletion Cancelled");
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
     }
   };
 
@@ -128,13 +134,13 @@ ONCLICK DELETE CLUB
         <ModalBody className={classes.modalBody}>
           <Form onSubmit={(e) => updateClub(e)} className={classes.form}>
             <Label htmlFor="club name">
-              Rename or Delete Club <b>{props.club.clubName}</b>
+              Rename or Delete Club <b>{props.club.club_name}</b>
             </Label>
             <Input
               required
               type="text"
               name="club name"
-              defaultValue={props.club.clubName}
+              defaultValue={props.club.club_name}
               onChange={(e) => setClubTitle(e.target.value)}
             ></Input>
             <div className={classes.btnGroup}>
@@ -157,7 +163,6 @@ ONCLICK DELETE CLUB
             ) : (
               <></>
             )}
-            {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
           </Form>
         </ModalBody>
         <ModalFooter className={classes.modalFooter}>
@@ -173,4 +178,4 @@ ONCLICK DELETE CLUB
   );
 };
 
-export default AthleteUpdater;
+export default UpdateRemoveClubModal;

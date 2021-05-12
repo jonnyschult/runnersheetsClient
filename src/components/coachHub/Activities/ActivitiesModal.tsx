@@ -71,7 +71,7 @@ const ActivitiesModal: React.FC<ActivitiesModalProps> = (props) => {
                   <tr className={classes.tr} key={index}>
                     <th scope="row">{index + 1}</th>
                     <td className={classes.td}>
-                      {new Date(parseInt(activity.date)).toDateString()}
+                      {new Date(activity.date).toDateString()}
                     </td>
                     <td className={classes.td}>
                       {Math.floor(activity.distance_meters)
@@ -114,11 +114,8 @@ const ActivitiesModal: React.FC<ActivitiesModalProps> = (props) => {
               <tr className={`${classes.tr} ${classes.totals}`}>
                 <th>Totals</th>
                 <td className={classes.td}>
-                  {new Date(parseInt(activities[0].date))
-                    .toDateString()
-                    .substr(4, 6)}{" "}
-                  -
-                  {new Date(parseInt(activities[activities.length - 1].date))
+                  {new Date(activities[0].date).toDateString().substr(4, 6)} -
+                  {new Date(activities[activities.length - 1].date)
                     .toDateString()
                     .substr(4, 6)}
                 </td>
@@ -145,11 +142,8 @@ const ActivitiesModal: React.FC<ActivitiesModalProps> = (props) => {
               <tr className={`${classes.tr} ${classes.averages}`}>
                 <th>Averages</th>
                 <td className={classes.td}>
-                  {new Date(parseInt(activities[0].date))
-                    .toDateString()
-                    .substr(4, 6)}{" "}
-                  -
-                  {new Date(parseInt(activities[activities.length - 1].date))
+                  {new Date(activities[0].date).toDateString().substr(4, 6)} -
+                  {new Date(activities[activities.length - 1].date)
                     .toDateString()
                     .substr(4, 6)}
                 </td>

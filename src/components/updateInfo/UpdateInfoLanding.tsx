@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import classes from "./UpdateInfo.module.css";
+import classes from "./UpdateInfo.module.scss";
 import UpdateUserInfo from "./UpdateUserInfo";
 import UpdatePassword from "./UpdatePassword";
 import DeleteUser from "./DeleteUser";
@@ -51,7 +51,7 @@ const UpdateInfoLanding: React.FC<UpdateInfoLandingProps> = (props) => {
             </p>
           </div>
           {updateUserInfo ? (
-            <UpdateUserInfo userInfo={props.userInfo}/>
+            <UpdateUserInfo userInfo={props.userInfo} />
           ) : (
             <></>
           )}

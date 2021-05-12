@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import APIURL from "../../../utilities/environment";
 import classes from "../Club.module.css";
 import {
   Button,
@@ -14,66 +13,67 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
+import { Club, User, UserInfo } from "../../../models";
+import { poster } from "../../../utilities";
 
-const ChairAdderModal = (props) => {
-  const [response, setResponse] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState(false);
-  const [modal, setModal] = useState(false);
-  const [email, setEmail] = useState();
-  const [role, setRole] = useState();
+interface ChairAdderModalProps {
+  userInfo: UserInfo;
+  chairpersons: User[];
+  setChairpersons: React.Dispatch<React.SetStateAction<User[]>>;
+  selectedClub: Club | null;
+}
+
+const ChairAdderModal: React.FC<ChairAdderModalProps> = (props) => {
+  const token = props.userInfo.token;
+  const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [modal, setModal] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [role, setRole] = useState<string>("");
 
   const toggle = () => setModal(!modal);
 
-  /*************************
-  ADD CHAIR TO TEAM
-  *************************/
-  const addChair = (e) => {
+  const addChair = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    fetch(`${APIURL}/club/addChairperson`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-      body: JSON.stringify({
-        clubId: props.selectedClub.id,
-        memberEmail: email,
+
+    try {
+      setLoading(true);
+      const info = {
+        club_id: +props.selectedClub!.id!,
+        email,
         role,
-      }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        } else {
-          if (res.status === 401) {
-            throw new Error("Must be a chairperson to perform this function");
-          } else if (res.status === 403) {
-            throw new Error("Can't find user with that email");
-          } else if (res.status === 409) {
-            throw new Error("That user is already on the team");
-          } else {
-            throw new Error("Something went wrong");
-          }
-        }
-      })
-      .then(async (data) => {
-        await setResponse(data.message);
-        setLoading(false);
-        props.fetchChairpersons(props.selectedClub.id);
-        setTimeout(() => {
-          toggle();
-          setResponse("");
-        }, 1200);
-      })
-      .catch(async (err) => {
-        await setErr(err.message);
-        setLoading(false);
-        setTimeout(() => {
-          setErr("");
-        }, 4000);
-      });
+      };
+      const results = await poster(token, "clubs/addChair", info);
+      const clubMember: User = results.data.clubMember;
+      clubMember.role = role;
+      setResponse(results.data.message);
+      setTimeout(() => {
+        props.setChairpersons(
+          [...props.chairpersons, clubMember].sort((a: User, b: User) => {
+            if (a.last_name > b.last_name) {
+              return 1;
+            } else {
+              return -1;
+            }
+          })
+        );
+        setResponse("");
+        toggle();
+      }, 2200);
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Could not create team team. Server error");
+      }
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -86,7 +86,9 @@ const ChairAdderModal = (props) => {
       <Modal className={classes.modal} isOpen={modal} toggle={toggle}>
         <ModalHeader className={classes.modalHeader} toggle={toggle}>
           <header className={classes.headerText}>
-            Add Chairperson to {props.selectedClub.clubName}
+            {props.selectedClub === null
+              ? "Select a club first"
+              : `Add Coach to ${props.selectedClub.club_name}`}
           </header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
@@ -142,7 +144,6 @@ const ChairAdderModal = (props) => {
             ) : (
               <></>
             )}
-            {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
           </Form>
         </ModalBody>
         <ModalFooter>

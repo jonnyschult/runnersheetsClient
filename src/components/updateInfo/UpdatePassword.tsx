@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import classes from "./UpdateInfo.module.css";
+import classes from "./UpdateInfo.module.scss";
 import {
   Button,
   Form,
@@ -18,9 +18,9 @@ interface UpdatePasswordProps {
 }
 
 const UpdatePassword: React.FC<UpdatePasswordProps> = (props) => {
-  const [password, setPassword] = useState<string>('');
-  const [newPassword, setNewPassword] = useState<string>('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState<string>('');
+  const [password, setPassword] = useState<string>("");
+  const [newPassword, setNewPassword] = useState<string>("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState<string>("");
   const [response, setResponse] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const responseDivRef = useRef<HTMLDivElement>(null);
@@ -34,28 +34,28 @@ const UpdatePassword: React.FC<UpdatePasswordProps> = (props) => {
     if (responseDivRef.current !== null) {
       expander(responseDivRef.current!, true);
     }
-    try{
+    try {
       const info: PasswordUpdate = {
         oldPassword: password,
         newPassword: newPassword,
       };
       const response = await updater(props.userInfo.token, "users/login", info);
-       if (response.status === 403) {
+      if (response.status === 403) {
         throw new Error("Wrong Password");
       }
-      setResponse('Login Successful');
+      setResponse("Login Successful");
       setTimeout(() => {
-        setResponse('');
+        setResponse("");
       }, 1500);
     } catch (error) {
       console.log(error);
-      if (error['response'] !== undefined) {
+      if (error["response"] !== undefined) {
         setResponse(error.response.data.message);
       } else {
-        setResponse('Server Error. Account not Updated');
+        setResponse("Server Error. Account not Updated");
       }
       setTimeout(() => {
-        setResponse('');
+        setResponse("");
       }, 2500);
     } finally {
       setLoading(false);
@@ -64,12 +64,12 @@ const UpdatePassword: React.FC<UpdatePasswordProps> = (props) => {
           expander(responseDivRef.current!, false);
         }
       }, 2200);
-    } 
-  }
+    }
+  };
 
   return (
     <div className={classes.subDiv}>
-      <h5>Update {props.userInfo.user.firstName}'s Password</h5>
+      <h5>Update {props.userInfo.user.first_name}'s Password</h5>
       <Form className={classes.form} onSubmit={(e) => passwordUpdater(e)}>
         <FormGroup>
           <Label htmlFor="current password">Current Password</Label>

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import APIURL from "../../../utilities/environment";
 import classes from "../Athlete.module.css";
 import {
   Button,
@@ -14,77 +13,104 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
+import { Activity, UserInfo } from "../../../models";
+import { poster } from "../../../utilities";
 
-const ManualActivityAdder = (props) => {
-  const [modal, setModal] = useState(false);
-  const [date, setDate] = useState();
-  const [time, setTime] = useState();
-  const [distance, setDistance] = useState();
-  const [hours, setHours] = useState(0);
-  const [minutes, setMinutes] = useState(0);
-  const [seconds, setSeconds] = useState(0);
-  const [maxHR, setMaxHR] = useState();
-  const [avgHR, setAvgHR] = useState();
-  const [elevation, setElevation] = useState();
-  const [description, setDescription] = useState();
-  const [response, setResponse] = useState();
-  const [loading, setLoading] = useState();
-  const [err, setErr] = useState();
+interface ManualActivityProps {
+  userInfo: UserInfo;
+  activities: Activity[];
+  endDate: number;
+  startDate: number;
+  setActivities: React.Dispatch<React.SetStateAction<Activity[]>>;
+}
+
+const ManualActivityAdder: React.FC<ManualActivityProps> = (props) => {
+  const [modal, setModal] = useState<boolean>(false);
+  const [date, setDate] = useState<string>("");
+  const [time, setTime] = useState<string>("");
+  const [distance, setDistance] = useState<number>(0);
+  const [hours, setHours] = useState<number>(0);
+  const [minutes, setMinutes] = useState<number>(0);
+  const [seconds, setSeconds] = useState<number>(0);
+  const [maxHR, setMaxHR] = useState<number | undefined>();
+  const [avgHR, setAvgHR] = useState<number | undefined>();
+  const [elevation, setElevation] = useState<number | undefined>();
+  const [description, setDescription] = useState<string | undefined>();
+  const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const toggle = () => setModal(!modal);
 
   /***************************
   ADD ACTIVITY TO DATABASE
   ***************************/
-  const runAdder = async (e) => {
+  const runAdder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
-    let dateTime =
-      new Date(`${date}T${time}:00.000Z`).getTime() +
-      new Date(`${date}T${time}:00.000Z`).getTimezoneOffset() * 60 * 1000;
-    //prettier-ignore
-    let duration = ((hours * 60 * 60) + (minutes * 60) + seconds)
-    fetch(`${APIURL}/activity/create`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-      body: JSON.stringify({
+    try {
+      setLoading(true);
+      let dateTime =
+        new Date(`${date}T${time}:00.000Z`).getTime() +
+        new Date(`${date}T${time}:00.000Z`).getTimezoneOffset() * 60 * 1000;
+      //prettier-ignore
+      let duration = ((hours * 60 * 60) + (minutes * 60) + seconds)
+      const info: Activity = {
+        user_id: props.userInfo.user.id!,
         date: dateTime,
-        meters: distance,
-        durationSecs: duration,
-        elevationMeters: elevation,
-        avgHR: avgHR,
-        maxHR: maxHR,
+        distance_meters: distance,
+        duration_seconds: duration,
+        elevation_meters: elevation,
+        avg_hr: avgHR,
+        max_hr: maxHR,
         description: description,
-      }),
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        await props.setUpdate(data);
-        await setResponse(data.message);
-        setMinutes(0);
-        setSeconds(0);
-        setHours(0);
-        setMaxHR();
-        setAvgHR();
-        setElevation();
-        setDescription("");
-        setDistance();
-        setLoading(false);
-        setTimeout(() => {
-          setResponse("");
-          toggle();
-        }, 1200);
-      })
-      .catch((err) => {
-        setErr(err.message);
-        setLoading(false);
-        setTimeout(() => {
-          setErr("");
-        }, 3000);
-      });
+      };
+      const results = await poster(
+        props.userInfo.token,
+        "activities/createActivity",
+        info
+      );
+      const newActivity: Activity = results.data.newActivity;
+      if (
+        newActivity.date < props.endDate &&
+        newActivity.date > props.startDate &&
+        props.activities.length > 0
+      ) {
+        const sortedActivities: Activity[] = [
+          ...props.activities,
+          newActivity,
+        ].sort((actA: Activity, actB: Activity) => {
+          return actA.date - actB.date;
+        });
+        props.setActivities(sortedActivities);
+      } else if (props.activities.length === 0) {
+        props.setActivities([newActivity]);
+      }
+
+      setMinutes(0);
+      setSeconds(0);
+      setHours(0);
+      setMaxHR(undefined);
+      setAvgHR(undefined);
+      setElevation(undefined);
+      setDescription("");
+      setDistance(0);
+      setResponse("Update Successful");
+      setTimeout(() => {
+        setResponse("");
+      }, 1500);
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Could not update user. Server error");
+      }
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -116,7 +142,6 @@ const ManualActivityAdder = (props) => {
                 name="date"
                 onChange={(e) => {
                   setDate(e.target.value);
-                  console.log(e.target.value)
                 }}
               ></Input>
             </FormGroup>
@@ -208,7 +233,6 @@ const ManualActivityAdder = (props) => {
               Submit
             </Button>
             {response ? <Alert>{response}</Alert> : <></>}
-            {err ? <Alert color="danger">{err}</Alert> : <></>}
             {loading ? <Spinner></Spinner> : <></>}
           </Form>
         </ModalBody>

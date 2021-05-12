@@ -15,13 +15,21 @@ import {
   Spinner,
   Alert,
 } from "reactstrap";
+import { UserInfo } from "../../../../models";
 
-const FitbitAdderModal = (props) => {
-  const [modal, setModal] = useState(false);
-  const [startDate, setStartDate] = useState();
-  const [loading, setLoading] = useState();
-  const [err, setErr] = useState();
-  const [alreadyAdded, setAlreadyAdded] = useState();
+interface FitbitAdderProps {
+  userInfo: UserInfo;
+  fitbitRuns: any;
+  setFitbitRuns: React.Dispatch<any[]>;
+}
+
+const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
+  const token = props.userInfo.token;
+  const [modal, setModal] = useState<boolean>(false);
+  const [startDate, setStartDate] = useState<string>();
+  const [loading, setLoading] = useState<boolean>();
+  const [response, setResponse] = useState<string>("");
+  const [alreadyAdded, setAlreadyAdded] = useState<number[]>([]);
 
   const toggle = () => setModal(!modal);
 
@@ -29,17 +37,17 @@ const FitbitAdderModal = (props) => {
   GET FITBIT IDS TO CHECK IF ALREADY ADDED
   ***************************/
   useEffect(() => {
-    fetch(`${APIURL}/activity/getActivities`, {
+    fetch(`${APIURL}/activities/getActivities`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: props.token,
+        Authorization: token,
       },
     })
       .then((res) => res.json())
       .then(async (data) => {
-        let fitbitId = []
-        await data.result.forEach((run) => {          
+        let fitbitId: number[] = [];
+        await data.result.forEach((run: any) => {
           //Gets fitbit Ids so user can see runs already adder in the fitbitAdderModal
           if (run.fitbitId != null) {
             fitbitId.push(parseInt(run.fitbitId));
@@ -50,17 +58,17 @@ const FitbitAdderModal = (props) => {
       .catch((err) => {
         console.log(err);
       });
-  }, [props.update]);
+  }, [token]);
 
   /***************************
   ADD FITBIT ACTIVITY TO DATABASE
   ***************************/
-  const runAdder = async (runObj) => {
+  const runAdder = async (runObj: any) => {
     fetch(`${APIURL}/activity/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: props.token,
+        Authorization: token,
       },
       body: JSON.stringify({
         date: new Date(runObj.startTime).getTime(),
@@ -76,9 +84,7 @@ const FitbitAdderModal = (props) => {
       }),
     })
       .then((res) => res.json())
-      .then(async (data) => {
-        await props.setUpdate(data);
-      })
+      .then(async (data) => {})
       .catch((err) => {
         console.log(err);
       });
@@ -87,21 +93,19 @@ const FitbitAdderModal = (props) => {
   /***************************
   REMOVE FITBIT ACTIVITY FROM DATABASE
   ***************************/
-  const runRemover = async (runObj) => {
+  const runRemover = async (runObj: any) => {
     fetch(`${APIURL}/activity/removeActivity`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        Authorization: props.token,
+        Authorization: token,
       },
       body: JSON.stringify({
         fitbitId: runObj.logId,
       }),
     })
       .then((res) => res.json())
-      .then(async (data) => {
-        await props.setUpdate(data);
-      })
+      .then(async (data) => {})
       .catch((err) => {
         console.log(err);
       });
@@ -110,7 +114,9 @@ const FitbitAdderModal = (props) => {
   /***************************
   GET FITBIT ACTIVITY FROM FITBIT
   ***************************/
-  const fitbitActivitiesFetcher = async (e) => {
+  const fitbitActivitiesFetcher = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
     setLoading(true);
     fetch(`${APIURL}/user/getAthlete`, {
@@ -118,7 +124,7 @@ const FitbitAdderModal = (props) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: props.token,
+        Authorization: token,
       },
     })
       .then((res) => res.json())
@@ -143,7 +149,7 @@ const FitbitAdderModal = (props) => {
               method: "PUT",
               headers: {
                 "Content-Type": "application/json",
-                Authorization: props.token,
+                Authorization: token,
               },
               body: JSON.stringify({
                 fitbitRefresh: data.refresh_token,
@@ -153,9 +159,9 @@ const FitbitAdderModal = (props) => {
               .then((data) => {})
               .catch((err) => {
                 setLoading(false);
-                setErr(err);
+                setResponse(err);
                 setTimeout(() => {
-                  setErr("");
+                  setResponse("");
                 }, 3000);
               });
             fetch(
@@ -170,7 +176,7 @@ const FitbitAdderModal = (props) => {
               .then((res) => res.json())
               .then(async (data) => {
                 const runs = await data.activities.filter(
-                  (activity) =>
+                  (activity: any) =>
                     activity.activityName === "Run" && activity.distance > 0.05
                 );
                 await props.setFitbitRuns(runs);
@@ -178,32 +184,32 @@ const FitbitAdderModal = (props) => {
               })
               .catch((err) => {
                 setLoading(false);
-                setErr(err);
+                setResponse(err);
                 setTimeout(() => {
-                  setErr("");
+                  setResponse("");
                 }, 3000);
               });
           })
           .catch((err) => {
             setLoading(false);
-            setErr(err);
+            setResponse(err);
             setTimeout(() => {
-              setErr("");
+              setResponse("");
             }, 3000);
           });
       })
       .catch((err) => {
         setLoading(false);
-        setErr(err);
+        setResponse(err);
         setTimeout(() => {
-          setErr("");
+          setResponse("");
         }, 3000);
       });
   };
 
   return (
     <div>
-      <Form inline onSubmit={(e) => e.preventDefault(e)}>
+      <Form inline onSubmit={(e) => e.preventDefault()}>
         <Button className={classes.launchModalBtn} onClick={toggle}>
           Add Fitbit Activities
         </Button>
@@ -256,7 +262,7 @@ const FitbitAdderModal = (props) => {
                 </tr>
               </thead>
               <tbody>
-                {props.fitbitRuns.map((run, index) => {
+                {props.fitbitRuns.map((run: any, index: number) => {
                   return (
                     <tr className={classes.tr} key={index}>
                       <th scope="row">{index + 1}</th>
@@ -297,14 +303,8 @@ const FitbitAdderModal = (props) => {
           ) : (
             <></>
           )}
-
-          {err ? (
-            <Alert className={classes.errAlert}>
-              Connect to fitbit in settings to get activities!
-            </Alert>
-          ) : (
-            <></>
-          )}
+          {response ? <Alert>{response}</Alert> : <></>}
+          {loading ? <Spinner></Spinner> : <></>}
         </ModalBody>
         <ModalFooter>
           <Button

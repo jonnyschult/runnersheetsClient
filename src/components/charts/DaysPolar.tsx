@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import classes from "./Charts.module.css";
 import { Polar } from "react-chartjs-2";
 import { Activity } from "../../models";
@@ -9,12 +9,12 @@ interface PolarChartProps {
 
 const PolarChart: React.FC<PolarChartProps> = (props) => {
   const [data, setData] = useState({});
-  const [options, setOptions] = useState({});
+  // const [options, setOptions] = useState({});
 
-  const polarChartSetter = () => {
+  const polarChartSetter = useCallback(() => {
     let days = [0, 0, 0, 0, 0, 0, 0];
     props.runs.forEach((run) => {
-      switch (new Date(parseInt(run.date)).toDateString().substr(0, 3)) {
+      switch (new Date(run.date).toDateString().substr(0, 3)) {
         case "Sun":
           days[0]++;
           break;
@@ -68,14 +68,14 @@ const PolarChart: React.FC<PolarChartProps> = (props) => {
         },
       ],
     });
-  };
+  }, [props.runs]);
 
   useEffect(() => {
     polarChartSetter();
-  }, [props.runs]);
+  }, [polarChartSetter]);
   return (
     <div className={classes.polar}>
-      <Polar data={data} options={options} />
+      <Polar data={data} />
     </div>
   );
 };

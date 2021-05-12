@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import APIURL from "../../../utilities/environment";
 import classes from "../Club.module.css";
 import {
   Button,
@@ -7,66 +6,74 @@ import {
   ModalHeader,
   ModalFooter,
   ModalBody,
-  Label,
-  Input,
   Form,
-  FormGroup,
   Alert,
   Spinner,
 } from "reactstrap";
+import { Club, User, UserInfo } from "../../../models";
+import { deleter } from "../../../utilities";
 
-const StaffModal = (props) => {
-  const [response, setResponse] = useState("");
-  const [loading, setLoading] = useState();
-  const [err, setErr] = useState("");
-  const [modal, setModal] = useState(false);
-  const [expand, setExpand] = useState(false);
-  const [update, setUpdate] = useState()
+interface AthleteModalProps {
+  userInfo: UserInfo;
+  athlete: User;
+  athletes: User[];
+  selectedClub: Club | null;
+  setAthletes: React.Dispatch<React.SetStateAction<User[]>>;
+}
+
+const StaffModal: React.FC<AthleteModalProps> = (props) => {
+  const token = props.userInfo.token;
+  const athlete = props.athlete;
+  const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>();
+  const [modal, setModal] = useState<boolean>(false);
+  const [expand, setExpand] = useState<boolean>(false);
 
   const toggle = () => setModal(!modal);
   const toggle2 = () => setExpand(!expand);
 
-  /**********************
-  DELETE ATHLETE
-  **********************/
-  const deleteAthlete = (e) => {
+  const deleteAthlete = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     let confirmation = window.confirm(
-      "Are you certain you wish to delete this athlete?"
+      `Are you certain you wish to delete ${athlete.first_name} from ${props.selectedClub?.club_name}?`
     );
     if (confirmation) {
-      setLoading(true);
-      fetch(`${APIURL}/viceChair/removeAthlete`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: props.token,
-        },
-        body: JSON.stringify({
-          clubId: props.selectedClub.id,
-          athleteId: props.athlete.id,
-        }),
-      })
-        .then((res) => res.json())
-        .then(async (data) => {
-          await setResponse(data.message);
-          setLoading(false);
-          setTimeout(() => {
-            props.setUpdate(data);
-            toggle();
-            toggle2();
-            setResponse("");
-          }, 1400);
-        })
-        .catch(async (err) => {
-          await setErr(err.message);
-          setLoading(false);
-          setTimeout(() => {
-            setErr("");
-          }, 2400);
-        });
+      try {
+        setLoading(true);
+        const results = await deleter(
+          token,
+          "clubs/removeAthlete",
+          `club_id=${props.selectedClub!.id}&athlete_id=${athlete.id}`
+        );
+        setResponse(results.data.message);
+        props.setAthletes(
+          props.athletes.filter((person: User) => person.id !== athlete.id)
+        );
+        setTimeout(() => {
+          setResponse("");
+          toggle();
+        }, 2200);
+      } catch (error) {
+        console.log(error);
+        if (error.status < 500 && error["response"] !== undefined) {
+          setResponse(error.response.data.message);
+        } else {
+          setResponse("Could not update user. Server error");
+        }
+        setTimeout(() => {
+          setResponse("");
+          toggle();
+        }, 2200);
+      } finally {
+        setLoading(false);
+      }
     } else {
-      toggle();
-      toggle2();
+      setResponse("Deletion Cancelled");
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
     }
   };
 
@@ -74,13 +81,13 @@ const StaffModal = (props) => {
     <div>
       <Form>
         <p className={classes.cardItem} onClick={toggle}>
-          <b>{`${props.athlete.firstName} ${props.athlete.lastName}`}</b>
+          <b>{`${props.athlete.first_name} ${props.athlete.last_name}`}</b>
         </p>
       </Form>
       <Modal
         className={classes.modal}
         isOpen={modal}
-        toggle={(e) => {
+        toggle={(e: any) => {
           toggle();
           if (expand) {
             toggle2();
@@ -90,7 +97,7 @@ const StaffModal = (props) => {
         <ModalHeader className={classes.modalHeader} toggle={toggle}>
           <header
             className={classes.headerText}
-          >{`${props.athlete.firstName} ${props.athlete.lastName}`}</header>
+          >{`${props.athlete.first_name} ${props.athlete.last_name}`}</header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
           <p>{`Email:   ${props.athlete.email}`}</p>
@@ -106,7 +113,6 @@ const StaffModal = (props) => {
           ) : (
             <></>
           )}
-          {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
         </ModalBody>
         <ModalFooter className={classes.modalFooter}>
           <Button

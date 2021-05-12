@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import classes from "./Charts.module.css";
 import { Scatter } from "react-chartjs-2";
 import { Activity, User } from "../../models";
@@ -11,7 +11,8 @@ interface DistanceScatterProps {
 const DistanceScatter: React.FC<DistanceScatterProps> = (props) => {
   const [data, setData] = useState({});
   const [options, setOptions] = useState<any>();
-  const ScatterSetter = () => {
+
+  const ScatterSetter = useCallback(() => {
     let colors = [
       "Blue ",
       "Red",
@@ -79,7 +80,7 @@ const DistanceScatter: React.FC<DistanceScatterProps> = (props) => {
           .filter((activity) => activity.user_id === athlete.id)
           .map((activity) => {
             return {
-              x: parseInt(activity.date),
+              x: activity.date,
               y: activity.distance_meters,
             };
           }),
@@ -125,11 +126,11 @@ const DistanceScatter: React.FC<DistanceScatterProps> = (props) => {
       labels: "Y axis = distance in meters",
       datasets: athleteData,
     });
-  };
+  }, [props.activities, props.athletes]);
 
   useEffect(() => {
     ScatterSetter();
-  }, [props.activities]);
+  }, [ScatterSetter]);
 
   return (
     <div className={classes.lineGraph}>

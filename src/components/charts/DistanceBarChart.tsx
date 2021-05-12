@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import classes from "./Charts.module.css";
 import { Bar } from "react-chartjs-2";
 import { Activity } from "../../models";
@@ -11,9 +11,9 @@ const DistanceBarChart: React.FC<DistanceBarChartProps> = (props) => {
   const [data, setData] = useState({});
   const [options, setOptions] = useState({});
 
-  const BarChartSetter = () => {
+  const barChartSetter = useCallback(() => {
     let dates = props.runs.map((run) => {
-      return new Date(parseInt(run.date)).toDateString();
+      return new Date(run.date).toDateString();
     });
     let distances = props.runs.map((run) => {
       return run.distance_meters;
@@ -44,11 +44,11 @@ const DistanceBarChart: React.FC<DistanceBarChartProps> = (props) => {
         },
       ],
     });
-  };
+  }, [props.runs]);
 
   useEffect(() => {
-    BarChartSetter();
-  }, [props.runs]);
+    barChartSetter();
+  }, [barChartSetter]);
   return (
     <div className={classes.barChart}>
       <div>

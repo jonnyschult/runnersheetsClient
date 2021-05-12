@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import classes from "../Coach.module.css";
 import AthleteAdderModal from "./AthleteAdderModal";
 import AthleteModal from "./AthleteModal";
@@ -8,7 +8,7 @@ import { Team, User, UserInfo } from "../../../models";
 interface TeamAthletesProps {
   userInfo: UserInfo;
   athletes: User[];
-  selectedTeam: Team;
+  selectedTeam: Team | null;
   setAthletes: React.Dispatch<React.SetStateAction<User[]>>;
 }
 

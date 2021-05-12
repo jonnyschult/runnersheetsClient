@@ -5,7 +5,7 @@ import ClubList from "./ClubList/ClubList";
 import RunCard from "./Activities/RunCard";
 import ClubAthletes from "./ClubAthletes/ClubAthletes";
 import Chairpersons from "./ClubChairs/Chairpersons";
-import FetchDates from "./Activities/FetchDates";
+import FetchDates from "./Activities/SetDates";
 import CollatedWorkouts from "./Activities/CollatedWorkouts";
 import Scatter from "../charts/DistanceScatter";
 import "./Print.css";
@@ -26,8 +26,8 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
   const [errorPage, setErrorPage] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [chairpersons, setChairpersons] = useState<User[]>([]);
-  const [selectedClub, setSelectedClub] = useState<Club>(
-    props.userInfo.clubs[0]
+  const [selectedClub, setSelectedClub] = useState<Club | null>(
+    props.userInfo.clubs ? props.userInfo.clubs[0] : null
   );
   const [athletes, setAthletes] = useState<User[]>([]);
   const [clubActivities, setClubActivities] = useState<Activity[]>([]);
@@ -36,8 +36,8 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
   );
   const [endDate, setEndDate] = useState(new Date(Date.now()).getTime());
 
-  const getActivities = useCallback(() => {
-    async () => {
+  useCallback(async () => {
+    if (selectedClub !== null) {
       try {
         setLoading(true);
         const activitiesResults = await getter(
@@ -67,15 +67,15 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
       } finally {
         setLoading(false);
       }
-    };
-  }, [startDate, endDate, athletes]);
+    }
+  }, [startDate, endDate, selectedClub, token]);
 
   useEffect(() => {
     const loadUpHandler = async () => {
       try {
         const clubResults = await getter(
           token,
-          `clubs/getClubMembers/${selectedClub}`
+          `clubs/getClubMembers/${selectedClub!.id}`
         );
         const activitiesResults = await getter(
           token,
@@ -131,8 +131,11 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
         setLoadingMain(false);
       }
     };
-    loadUpHandler();
-  }, [selectedClub]);
+
+    if (selectedClub !== null) {
+      loadUpHandler();
+    }
+  }, [selectedClub, token]);
 
   if (errorPage) {
     return <ErrorPage errMessage={error} />;
@@ -154,11 +157,11 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
             ) : (
               <div>
                 <h2 className={classes.clubLandingHeader}>
-                  {selectedClub.club_name ? (
-                    selectedClub.club_name
-                  ) : (
-                    <>Select a Club</>
-                  )}
+                  {selectedClub !== null
+                    ? selectedClub.club_name
+                    : props.userInfo.clubs.length > 0
+                    ? props.userInfo.clubs[0]
+                    : "Select or Create a Team"}
                 </h2>
                 <div style={{ display: "flex" }}>
                   <Container className={classes.leftContainer}>
@@ -192,9 +195,19 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
                       <></>
                     )}
                     {clubActivities ? (
-                      clubActivities.map((athlete, index) => {
-                        return <RunCard athlete={athlete} key={index} />;
-                      })
+                      [...athletes, ...chairpersons].map(
+                        (clubmember, index) => {
+                          return (
+                            <RunCard
+                              clubMember={clubmember}
+                              activities={clubActivities.filter(
+                                (activity) => activity.user_id === clubmember.id
+                              )}
+                              key={index}
+                            />
+                          );
+                        }
+                      )
                     ) : (
                       <></>
                     )}
@@ -203,13 +216,15 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
                     <FetchDates
                       setStartDate={setStartDate}
                       setEndDate={setEndDate}
-                      clubActivities={clubActivities}
                     />
                     <div className={classes.collatedWorkoutsContainer}>
                       <legend className={classes.collatedWorkoutsLegend}>
                         View Collated Workouts
                       </legend>
-                      <CollatedWorkouts teamActivities={clubActivities} />
+                      <CollatedWorkouts
+                        activities={clubActivities}
+                        clubMembers={[...athletes, ...chairpersons]}
+                      />
                     </div>
                   </Container>
                 </div>

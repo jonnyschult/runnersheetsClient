@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import APIURL from "../../../utilities/environment";
 import classes from "../Coach.module.css";
 import {
   Button,
@@ -14,7 +13,7 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
-import { Team, TeamsUsers, User, UserInfo } from "../../../models";
+import { Team, User, UserInfo } from "../../../models";
 import updater from "../../../utilities/updateFetcher";
 import deleter from "../../../utilities/deleteFetcher";
 
@@ -22,7 +21,7 @@ interface AthleteModalProps {
   userInfo: UserInfo;
   athlete: User;
   athletes: User[];
-  selectedTeam: Team;
+  selectedTeam: Team | null;
   setAthletes: React.Dispatch<React.SetStateAction<User[]>>;
 }
 
@@ -31,7 +30,6 @@ const AthleteModal: React.FC<AthleteModalProps> = (props) => {
   const token = props.userInfo.token;
   const [response, setResponse] = useState<string>("");
   const [loading, setLoading] = useState<boolean>();
-  const [err, setErr] = useState<string>("");
   const [modal, setModal] = useState<boolean>(false);
   const [expand, setExpand] = useState<boolean>(false);
   const [feet, setFeet] = useState<number | undefined>(
@@ -48,9 +46,6 @@ const AthleteModal: React.FC<AthleteModalProps> = (props) => {
   const toggle = () => setModal(!modal);
   const toggle2 = () => setExpand(!expand);
 
-  /**********************
-  UPDATE ATHLETE
-  **********************/
   const updateInfo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -101,14 +96,11 @@ const AthleteModal: React.FC<AthleteModalProps> = (props) => {
     }
   };
 
-  /**********************
-  DELETE ATHLETE
-  **********************/
   const deleteAthlete = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     let confirmation = window.confirm(
-      "Are you certain you wish to delete this athlete?"
+      `Are you certain you wish to delete ${athlete.first_name} from ${props.selectedTeam?.team_name}?`
     );
     if (confirmation) {
       try {
@@ -116,7 +108,7 @@ const AthleteModal: React.FC<AthleteModalProps> = (props) => {
         const results = await deleter(
           token,
           "teams/removeAthlete",
-          `team_id=${props.selectedTeam.id}&athlete_id=${athlete.id}`
+          `team_id=${props.selectedTeam!.id}&athlete_id=${athlete.id}`
         );
         setResponse(results.data.message);
         setTimeout(() => {
@@ -247,7 +239,6 @@ const AthleteModal: React.FC<AthleteModalProps> = (props) => {
               ) : (
                 <></>
               )}
-              {err ? <Alert className={classes.errAlert}>{err}</Alert> : <></>}
             </Form>
           ) : (
             <></>

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import APIURL from "../../../utilities/environment";
 import classes from "../Club.module.css";
 import {
   Button,
@@ -14,93 +13,115 @@ import {
   Alert,
   Spinner,
 } from "reactstrap";
+import { Club, ClubsUsers, User, UserInfo } from "../../../models";
+import { deleter, updater } from "../../../utilities";
 
-const ChairModal = (props) => {
-  const [response, setResponse] = useState("");
-  const [err, setErr] = useState();
-  const [loading, setLoading] = useState();
-  const [modal, setModal] = useState(false);
-  const [expand, setExpand] = useState(false);
-  const [role, setRole] = useState();
+interface ChairModalProps {
+  userInfo: UserInfo;
+  chairperson: User;
+  setChairpersons: React.Dispatch<React.SetStateAction<User[]>>;
+  chairpersons: User[];
+  selectedClub: Club | null;
+}
+
+const ChairModal: React.FC<ChairModalProps> = (props) => {
+  const token = props.userInfo.token;
+  const [response, setResponse] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [modal, setModal] = useState<boolean>(false);
+  const [expand, setExpand] = useState<boolean>(false);
+  const [role, setRole] = useState<string>("");
 
   const toggle = () => setModal(!modal);
   const toggle2 = () => setExpand(!expand);
 
-  /**********************
-  UPDATE CHAIRPERSON ROLE
-  **********************/
-  const updateInfo = (e) => {
+  const updateInfo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    fetch(`${APIURL}/chairperson/updateChairperson`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: props.token,
-      },
-      body: JSON.stringify({
-        clubId: props.selectedClub.id,
-        userId: props.chairperson.id,
-        newRole: role,
-      }),
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        setLoading(true);
-        await setResponse(data.message);
-        setLoading(false);
-        props.fetchChairpersons(props.selectedClub.id);
-        setTimeout(() => {
-          toggle();
-          toggle2();
-          setResponse("");
-        }, 1200);
-      })
-      .catch(async (err) => {
-        setLoading(true);
-        await setErr(err.message);
-        setLoading(false);
-      });
+    try {
+      setLoading(true);
+      const info: ClubsUsers = {
+        club_id: props.selectedClub!.id!,
+        user_id: props.chairperson.id!,
+        role: role,
+      };
+      const results = await updater(token, "clubs/updateChairperson", info);
+      props.chairperson.role = results.data.updatedClubsUsersItem.role;
+      setResponse(results.data.message);
+      props.setChairpersons(
+        props.chairpersons.map((person: User) => {
+          if (person.id === props.chairperson.id) {
+            return props.chairperson;
+          } else {
+            return person;
+          }
+        })
+      );
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Could not update user. Server error");
+      }
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  /**********************
-  DELETE CHAIRPERSON
-  **********************/
-  const deleteChairperson = (e) => {
+  const deleteChairperson = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     let confirmation = window.confirm(
-      "Are you certain you wish to delete this user?"
+      `Are you certain you wish to delete ${
+        props.chairperson.first_name
+      } from ${props.selectedClub!.club_name}?`
     );
     if (confirmation) {
-      fetch(`${APIURL}/chairperson/removeChairperson`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: props.token,
-        },
-        body: JSON.stringify({
-          clubId: props.selectedClub.id,
-          chairpersonId: props.chairperson.id,
-        }),
-      })
-        .then((res) => res.json())
-        .then(async (data) => {
-          setLoading(true);
-          await setResponse(data.message);
-          setLoading(false);
-          setTimeout(() => {
-            toggle();
-            toggle2();
-            setResponse("");
-            props.fetchChairpersons(props.selectedClub.id);
-          }, 1200);
-        })
-        .catch(async (err) => {
-          setLoading(true);
-          await setErr(err.message);
-          setLoading(false);
-        });
+      try {
+        setLoading(true);
+        const results = await deleter(
+          token,
+          "clubs/removeChairperson",
+          `club_id=${props.selectedClub!.id}&user_id=${props.chairperson.id}`
+        );
+        setResponse(results.data.message);
+        setTimeout(() => {
+          props.setChairpersons(
+            props.chairpersons.filter(
+              (person: User) => person.id !== props.chairperson.id
+            )
+          );
+          setResponse("");
+          toggle();
+        }, 2200);
+      } catch (error) {
+        console.log(error);
+        if (error.status < 500 && error["response"] !== undefined) {
+          setResponse(error.response.data.message);
+        } else {
+          setResponse("Could not update user. Server error");
+        }
+        setTimeout(() => {
+          setResponse("");
+          toggle();
+        }, 2200);
+      } finally {
+        setLoading(false);
+      }
     } else {
-      toggle();
-      toggle2();
+      setResponse("Deletion Cancelled");
+      setTimeout(() => {
+        setResponse("");
+        toggle();
+      }, 2200);
     }
   };
 
@@ -108,14 +129,14 @@ const ChairModal = (props) => {
     <div>
       <Form inline onSubmit={(e) => updateInfo(e)}>
         <p onClick={toggle} className={classes.cardItem}>
-          <b>{`${props.chairperson.firstName} ${props.chairperson.lastName}: `}</b>
+          <b>{`${props.chairperson.first_name} ${props.chairperson.last_name}: `}</b>
           <i> {props.chairperson.role}</i>
         </p>
       </Form>
       <Modal
         className={classes.modal}
         isOpen={modal}
-        toggle={(e) => {
+        toggle={(e: any) => {
           toggle();
           if (expand) {
             toggle2();
@@ -125,7 +146,7 @@ const ChairModal = (props) => {
         <ModalHeader className={classes.modalHeader} toggle={toggle}>
           <header
             className={classes.headerText}
-          >{`${props.chairperson.firstName} ${props.chairperson.lastName}`}</header>
+          >{`${props.chairperson.first_name} ${props.chairperson.last_name}`}</header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
           <p>{`Email:   ${props.chairperson.email}`}</p>
@@ -177,11 +198,6 @@ const ChairModal = (props) => {
               {loading ? <Spinner color="primary" /> : <></>}
               {response ? (
                 <Alert className={classes.responseAlert}>{response}</Alert>
-              ) : (
-                <></>
-              )}
-              {err ? (
-                <Alert className={classes.responseAlert}>{err}</Alert>
               ) : (
                 <></>
               )}
