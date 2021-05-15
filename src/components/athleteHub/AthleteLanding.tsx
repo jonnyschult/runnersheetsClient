@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import ErrorPage from "../ErrorPage/ErrorPage";
 import classes from "./Athlete.module.css";
 import AdderCard from "./activities/AdderCard";
@@ -35,36 +35,40 @@ const AthleteLanding: React.FC<AthleteLandingProps> = (props) => {
   const [errorPage, setErrorPage] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
-  useCallback(async () => {
-    try {
-      setLoading(true);
-      const activitiesResults = await getter(
-        token,
-        `activities/getActvitiesByDate`,
-        `start_date=${startDate}&end_date=${endDate}`
-      );
-      const sortedActivities = activitiesResults.data.activities.sort(
-        (a: Activity, b: Activity) => {
-          if (new Date(a.date).getTime() > new Date(b.date).getTime()) {
-            return 1;
-          } else {
-            return -1;
+  useEffect(() => {
+    const name = async () => {
+      try {
+        setErrorPage(false);
+        setLoading(true);
+        const activitiesResults = await getter(
+          token,
+          `activities/getActivitiesByDate`,
+          `start_date=${startDate}&end_date=${endDate}`
+        );
+        const sortedActivities = activitiesResults.data.activities.sort(
+          (a: Activity, b: Activity) => {
+            if (new Date(a.date).getTime() > new Date(b.date).getTime()) {
+              return 1;
+            } else {
+              return -1;
+            }
           }
+        );
+        setActivities(sortedActivities);
+      } catch (error) {
+        console.log(error);
+        setErrorPage(true);
+        if (error["response"]) {
+          setError(error.response.data.message);
+        } else {
+          setError("Problem fetching your data. Please let site admin Know.");
         }
-      );
-      setActivities(sortedActivities);
-    } catch (error) {
-      console.log(error);
-      setErrorPage(true);
-      if (error["response"]) {
-        setError(error.response.data.message);
-      } else {
-        setError("Problem fetching your data. Please let site admin Know.");
+        console.log(error);
+      } finally {
+        setLoading(false);
       }
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
+    };
+    name();
   }, [startDate, endDate, token]);
 
   return (
