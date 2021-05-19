@@ -94,6 +94,7 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
       setResponse("Update Successful");
       setTimeout(() => {
         setResponse("");
+        toggle();
       }, 1500);
     } catch (error) {
       console.log(error);
@@ -126,7 +127,8 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
         setLoading(true);
         await deleter(
           props.userInfo.token,
-          `activities/removeActivity/${activity.id}`
+          "activities/removeActivity",
+          `id=${activity.id}`
         );
 
         props.setActivities(
@@ -134,16 +136,17 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
             (activityItem) => activityItem.id !== activity.id
           )
         );
-        setResponse("Update Successful");
+        setResponse("Delete successful");
         setTimeout(() => {
           setResponse("");
+          toggle();
         }, 1500);
       } catch (error) {
         console.log(error);
         if (error.status < 500 && error["response"] !== undefined) {
           setResponse(error.response.data.message);
         } else {
-          setResponse("Could not update user. Server error");
+          setResponse("Could not delete activity. Server error");
         }
         setTimeout(() => {
           setResponse("");
@@ -179,6 +182,7 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
               <Input
                 type="date"
                 name="date"
+                disabled={activity.fitbit_id ? true : false}
                 onChange={(e) => {
                   setDate(e.target.value);
                 }}
@@ -189,6 +193,7 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
               <Input
                 type="time"
                 name="time"
+                disabled={activity.fitbit_id ? true : false}
                 onChange={(e) => {
                   setTime(e.target.value);
                 }}
@@ -199,6 +204,7 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
               <Input
                 type="number"
                 name="distance"
+                disabled={activity.fitbit_id ? true : false}
                 placeholder={`${activity.distance_meters}`}
                 onChange={(e) => setDistance(parseInt(e.target.value))}
               ></Input>
@@ -209,6 +215,7 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
                 <Input
                   type="number"
                   name="hours"
+                  disabled={activity.fitbit_id ? true : false}
                   placeholder={new Date(activity.duration_seconds * 1000)
                     .toISOString()
                     .substr(11, 2)}
@@ -220,6 +227,7 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
                 <Input
                   type="number"
                   name="minutes"
+                  disabled={activity.fitbit_id ? true : false}
                   placeholder={new Date(activity.duration_seconds * 1000)
                     .toISOString()
                     .substr(14, 2)}
@@ -231,6 +239,7 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
                 <Input
                   type="number"
                   name="seconds"
+                  disabled={activity.fitbit_id ? true : false}
                   placeholder={new Date(activity.duration_seconds * 1000)
                     .toISOString()
                     .substr(17, 2)}
@@ -243,6 +252,7 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
               <Input
                 type="number"
                 name="elevation"
+                disabled={activity.fitbit_id ? true : false}
                 placeholder={`${activity.elevation_meters}`}
                 onChange={(e) => setElevation(parseInt(e.target.value))}
               ></Input>
@@ -293,6 +303,7 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
             ) : (
               <></>
             )}
+
             {loading ? <Spinner></Spinner> : <></>}
           </Form>
         </ModalBody>
@@ -301,7 +312,7 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
             className={`${classes.modalBtn} ${classes.cancelBtn}`}
             onClick={toggle}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>

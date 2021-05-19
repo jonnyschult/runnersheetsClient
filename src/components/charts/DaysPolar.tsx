@@ -9,12 +9,12 @@ interface PolarChartProps {
 
 const PolarChart: React.FC<PolarChartProps> = (props) => {
   const [data, setData] = useState({});
-  // const [options, setOptions] = useState({});
+  const [options, setOptions] = useState({});
 
   const polarChartSetter = useCallback(() => {
     let days = [0, 0, 0, 0, 0, 0, 0];
     props.runs.forEach((run) => {
-      switch (new Date(run.date).toDateString().substr(0, 3)) {
+      switch (new Date(+run.date).toDateString().substr(0, 3)) {
         case "Sun":
           days[0]++;
           break;
@@ -38,9 +38,9 @@ const PolarChart: React.FC<PolarChartProps> = (props) => {
           break;
       }
     });
-    // setOptions({
-    //   aspectRation: 27,
-    // });
+    setOptions({
+      aspectRation: 27,
+    });
     setData({
       labels: [
         "Sunday",
@@ -75,7 +75,7 @@ const PolarChart: React.FC<PolarChartProps> = (props) => {
   }, [polarChartSetter]);
   return (
     <div className={classes.polar}>
-      <Polar data={data} />
+      <Polar data={data} options={options} />
     </div>
   );
 };

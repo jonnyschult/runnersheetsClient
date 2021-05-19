@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ErrorPage from "../ErrorPage/ErrorPage";
 import classes from "./Athlete.module.css";
 import AdderCard from "./activities/AdderCard";
@@ -19,7 +19,6 @@ interface AthleteLandingProps {
 const AthleteLanding: React.FC<AthleteLandingProps> = (props) => {
   const token = props.userInfo.token;
   const athlete = props.userInfo.user;
-  const [fitbitRuns, setFitbitRuns] = useState<any[]>([]);
   const [activities, setActivities] = useState<Activity[]>(
     props.userInfo.activities
   );
@@ -47,10 +46,10 @@ const AthleteLanding: React.FC<AthleteLandingProps> = (props) => {
         );
         const sortedActivities = activitiesResults.data.activities.sort(
           (a: Activity, b: Activity) => {
-            if (new Date(a.date).getTime() > new Date(b.date).getTime()) {
-              return 1;
-            } else {
+            if (new Date(+a.date).getTime() > new Date(+b.date).getTime()) {
               return -1;
+            } else {
+              return 1;
             }
           }
         );
@@ -117,8 +116,6 @@ const AthleteLanding: React.FC<AthleteLandingProps> = (props) => {
                 activities={activities}
                 endDate={endDate}
                 startDate={startDate}
-                fitbitRuns={fitbitRuns}
-                setFitbitRuns={setFitbitRuns}
                 setActivities={setActivities}
               />
             </Container>

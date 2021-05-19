@@ -20,14 +20,14 @@ interface ClubLandingProps {
 
 const ClubLanding: React.FC<ClubLandingProps> = (props) => {
   const token = props.userInfo.token;
-  const [clubs, setClubs] = useState<Club[]>([]);
+  const [clubs, setClubs] = useState<Club[]>(props.userInfo.clubs);
   const [loading, setLoading] = useState<boolean>(false);
   const [loadingMain, setLoadingMain] = useState<boolean>(false);
   const [errorPage, setErrorPage] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [chairpersons, setChairpersons] = useState<User[]>([]);
   const [selectedClub, setSelectedClub] = useState<Club | null>(
-    props.userInfo.clubs ? props.userInfo.clubs[0] : null
+    props.userInfo.clubs.length > 0 ? props.userInfo.clubs[0] : null
   );
   const [athletes, setAthletes] = useState<User[]>([]);
   const [clubActivities, setClubActivities] = useState<Activity[]>([]);
@@ -77,17 +77,25 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
           token,
           `clubs/getClubMembers/${selectedClub!.id}`
         );
+        console.log(clubResults.data);
         const activitiesResults = await getter(
           token,
-          `clubs/getTeamActivities/${selectedClub}`,
-          `start_date=${new Date(Date.now() - 604800000).getTime()}
-          &end_date=${new Date(Date.now()).getTime()}`
+          `clubs/getClubActivities/${selectedClub!.id}`,
+          `start_date=${
+            new Date(Date.now()).getTime() - 604800000
+          }&end_date=${new Date(Date.now()).getTime()}`
         );
-        const viceChairsWithRoles = clubResults.data.viceChairs.map(
-          (viceChair: User) => (viceChair.role = "vice_chair")
+        const viceChairsWithRoles: User[] = clubResults.data.viceChairs.map(
+          (viceChair: User) => {
+            viceChair.role = "vice_chair";
+            return viceChair;
+          }
         );
-        const chairsWithRoles = clubResults.data.chairs.map(
-          (chair: User) => (chair.role = "chair")
+        const chairsWithRoles: User[] = clubResults.data.chairs.map(
+          (chair: User) => {
+            chair.role = "chair";
+            return chair;
+          }
         );
         const sortedChairs = [...chairsWithRoles, ...viceChairsWithRoles].sort(
           (a: User, b: User) => {
@@ -98,7 +106,7 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
             }
           }
         );
-        const sortedAthletes = clubResults.data.athletes.sort(
+        const sortedAthletes: User[] = clubResults.data.athletes.sort(
           (a: User, b: User) => {
             if (a.last_name > b.last_name) {
               return 1;
@@ -107,15 +115,14 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
             }
           }
         );
-        const sortedActivities = activitiesResults.data.activities.sort(
-          (a: Activity, b: Activity) => {
-            if (new Date(a.date).getTime() > new Date(b.date).getTime()) {
+        const sortedActivities: Activity[] =
+          activitiesResults.data.activities.sort((a: Activity, b: Activity) => {
+            if (new Date(+a.date).getTime() > new Date(+b.date).getTime()) {
               return 1;
             } else {
               return -1;
             }
-          }
-        );
+          });
         setChairpersons(sortedChairs);
         setAthletes(sortedAthletes);
         setClubActivities(sortedActivities);

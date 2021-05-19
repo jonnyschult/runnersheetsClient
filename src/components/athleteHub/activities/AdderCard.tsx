@@ -8,11 +8,9 @@ import { Activity, UserInfo } from "../../../models";
 
 interface AdderCardProps {
   userInfo: UserInfo;
-  fitbitRuns: any[];
-  activities: Activity[];
   endDate: number;
   startDate: number;
-  setFitbitRuns: React.Dispatch<any[]>;
+  activities: Activity[];
   setActivities: React.Dispatch<React.SetStateAction<Activity[]>>;
 }
 
@@ -26,8 +24,8 @@ const AdderCard: React.FC<AdderCardProps> = (props) => {
           </CardTitle>
           <FitbitAdderModal
             userInfo={props.userInfo}
-            fitbitRuns={props.fitbitRuns}
-            setFitbitRuns={props.setFitbitRuns}
+            activities={props.activities}
+            setActivities={props.setActivities}
           />
           <ManualActivityAdder
             userInfo={props.userInfo}

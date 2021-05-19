@@ -12,25 +12,6 @@ interface ChartsAndGraphsProps {
 }
 
 const ChartsAndGraphs: React.FC<ChartsAndGraphsProps> = (props) => {
-  // const [timeRan, setTimeRan] = useState<number>();
-  // const [distanceCovered, setDistanceCovered] = useState<number>();
-  // const [loading, setLoading] = useState<boolean>(true);
-
-  // /**********************
-  // SET DISTANCE AND DURATION
-  // **********************/
-  // useEffect(() => {
-  //   let time = 0;
-  //   let distance = 0;
-  //   props.runs.forEach((run) => {
-  //     time += run.duration_seconds;
-  //     distance += run.distance_meters;
-  //   });
-  //   setTimeRan(time);
-  //   setDistanceCovered(distance);
-  //   setLoading(false);
-  // }, [props.runs]);
-
   return (
     <div className={classes.mainDiv}>
       <div>

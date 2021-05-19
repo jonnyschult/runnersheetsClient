@@ -82,10 +82,7 @@ const AthleteAdderModal: React.FC<AthleteAdderModalProps> = (props) => {
       </Form>
       <Modal className={classes.modal} isOpen={modal} toggle={toggle}>
         <ModalHeader className={classes.modalHeader} toggle={toggle}>
-          <header className={classes.headerText}>
-            {" "}
-            Add Athlete to {props.selectedClub!.club_name}{" "}
-          </header>
+          <header className={classes.headerText}>Add Athlete to Club</header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
           <Form className={classes.form} onSubmit={(e) => addAthlete(e)}>
@@ -106,6 +103,7 @@ const AthleteAdderModal: React.FC<AthleteAdderModalProps> = (props) => {
             <Button
               className={`${classes.modalBtn} ${classes.addBtn}`}
               type="submit"
+              disabled={props.selectedClub === null ? true : false}
             >
               Add
             </Button>

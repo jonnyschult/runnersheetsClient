@@ -40,7 +40,9 @@ const ClubAdderModal: React.FC<ClubAdderModalProps> = (props) => {
       const info: Club = {
         club_name: clubTitle,
       };
-      const clubResults = await poster(token, "clubs/create", info);
+      console.log(info);
+      const clubResults = await poster(token, "clubs/createClub", info);
+      console.log("helo");
       const newClub: Club = clubResults.data.newClub;
       setResponse(clubResults.data.message);
       const sortedClubs = [...props.clubs, newClub].sort((a: Club, b: Club) => {
@@ -55,7 +57,6 @@ const ClubAdderModal: React.FC<ClubAdderModalProps> = (props) => {
       props.userInfo.setUserInfo!(props.userInfo);
       setTimeout(() => {
         props.setSelectedClub(newClub);
-        props.userInfo.setUserInfo!(clubResults.data.updatedUser);
         setResponse("");
         toggle();
       }, 2200);
@@ -64,7 +65,7 @@ const ClubAdderModal: React.FC<ClubAdderModalProps> = (props) => {
       if (error.status < 500 && error["response"] !== undefined) {
         setResponse(error.response.data.message);
       } else {
-        setResponse("Could not create Club Club. Server error");
+        setResponse("Could not create club. Server error");
       }
       setTimeout(() => {
         setResponse("");
@@ -121,7 +122,7 @@ const ClubAdderModal: React.FC<ClubAdderModalProps> = (props) => {
             className={`${classes.modalBtn} ${classes.cancelBtn}`}
             onClick={toggle}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>
