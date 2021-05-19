@@ -13,106 +13,97 @@ import {
   CardText,
 } from "reactstrap";
 import { UserInfo } from "../../../../models";
+import { getter, updater } from "../../../../utilities";
+import axios from "axios";
 
 interface FibitAuthProps {
   userInfo: UserInfo;
 }
 
+//url: `https://api.fitbit.com/oauth2/token?code=${authCode}&grant_type=authorization_code&redirect_uri=${fitbitSecretResults.data.redirectURI}`,
+
 const FitbitAuth: React.FC<FibitAuthProps> = (props) => {
   const token = props.userInfo.token;
   const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState();
-  const [response, setResponse] = useState();
+  const [error, setError] = useState<string>("");
+  const [response, setResponse] = useState<string>("");
+
+  //checks for query parameter, which fitbit returns in their callback uri
+  const stringParser = (str: string) => {
+    //Gets token from window.location.href
+    const query = str.split("?");
+    const codePlusHash = query[1].split("code=");
+    const code = codePlusHash[1].split("#");
+    return code[0];
+  };
+
   useEffect(() => {
     const url = window.location.href;
-    if (url.includes("?")) {
-      //checks for query parameter, which fitbit returns in their callback uri
 
-      setLoading(true);
-      const stringParser = (str: string) => {
-        //Gets token from window.location.href
-        const query = str.split("?");
-        const codePlusHash = query[1].split("code=");
-        const code = codePlusHash[1].split("#");
-        return code[0];
-      };
-      const authCode = stringParser(url);
-      fetch(`${APIURL}/fitbit/getSecretId`, {
-        //calls to get user secret stored in env.
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          //Call to get refresh token from fitbit
-          fetch(
-            `https://api.fitbit.com/oauth2/token?code=${authCode}&grant_type=authorization_code&redirect_uri=${data.redirectURI}`,
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Basic ${data.authorization}`,
-                "Content-Type": "application/x-www-form-urlencoded",
-              },
-            }
-          )
-            .then((res) => res.json())
-            .then(async (data) => {
-              fetch(`${APIURL}/user/updateUser`, {
-                //store refresh token in user table
-                method: "PUT",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: token,
-                },
-                body: JSON.stringify({
-                  fitbitRefresh: data.refresh_token,
-                }),
-              })
-                .then((res) => res.json())
-                .then((data) => {
-                  setResponse(data.message);
-                  setLoading(false);
-                })
-                .catch((err) => {
-                  setErr(err.message);
-                  setLoading(false);
-                });
-            })
-            .catch((err) => {
-              setErr(err.message);
-              setLoading(false);
-            });
-        })
-        .catch((err) => {
-          setErr(err.message);
-          setLoading(false);
+    const fitbitTokenHandler = async () => {
+      try {
+        setLoading(true);
+        const authCode = stringParser(url);
+        const fitbitSecretResults = await getter(token, "fitbit/getSecretId");
+        //Used fetch because axios doesn't have a built in stringify function for x-www-form-urlencoded
+        const response = await fetch(
+          `https://api.fitbit.com/oauth2/token?code=${authCode}&grant_type=authorization_code&redirect_uri=${fitbitSecretResults.data.redirectURI}`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Basic ${fitbitSecretResults.data.authorization}`,
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          }
+        );
+        const data = await response.json();
+        const updateResults = await updater(token, "users/updateUser", {
+          fitbit_refresh: data.refresh_token,
         });
-    } else {
-      console.log("No query parameter");
+        props.userInfo.user = updateResults.data.updatedUser;
+        props.userInfo.setUserInfo!(props.userInfo);
+        setResponse("Success");
+        setTimeout(() => {
+          setResponse("");
+        }, 2200);
+      } catch (error) {
+        console.log(error);
+        if (error.status < 500 && error["response"] !== undefined) {
+          setResponse(error.response.data.message);
+        } else {
+          setResponse("");
+        }
+        setTimeout(() => {
+          setResponse("");
+        }, 2200);
+      } finally {
+        setLoading(false);
+      }
+    };
+    if (url.includes("?")) {
+      fitbitTokenHandler();
     }
   }, [token]);
 
-  const fitbitFetcher = () => {
-    fetch(`${APIURL}/fitbit/getAuth`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        token,
-      },
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        window.open(
-          `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${data.clientId}&redirect_uri=${data.redirectURI}&scope=activity%20nutrition%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight`
-        );
-      })
-      .catch((err) => {
-        setErr(err.message);
-      });
+  const fitbitTokenFetcher = async () => {
+    try {
+      const clientResults = await getter(token, "fitbit/getAuth");
+      window.open(
+        `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${clientResults.data.clientId}&redirect_uri=${clientResults.data.redirectURI}&scope=activity%20nutrition%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight`
+      );
+    } catch (error) {
+      console.log(error);
+      if (error.status < 500 && error["response"] !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("Unable to connect to fitbit");
+      }
+      setTimeout(() => {
+        setResponse("");
+      }, 2200);
+    }
   };
+
   return (
     <div className={classes.wrapper}>
       <div className={classes.mainDiv}>
@@ -128,7 +119,7 @@ const FitbitAuth: React.FC<FibitAuthProps> = (props) => {
             </CardText>
             <Button
               className={classes.fitbitBtn}
-              onClick={(e) => fitbitFetcher()}
+              onClick={(e) => fitbitTokenFetcher()}
             >
               Connect to Fitbit
             </Button>
@@ -141,7 +132,6 @@ const FitbitAuth: React.FC<FibitAuthProps> = (props) => {
             <></>
           )}
           {loading ? <Spinner></Spinner> : <></>}
-          {err ? <Alert>{err}</Alert> : <></>}
         </Card>
       </div>
     </div>

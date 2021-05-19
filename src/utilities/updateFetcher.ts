@@ -18,7 +18,8 @@ type Info =
   | Team
   | Club
   | TeamsUsers
-  | ClubsUsers;
+  | ClubsUsers
+  | { fitbit_refresh: number | string };
 
 const updater: (
   token: string,

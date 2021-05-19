@@ -15,7 +15,9 @@ import {
   Spinner,
   Alert,
 } from "reactstrap";
-import { UserInfo } from "../../../../models";
+import { Activity, UserInfo } from "../../../../models";
+import { getter } from "../../../../utilities";
+import { userInfo } from "os";
 
 interface FitbitAdderProps {
   userInfo: UserInfo;
@@ -37,34 +39,37 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
   GET FITBIT IDS TO CHECK IF ALREADY ADDED
   ***************************/
   useEffect(() => {
-    fetch(`${APIURL}/activities/getActivities`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token,
-      },
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        let fitbitId: number[] = [];
-        await data.result.forEach((run: any) => {
-          //Gets fitbit Ids so user can see runs already adder in the fitbitAdderModal
-          if (run.fitbitId != null) {
-            fitbitId.push(parseInt(run.fitbitId));
-          }
-        });
-        await setAlreadyAdded(fitbitId);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const savedFBActivitiesFetcher = async () => {
+      try {
+        const results = await getter(
+          token,
+          "activities/getActivities",
+          `user_id=${props.userInfo.user.id}`
+        );
+        const fitbitRuns: Activity[] = results.data.activities.filter(
+          (run: Activity) => run.fitbit_id
+        );
+        setAlreadyAdded(fitbitRuns.map((run) => run.fitbit_id!));
+      } catch (error) {
+        console.log(error);
+        if (error.status < 500 && error["response"] !== undefined) {
+          setResponse(error.response.data.message);
+        } else {
+          setResponse("");
+        }
+        setTimeout(() => {
+          setResponse("");
+        }, 2200);
+      }
+    };
+    savedFBActivitiesFetcher();
   }, [token]);
 
   /***************************
   ADD FITBIT ACTIVITY TO DATABASE
   ***************************/
   const runAdder = async (runObj: any) => {
-    fetch(`${APIURL}/activity/create`, {
+    fetch(`${APIURL}/activities/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -85,8 +90,8 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {})
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        console.log(error);
       });
   };
 
@@ -94,7 +99,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
   REMOVE FITBIT ACTIVITY FROM DATABASE
   ***************************/
   const runRemover = async (runObj: any) => {
-    fetch(`${APIURL}/activity/removeActivity`, {
+    fetch(`${APIURL}/activities/removeActivity`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -106,8 +111,8 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
     })
       .then((res) => res.json())
       .then(async (data) => {})
-      .catch((err) => {
-        console.log(err);
+      .catch((error) => {
+        console.log(error);
       });
   };
 
@@ -119,7 +124,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
   ) => {
     e.preventDefault();
     setLoading(true);
-    fetch(`${APIURL}/user/getAthlete`, {
+    fetch(`${APIURL}/users/getUser`, {
       //Gets refresh token 64encoded client id and client secret
       method: "GET",
       headers: {
@@ -133,7 +138,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
           throw new Error("Account Not Associated with fitbit");
         }
         fetch(
-          `https://api.fitbit.com/oauth2/token?&grant_type=refresh_token&refresh_token=${data.athlete.fitbitRefresh}`, //refreshes the refresh token and gives access token.
+          `https://api.fitbit.com/oauth2/token?&grant_type=refresh_token&refresh_token=${props.userInfo.user.fitbit_refresh}`, //refreshes the refresh token and gives access token.
           {
             method: "POST",
             headers: {
@@ -144,7 +149,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
         )
           .then((res) => res.json())
           .then((data) => {
-            fetch(`${APIURL}/user/updateUser`, {
+            fetch(`${APIURL}/users/updateUser`, {
               //Saves new update token to database
               method: "PUT",
               headers: {
@@ -157,9 +162,9 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
             })
               .then((res) => res.json())
               .then((data) => {})
-              .catch((err) => {
+              .catch((error) => {
                 setLoading(false);
-                setResponse(err);
+                setResponse(error);
                 setTimeout(() => {
                   setResponse("");
                 }, 3000);
@@ -182,25 +187,28 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
                 await props.setFitbitRuns(runs);
                 setLoading(false);
               })
-              .catch((err) => {
+              .catch((error) => {
                 setLoading(false);
-                setResponse(err);
+                console.log(error);
+                setResponse(error.message);
                 setTimeout(() => {
                   setResponse("");
                 }, 3000);
               });
           })
-          .catch((err) => {
+          .catch((error) => {
             setLoading(false);
-            setResponse(err);
+            console.log(error);
+            setResponse(error.message);
             setTimeout(() => {
               setResponse("");
             }, 3000);
           });
       })
-      .catch((err) => {
+      .catch((error) => {
         setLoading(false);
-        setResponse(err);
+        console.log(error);
+        setResponse(error.message);
         setTimeout(() => {
           setResponse("");
         }, 3000);

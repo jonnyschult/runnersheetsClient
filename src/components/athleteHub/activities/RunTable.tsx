@@ -54,7 +54,7 @@ const RunTable: React.FC<RunTableProps> = (props) => {
                   >
                     <th scope="row">{index + 1}</th>
                     <td className={classes.td}>
-                      {new Date(activity.date).toDateString()}
+                      {new Date(+activity.date).toDateString()}
                     </td>
                     <td className={classes.td}>
                       {Math.floor(activity.distance_meters)
@@ -116,11 +116,11 @@ const RunTable: React.FC<RunTableProps> = (props) => {
               <tr className={`${classes.tr} ${classes.totals}`}>
                 <th>Totals</th>
                 <td className={classes.td}>
-                  {new Date(props.activities[0].date)
+                  {new Date(+props.activities[0].date)
                     .toDateString()
                     .substr(4, 6)}{" "}
                   -
-                  {new Date(props.activities[props.activities.length - 1].date)
+                  {new Date(+props.activities[props.activities.length - 1].date)
                     .toDateString()
                     .substr(4, 6)}
                 </td>
@@ -148,11 +148,11 @@ const RunTable: React.FC<RunTableProps> = (props) => {
               <tr className={`${classes.tr} ${classes.averages}`}>
                 <th>Averages</th>
                 <td className={classes.td}>
-                  {new Date(props.activities[0].date)
+                  {new Date(+props.activities[0].date)
                     .toDateString()
                     .substr(4, 6)}{" "}
                   -
-                  {new Date(props.activities[props.activities.length - 1].date)
+                  {new Date(+props.activities[props.activities.length - 1].date)
                     .toDateString()
                     .substr(4, 6)}
                 </td>
