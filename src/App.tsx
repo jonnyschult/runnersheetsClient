@@ -40,6 +40,7 @@ const App: React.FC = () => {
   const loginHandler: (userToken: string) => void = async (userToken) => {
     localStorage.setItem("token", userToken);
     let userData = await userDataFetcher(userToken, setUserInfo);
+    console.log(userData);
     //prevents unmounting login modal before login message is set in that modal.
     setTimeout(() => {
       setUserInfo(userData);

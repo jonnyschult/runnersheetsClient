@@ -13,7 +13,7 @@ const ElevationLineGraph: React.FC<ElevationLineGraphProps> = (props) => {
 
   const lineGraphSetter = useCallback(() => {
     let dates = props.runs.map((run) => {
-      return new Date(run.date).toDateString();
+      return new Date(+run.date).toDateString();
     });
     let elevations = props.runs.map((run) => {
       if (!run.elevation_meters) {

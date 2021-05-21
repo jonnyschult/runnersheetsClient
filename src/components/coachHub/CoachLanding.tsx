@@ -37,37 +37,42 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
     new Date(Date.now()).getTime()
   );
 
-  useCallback(async () => {
-    if (selectedTeam !== null) {
-      try {
-        setLoading(true);
-        const activitiesResults = await getter(
-          token,
-          `teams/getTeamActivities/${selectedTeam.id}`,
-          `start_date=${startDate}&end_date=${endDate}`
-        );
-        const sortedActivities = activitiesResults.data.activities.sort(
-          (a: Activity, b: Activity) => {
-            if (new Date(a.date).getTime() > new Date(b.date).getTime()) {
-              return 1;
-            } else {
-              return -1;
+  useEffect(() => {
+    const activityGetter = async () => {
+      if (selectedTeam !== null) {
+        try {
+          setLoading(true);
+          const activitiesResults = await getter(
+            token,
+            `teams/getTeamActivities/${selectedTeam.id}`,
+            `start_date=${startDate}&end_date=${endDate}`
+          );
+          const sortedActivities = activitiesResults.data.activities.sort(
+            (a: Activity, b: Activity) => {
+              if (new Date(a.date).getTime() > new Date(b.date).getTime()) {
+                return 1;
+              } else {
+                return -1;
+              }
             }
+          );
+          setTeamActivities(sortedActivities);
+        } catch (error) {
+          console.log(error);
+          setErrorPage(true);
+          if (error.response) {
+            setError(error.response.data.message);
+          } else {
+            setError("Problem fetching your data. Please let site admin Know.");
           }
-        );
-        setTeamActivities(sortedActivities);
-      } catch (error) {
-        console.log(error);
-        setErrorPage(true);
-        if (error["response"]) {
-          setError(error.response.data.message);
-        } else {
-          setError("Problem fetching your data. Please let site admin Know.");
+          console.log(error);
+        } finally {
+          setLoading(false);
         }
-        console.log(error);
-      } finally {
-        setLoading(false);
       }
+    };
+    if (selectedTeam !== null) {
+      activityGetter();
     }
   }, [startDate, endDate, selectedTeam, token]);
 
@@ -123,7 +128,7 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
       } catch (error) {
         console.log(error);
         setErrorPage(true);
-        if (error["response"]) {
+        if (error.response) {
           setError(error.response.data.message);
         } else {
           setError("Problem fetching your data. Please let site admin Know.");

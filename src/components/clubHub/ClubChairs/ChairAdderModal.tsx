@@ -62,10 +62,10 @@ const ChairAdderModal: React.FC<ChairAdderModalProps> = (props) => {
       }, 2200);
     } catch (error) {
       console.log(error);
-      if (error.status < 500 && error["response"] !== undefined) {
+      if (error.response.status < 500 && error.response !== undefined) {
         setResponse(error.response.data.message);
       } else {
-        setResponse("Could not create team team. Server error");
+        setResponse("Could not add chairperson. Server error");
       }
       setTimeout(() => {
         setResponse("");
@@ -114,7 +114,7 @@ const ChairAdderModal: React.FC<ChairAdderModalProps> = (props) => {
                     type="radio"
                     name="radio1"
                     value="vice chairperson"
-                    onChange={(e) => setRole(e.target.value)}
+                    onChange={(e) => setRole("vice_chair")}
                   />
                   Vice Chair
                 </Label>
@@ -126,7 +126,7 @@ const ChairAdderModal: React.FC<ChairAdderModalProps> = (props) => {
                     type="radio"
                     name="radio1"
                     value="chairperson"
-                    onChange={(e) => setRole(e.target.value)}
+                    onChange={(e) => setRole("chair")}
                   />
                   Chairperson
                 </Label>
@@ -151,7 +151,7 @@ const ChairAdderModal: React.FC<ChairAdderModalProps> = (props) => {
             className={`${classes.modalBtn} ${classes.cancelBtn}`}
             onClick={toggle}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>

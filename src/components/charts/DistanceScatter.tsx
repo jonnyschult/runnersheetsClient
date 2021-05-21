@@ -80,7 +80,7 @@ const DistanceScatter: React.FC<DistanceScatterProps> = (props) => {
           .filter((activity) => activity.user_id === athlete.id)
           .map((activity) => {
             return {
-              x: activity.date,
+              x: +activity.date,
               y: activity.distance_meters,
             };
           }),

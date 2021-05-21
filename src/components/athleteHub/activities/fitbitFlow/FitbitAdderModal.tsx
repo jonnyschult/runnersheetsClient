@@ -61,7 +61,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
       props.userInfo.setUserInfo!(updatedUserInfo);
     } catch (error) {
       console.log(error);
-      if (error.status < 500 && error["response"] !== undefined) {
+      if (error.response.status < 500 && error.response !== undefined) {
         setResponse(error.response.data.message);
       } else {
         setResponse("");
@@ -104,7 +104,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
       props.setActivities(sortedActivities);
     } catch (error) {
       console.log(error);
-      if (error.status < 500 && error["response"] !== undefined) {
+      if (error.response.status < 500 && error.response !== undefined) {
         setResponse(error.response.data.message);
       } else {
         setResponse("");
@@ -132,7 +132,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
       );
     } catch (error) {
       console.log(error);
-      if (error.status < 500 && error["response"] !== undefined) {
+      if (error.response.status < 500 && error.response !== undefined) {
         setResponse(error.response.data.message);
       } else {
         setResponse("");
@@ -171,7 +171,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
       setLoading(false);
     } catch (error) {
       console.log(error);
-      if (error.status < 500 && error["response"] !== undefined) {
+      if (error.response.status < 500 && error.response !== undefined) {
         setResponse(error.response.data.message);
       } else {
         setResponse("");
@@ -198,7 +198,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
         setAlreadyAdded(fitbitRuns.map((run) => +run.fitbit_id!));
       } catch (error) {
         console.log(error);
-        if (error.status < 500 && error["response"] !== undefined) {
+        if (error.response.status < 500 && error.response !== undefined) {
           setResponse(error.response.data.message);
         } else {
           setResponse("");

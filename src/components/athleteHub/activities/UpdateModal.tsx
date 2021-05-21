@@ -98,7 +98,7 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
       }, 1500);
     } catch (error) {
       console.log(error);
-      if (error.status < 500 && error["response"] !== undefined) {
+      if (error.response.status < 500 && error.response !== undefined) {
         setResponse(error.response.data.message);
       } else {
         setResponse("Could not update user. Server error");
@@ -143,7 +143,7 @@ const UpdateModal: React.FC<UpdateModalProps> = (props) => {
         }, 1500);
       } catch (error) {
         console.log(error);
-        if (error.status < 500 && error["response"] !== undefined) {
+        if (error.response.status < 500 && error.response !== undefined) {
           setResponse(error.response.data.message);
         } else {
           setResponse("Could not delete activity. Server error");

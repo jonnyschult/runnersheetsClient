@@ -59,10 +59,10 @@ const AthleteAdderModal: React.FC<AthleteAdderModalProps> = (props) => {
       }, 2200);
     } catch (error) {
       console.log(error);
-      if (error.status < 500 && error["response"] !== undefined) {
+      if (error.response.status < 500 && error.response !== undefined) {
         setResponse(error.response.data.message);
       } else {
-        setResponse("Could not create team team. Server error");
+        setResponse("Could not add athlete. Server error");
       }
       setTimeout(() => {
         setResponse("");
@@ -120,7 +120,7 @@ const AthleteAdderModal: React.FC<AthleteAdderModalProps> = (props) => {
             className={`${classes.modalBtn} ${classes.cancelBtn}`}
             onClick={toggle}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>

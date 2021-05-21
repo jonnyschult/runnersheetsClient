@@ -14,7 +14,7 @@ import {
   Spinner,
 } from "reactstrap";
 import { Activity, UserInfo } from "../../../models";
-import { poster } from "../../../utilities";
+import { poster, checkNumber } from "../../../utilities";
 
 interface ManualActivityProps {
   userInfo: UserInfo;
@@ -46,70 +46,74 @@ const ManualActivityAdder: React.FC<ManualActivityProps> = (props) => {
   ***************************/
   const runAdder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      setLoading(true);
-      let dateTime =
-        new Date(`${date}T${time}:00.000Z`).getTime() +
-        new Date(`${date}T${time}:00.000Z`).getTimezoneOffset() * 60 * 1000;
-      //prettier-ignore
-      let duration = ((hours * 60 * 60) + (minutes * 60) + seconds)
-      const info: Activity = {
-        user_id: props.userInfo.user.id!,
-        date: dateTime,
-        distance_meters: distance,
-        duration_seconds: duration,
-        elevation_meters: elevation,
-        avg_hr: avgHR,
-        max_hr: maxHR,
-        description: description,
-      };
-      const results = await poster(
-        props.userInfo.token,
-        "activities/createActivity",
-        info
-      );
-      const newActivity: Activity = results.data.newActivity;
-      if (
-        newActivity.date < props.endDate &&
-        newActivity.date > props.startDate &&
-        props.activities.length > 0
-      ) {
-        const sortedActivities: Activity[] = [
-          ...props.activities,
-          newActivity,
-        ].sort((actA: Activity, actB: Activity) => {
-          return actA.date - actB.date;
-        });
-        props.setActivities(sortedActivities);
-      } else if (props.activities.length === 0) {
-        props.setActivities([newActivity]);
-      }
+    if (hours + minutes + seconds === 0) {
+      setResponse("Distance and duration must be greater than zero.");
+    } else {
+      try {
+        setLoading(true);
+        let dateTime =
+          new Date(`${date}T${time}:00.000Z`).getTime() +
+          new Date(`${date}T${time}:00.000Z`).getTimezoneOffset() * 60 * 1000;
+        //prettier-ignore
+        let duration = ((hours * 60 * 60) + (minutes * 60) + seconds)
+        const info: Activity = {
+          user_id: props.userInfo.user.id!,
+          date: dateTime,
+          distance_meters: distance,
+          duration_seconds: duration,
+          elevation_meters: elevation,
+          avg_hr: avgHR,
+          max_hr: maxHR,
+          description: description,
+        };
+        const results = await poster(
+          props.userInfo.token,
+          "activities/createActivity",
+          info
+        );
+        const newActivity: Activity = results.data.newActivity;
+        if (
+          newActivity.date < props.endDate &&
+          newActivity.date > props.startDate &&
+          props.activities.length > 0
+        ) {
+          const sortedActivities: Activity[] = [
+            ...props.activities,
+            newActivity,
+          ].sort((actA: Activity, actB: Activity) => {
+            return actA.date - actB.date;
+          });
+          props.setActivities(sortedActivities);
+        } else if (props.activities.length === 0) {
+          props.setActivities([newActivity]);
+        }
 
-      setMinutes(0);
-      setSeconds(0);
-      setHours(0);
-      setMaxHR(undefined);
-      setAvgHR(undefined);
-      setElevation(undefined);
-      setDescription("");
-      setDistance(0);
-      setResponse("Update Successful");
-      setTimeout(() => {
-        setResponse("");
-      }, 1500);
-    } catch (error) {
-      console.log(error);
-      if (error.status < 500 && error["response"] !== undefined) {
-        setResponse(error.response.data.message);
-      } else {
-        setResponse("Could not update user. Server error");
+        setMinutes(0);
+        setSeconds(0);
+        setHours(0);
+        setMaxHR(undefined);
+        setAvgHR(undefined);
+        setElevation(undefined);
+        setDescription("");
+        setDistance(0);
+        setResponse("Success");
+        setTimeout(() => {
+          setResponse("");
+        }, 1500);
+      } catch (error) {
+        console.log(error);
+        if (error.response.status < 500 && error.response !== undefined) {
+          setResponse(error.response.data.message);
+        } else {
+          setResponse("Could not add run. Server error");
+        }
+        setTimeout(() => {
+          setResponse("");
+          toggle();
+        }, 2200);
+      } finally {
+        setLoading(false);
       }
-      setTimeout(() => {
-        setResponse("");
-        toggle();
-      }, 2200);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -160,9 +164,9 @@ const ManualActivityAdder: React.FC<ManualActivityProps> = (props) => {
               <Label htmlFor="distance">Distance in Meters</Label>
               <Input
                 required
-                type="number"
+                type="text"
                 name="distance"
-                onChange={(e) => setDistance(parseInt(e.target.value))}
+                onChange={(e) => checkNumber(e, setDistance, setResponse)}
               ></Input>
             </FormGroup>
             <div className={classes.timeGroup}>
@@ -241,7 +245,7 @@ const ManualActivityAdder: React.FC<ManualActivityProps> = (props) => {
             className={`${classes.modalBtn} ${classes.cancelBtn}`}
             onClick={toggle}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>

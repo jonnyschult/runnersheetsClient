@@ -74,7 +74,7 @@ const Register: React.FC<RegisterProps> = (props) => {
         }, 1500);
       } catch (error) {
         console.log(error);
-        if (error["response"] !== undefined) {
+        if (error.response !== undefined) {
           setError(error.response.data.message);
         } else {
           setError("Problem creating your account. Please let site admin know");

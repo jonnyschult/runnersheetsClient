@@ -13,7 +13,7 @@ const DistanceBarChart: React.FC<DistanceBarChartProps> = (props) => {
 
   const barChartSetter = useCallback(() => {
     let dates = props.runs.map((run) => {
-      return new Date(run.date).toDateString();
+      return new Date(+run.date).toDateString();
     });
     let distances = props.runs.map((run) => {
       return run.distance_meters;

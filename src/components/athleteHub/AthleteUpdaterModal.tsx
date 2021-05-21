@@ -66,13 +66,14 @@ const AthleteUpdater: React.FC<AthleteUpdaterProps> = (props) => {
 
       props.userInfo.user = response.data.updatedUser;
       props.userInfo.setUserInfo!(props.userInfo);
+      props.setAthlete(response.data.updatedUser);
       setResponse("Update Successful");
       setTimeout(() => {
         setResponse("");
       }, 1500);
     } catch (error) {
       console.log(error);
-      if (error.status < 500 && error["response"] !== undefined) {
+      if (error.response.status < 500 && error.response !== undefined) {
         setResponse(error.response.data.message);
       } else {
         setResponse("Could not update user. Server error");
@@ -158,7 +159,7 @@ const AthleteUpdater: React.FC<AthleteUpdaterProps> = (props) => {
             className={`${classes.modalBtn} ${classes.cancelBtn}`}
             onClick={toggle}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>

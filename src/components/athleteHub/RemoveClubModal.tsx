@@ -46,10 +46,10 @@ const RemoveClubmodal: React.FC<RemoveClubModalProps> = (props) => {
         const filteredClubs = props.clubs.filter(
           (club) => club.id !== props.club.id
         );
-        props.setClubs(filteredClubs);
-        props.userInfo.clubs = filteredClubs;
-        props.userInfo.setUserInfo!(props.userInfo);
         setTimeout(() => {
+          props.setClubs(filteredClubs);
+          props.userInfo.clubs = filteredClubs;
+          props.userInfo.setUserInfo!(props.userInfo);
           setResponse("");
           toggle();
         }, 2200);

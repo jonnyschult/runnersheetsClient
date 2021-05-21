@@ -44,22 +44,22 @@ const StaffModal: React.FC<AthleteModalProps> = (props) => {
         const results = await deleter(
           token,
           "clubs/removeAthlete",
-          `club_id=${props.selectedClub!.id}&athlete_id=${athlete.id}`
+          `club_id=${props.selectedClub!.id}&user_id=${athlete.id}`
         );
         setResponse(results.data.message);
-        props.setAthletes(
-          props.athletes.filter((person: User) => person.id !== athlete.id)
-        );
         setTimeout(() => {
+          props.setAthletes(
+            props.athletes.filter((person: User) => person.id !== athlete.id)
+          );
           setResponse("");
           toggle();
         }, 2200);
       } catch (error) {
         console.log(error);
-        if (error.status < 500 && error["response"] !== undefined) {
+        if (error.response.status < 500 && error.response !== undefined) {
           setResponse(error.response.data.message);
         } else {
-          setResponse("Could not update user. Server error");
+          setResponse("Could not remove clubmember. Server error");
         }
         setTimeout(() => {
           setResponse("");
@@ -125,7 +125,7 @@ const StaffModal: React.FC<AthleteModalProps> = (props) => {
               }
             }}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>

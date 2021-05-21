@@ -66,7 +66,7 @@ const CollatedWorkouts: React.FC<CollatedWorkoutsProps> = (props) => {
                           <tr className={classes.tr}>
                             <th scope="row">{index + 1}</th>
                             <td className={classes.td}>
-                              {new Date(activity.date).toDateString()}
+                              {new Date(+activity.date).toDateString()}
                             </td>
                             <td className={classes.td}>
                               {activity.distance_meters
@@ -117,7 +117,7 @@ const CollatedWorkouts: React.FC<CollatedWorkoutsProps> = (props) => {
             onClick={toggle}
             className={`modalButton ${classes.modalBtn} ${classes.cancelBtn}`}
           >
-            Cancel
+            Okay
           </Button>
           <Button
             className={` modalButton ${classes.modalBtn} ${classes.cancelBtn}`}

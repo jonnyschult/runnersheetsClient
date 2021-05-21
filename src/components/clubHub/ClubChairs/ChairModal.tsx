@@ -19,7 +19,10 @@ import { deleter, updater } from "../../../utilities";
 interface ChairModalProps {
   userInfo: UserInfo;
   chairperson: User;
+  clubs: Club[];
+  setClubs: React.Dispatch<React.SetStateAction<Club[]>>;
   setChairpersons: React.Dispatch<React.SetStateAction<User[]>>;
+  setSelectedClub: React.Dispatch<React.SetStateAction<Club | null>>;
   chairpersons: User[];
   selectedClub: Club | null;
 }
@@ -61,11 +64,11 @@ const ChairModal: React.FC<ChairModalProps> = (props) => {
         toggle();
       }, 2200);
     } catch (error) {
-      console.log(error);
-      if (error.status < 500 && error["response"] !== undefined) {
+      console.log(error, error.response);
+      if (error.response.status < 500 && error.response !== undefined) {
         setResponse(error.response.data.message);
       } else {
-        setResponse("Could not update user. Server error");
+        setResponse("Could not update role. Server error");
       }
       setTimeout(() => {
         setResponse("");
@@ -94,20 +97,32 @@ const ChairModal: React.FC<ChairModalProps> = (props) => {
         );
         setResponse(results.data.message);
         setTimeout(() => {
+          //removes club if user deleted themself
           props.setChairpersons(
             props.chairpersons.filter(
               (person: User) => person.id !== props.chairperson.id
             )
           );
+          if (props.chairperson.id === props.userInfo.user.id) {
+            const filteredClubs = props.clubs.filter(
+              (club) => club.id !== props.selectedClub!.id
+            );
+            props.setClubs(filteredClubs);
+            props.userInfo.clubs = filteredClubs;
+            props.userInfo.setUserInfo!(props.userInfo);
+            props.setSelectedClub(
+              filteredClubs.length > 0 ? filteredClubs[0] : null
+            );
+          }
           setResponse("");
           toggle();
         }, 2200);
       } catch (error) {
         console.log(error);
-        if (error.status < 500 && error["response"] !== undefined) {
+        if (error.response.status < 500 && error.response !== undefined) {
           setResponse(error.response.data.message);
         } else {
-          setResponse("Could not update user. Server error");
+          setResponse("Could not delete user. Server error");
         }
         setTimeout(() => {
           setResponse("");
@@ -130,7 +145,7 @@ const ChairModal: React.FC<ChairModalProps> = (props) => {
       <Form inline onSubmit={(e) => updateInfo(e)}>
         <p onClick={toggle} className={classes.cardItem}>
           <b>{`${props.chairperson.first_name} ${props.chairperson.last_name}: `}</b>
-          <i> {props.chairperson.role}</i>
+          <i> {props.chairperson.role === "chair" ? "Chair" : "Vice Chair"}</i>
         </p>
       </Form>
       <Modal
@@ -150,7 +165,9 @@ const ChairModal: React.FC<ChairModalProps> = (props) => {
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
           <p>{`Email:   ${props.chairperson.email}`}</p>
-          <p>{`Role:   ${props.chairperson.role}`}</p>
+          <p>{`Role:   ${
+            props.chairperson.role === "chair" ? "Chair" : "Vice Chair"
+          }`}</p>
           <h6 className={classes.modalExpand} onClick={toggle2}>
             Update
           </h6>
@@ -164,7 +181,7 @@ const ChairModal: React.FC<ChairModalProps> = (props) => {
                       type="radio"
                       name="radio1"
                       value="vice chairperson"
-                      onChange={(e) => setRole(e.target.value)}
+                      onChange={(e) => setRole("vice_chair")}
                     />
                     Vice Chairperson
                   </Label>
@@ -175,7 +192,7 @@ const ChairModal: React.FC<ChairModalProps> = (props) => {
                       type="radio"
                       name="radio1"
                       value="chairperson"
-                      onChange={(e) => setRole(e.target.value)}
+                      onChange={(e) => setRole("chair")}
                     />
                     Chairperson
                   </Label>
@@ -216,7 +233,7 @@ const ChairModal: React.FC<ChairModalProps> = (props) => {
               }
             }}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>

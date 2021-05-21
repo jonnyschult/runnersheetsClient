@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import ErrorPage from "../ErrorPage/ErrorPage";
 import classes from "./Club.module.css";
 import ClubList from "./ClubList/ClubList";
@@ -36,43 +36,52 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
   );
   const [endDate, setEndDate] = useState(new Date(Date.now()).getTime());
 
-  useCallback(async () => {
-    if (selectedClub !== null) {
+  useEffect(() => {
+    const clubActivitiesFetcher = async () => {
       try {
         setLoading(true);
         const activitiesResults = await getter(
           token,
-          `clubs/getClubActivities/${selectedClub.id}`,
+          `clubs/getClubActivities/${selectedClub!.id}`,
           `start_date=${startDate}&end_date=${endDate}`
         );
-        const sortedActivities = activitiesResults.data.activities.sort(
-          (a: Activity, b: Activity) => {
-            if (new Date(a.date).getTime() > new Date(b.date).getTime()) {
-              return 1;
-            } else {
-              return -1;
-            }
-          }
-        );
-        setClubActivities(sortedActivities);
+        if (activitiesResults.data.activities.length > 0) {
+          const sortedActivities: Activity[] =
+            activitiesResults.data.activities.sort(
+              (a: Activity, b: Activity) => {
+                if (new Date(+a.date).getTime() > new Date(+b.date).getTime()) {
+                  return 1;
+                } else {
+                  return -1;
+                }
+              }
+            );
+          console.log(sortedActivities);
+          setClubActivities(sortedActivities ? sortedActivities : []);
+        } else {
+          setClubActivities([]);
+        }
       } catch (error) {
         console.log(error);
         setErrorPage(true);
-        if (error["response"]) {
+        if (error.response) {
           setError(error.response.data.message);
         } else {
           setError("Problem fetching your data. Please let site admin Know.");
         }
-        console.log(error);
       } finally {
         setLoading(false);
       }
+    };
+    if (selectedClub !== null) {
+      clubActivitiesFetcher();
     }
-  }, [startDate, endDate, selectedClub, token]);
+  }, [startDate, endDate, selectedClub, token, athletes]);
 
   useEffect(() => {
     const loadUpHandler = async () => {
       try {
+        setLoadingMain(true);
         const clubResults = await getter(
           token,
           `clubs/getClubMembers/${selectedClub!.id}`
@@ -129,7 +138,7 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
       } catch (error) {
         console.log(error);
         setErrorPage(true);
-        if (error["response"]) {
+        if (error.response) {
           setError(error.response.data.message);
         } else {
           setError("Problem fetching your data. Please let site admin Know.");
@@ -138,9 +147,12 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
         setLoadingMain(false);
       }
     };
-
     if (selectedClub !== null) {
       loadUpHandler();
+    } else {
+      setChairpersons([]);
+      setAthletes([]);
+      setClubActivities([]);
     }
   }, [selectedClub, token]);
 
@@ -155,90 +167,84 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
   } else {
     return (
       <div className={classes.wrapper}>
-        {loading ? (
-          <Spinner></Spinner>
-        ) : (
-          <div className={classes.mainDiv}>
-            {loadingMain ? (
-              <Spinner></Spinner>
-            ) : (
-              <div>
-                <h2 className={classes.clubLandingHeader}>
-                  {selectedClub !== null
-                    ? selectedClub.club_name
-                    : props.userInfo.clubs.length > 0
-                    ? props.userInfo.clubs[0]
-                    : "Select or Create a Team"}
-                </h2>
-                <div style={{ display: "flex" }}>
-                  <Container className={classes.leftContainer}>
-                    <ClubList
-                      userInfo={props.userInfo}
-                      clubs={clubs}
-                      selectedClub={selectedClub}
-                      setClubs={setClubs}
-                      setSelectedClub={setSelectedClub}
-                    />
-                    <Chairpersons
-                      userInfo={props.userInfo}
-                      chairpersons={chairpersons}
-                      selectedClub={selectedClub}
-                      setChairpersons={setChairpersons}
-                    />
-                    <ClubAthletes
-                      userInfo={props.userInfo}
-                      athletes={athletes}
-                      selectedClub={selectedClub}
-                      setAthletes={setAthletes}
-                    />
-                  </Container>
-                  <Container className={classes.middleContainer}>
-                    {clubActivities ? (
-                      <Scatter
-                        activities={clubActivities}
-                        athletes={[...athletes, ...chairpersons]}
-                      />
-                    ) : (
-                      <></>
-                    )}
-                    {clubActivities ? (
-                      [...athletes, ...chairpersons].map(
-                        (clubmember, index) => {
-                          return (
-                            <RunCard
-                              clubMember={clubmember}
-                              activities={clubActivities.filter(
-                                (activity) => activity.user_id === clubmember.id
-                              )}
-                              key={index}
-                            />
-                          );
-                        }
-                      )
-                    ) : (
-                      <></>
-                    )}
-                  </Container>
-                  <Container className={classes.rightContainer}>
-                    <FetchDates
-                      setStartDate={setStartDate}
-                      setEndDate={setEndDate}
-                    />
-                    <div className={classes.collatedWorkoutsContainer}>
-                      <legend className={classes.collatedWorkoutsLegend}>
-                        View Collated Workouts
-                      </legend>
-                      <CollatedWorkouts
-                        activities={clubActivities}
-                        clubMembers={[...athletes, ...chairpersons]}
-                      />
-                    </div>
-                  </Container>
-                </div>
+        <div className={classes.mainDiv}>
+          <h2 className={classes.clubLandingHeader}>
+            {selectedClub !== null
+              ? selectedClub.club_name
+              : props.userInfo.clubs.length > 0
+              ? props.userInfo.clubs[0]
+              : "Select or Create a Club"}
+          </h2>
+          <div style={{ display: "flex" }}>
+            <Container className={classes.leftContainer}>
+              <ClubList
+                userInfo={props.userInfo}
+                clubs={clubs}
+                selectedClub={selectedClub}
+                setClubs={setClubs}
+                setSelectedClub={setSelectedClub}
+              />
+              <Chairpersons
+                userInfo={props.userInfo}
+                clubs={clubs}
+                setClubs={setClubs}
+                chairpersons={chairpersons}
+                selectedClub={selectedClub}
+                setSelectedClub={setSelectedClub}
+                setChairpersons={setChairpersons}
+              />
+              <ClubAthletes
+                userInfo={props.userInfo}
+                athletes={athletes}
+                selectedClub={selectedClub}
+                setAthletes={setAthletes}
+              />
+            </Container>
+            {loading ? (
+              <div className={classes.middleContainer}>
+                <Spinner></Spinner>
               </div>
+            ) : (
+              <Container className={classes.middleContainer}>
+                {clubActivities ? (
+                  <Scatter
+                    activities={clubActivities}
+                    athletes={[...athletes, ...chairpersons]}
+                  />
+                ) : (
+                  <></>
+                )}
+                {clubActivities ? (
+                  [...athletes, ...chairpersons].map((clubmember, index) => {
+                    return (
+                      <RunCard
+                        clubMember={clubmember}
+                        activities={clubActivities.filter(
+                          (activity) => activity.user_id === clubmember.id
+                        )}
+                        key={index}
+                      />
+                    );
+                  })
+                ) : (
+                  <></>
+                )}
+              </Container>
             )}
+            <Container className={classes.rightContainer}>
+              <FetchDates setStartDate={setStartDate} setEndDate={setEndDate} />
+              <div className={classes.collatedWorkoutsContainer}>
+                <legend className={classes.collatedWorkoutsLegend}>
+                  View Collated Workouts
+                </legend>
+                <CollatedWorkouts
+                  activities={clubActivities}
+                  clubMembers={[...athletes, ...chairpersons]}
+                />
+              </div>
+            </Container>
           </div>
-        )}
+        </div>
       </div>
     );
   }

@@ -1,4 +1,4 @@
-import checkIsNumber from "./checkIsNumber";
+import checkNumber from "./checkIsNumber";
 import deleter from "./deleteFetcher";
 import APIURL from "./environment";
 import expander from "./expander";
@@ -13,7 +13,7 @@ import avgHRAdder from "./avgHRAdder";
 import maxHRAdder from "./maxHRAdder";
 
 export {
-  checkIsNumber,
+  checkNumber,
   deleter,
   APIURL,
   expander,

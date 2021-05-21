@@ -57,7 +57,7 @@ const AthleteLanding: React.FC<AthleteLandingProps> = (props) => {
       } catch (error) {
         console.log(error);
         setErrorPage(true);
-        if (error["response"]) {
+        if (error.response) {
           setError(error.response.data.message);
         } else {
           setError("Problem fetching your data. Please let site admin Know.");

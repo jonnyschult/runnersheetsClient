@@ -29,10 +29,9 @@ const ClubList: React.FC<ClubListProps> = (props) => {
                     key={index}
                     onClick={async (e) => {
                       props.setSelectedClub(club);
-                      // props.setClubActivities([]);
                     }}
                   >
-                    <b>{club.club_name}</b> <i>{club.role}</i>
+                    <b>{club.club_name}</b>
                   </CardText>
                   <UpdateRemoveClubModal
                     userInfo={props.userInfo}

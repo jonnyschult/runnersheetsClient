@@ -63,7 +63,7 @@ const StaffModal: React.FC<StaffModalProps> = (props) => {
       }, 2200);
     } catch (error) {
       console.log(error);
-      if (error.status < 500 && error["response"] !== undefined) {
+      if (error.response.status < 500 && error.response !== undefined) {
         setResponse(error.response.data.message);
       } else {
         setResponse("Could not update user. Server error");
@@ -103,7 +103,7 @@ const StaffModal: React.FC<StaffModalProps> = (props) => {
         }, 2200);
       } catch (error) {
         console.log(error);
-        if (error.status < 500 && error["response"] !== undefined) {
+        if (error.response.status < 500 && error.response !== undefined) {
           setResponse(error.response.data.message);
         } else {
           setResponse("Could not update user. Server error");

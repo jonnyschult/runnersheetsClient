@@ -55,7 +55,7 @@ const UpdateInfo: React.FC<UpdateInfoProps> = (props) => {
       }, 1500);
     } catch (error) {
       console.log(error);
-      if (error["response"] !== undefined) {
+      if (error.response !== undefined) {
         setResponse(error.response.data.message);
       } else {
         setResponse("Server Error. Account not Updated");

@@ -9,6 +9,9 @@ interface ChairPersonsProps {
   userInfo: UserInfo;
   chairpersons: User[];
   selectedClub: Club | null;
+  setSelectedClub: React.Dispatch<React.SetStateAction<Club | null>>;
+  clubs: Club[];
+  setClubs: React.Dispatch<React.SetStateAction<Club[]>>;
   setChairpersons: React.Dispatch<React.SetStateAction<User[]>>;
 }
 
@@ -25,11 +28,14 @@ const Chairpersons: React.FC<ChairPersonsProps> = (props) => {
               return (
                 <ChairModal
                   key={index}
+                  userInfo={props.userInfo}
                   chairperson={chairperson}
                   setChairpersons={props.setChairpersons}
                   chairpersons={props.chairpersons}
                   selectedClub={props.selectedClub}
-                  userInfo={props.userInfo}
+                  setSelectedClub={props.setSelectedClub}
+                  clubs={props.clubs}
+                  setClubs={props.setClubs}
                 />
               );
             })

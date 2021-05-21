@@ -41,17 +41,23 @@ const UpdateRemoveClubModal: React.FC<UpdateRemoveClubProps> = (props) => {
         id: props.club.id,
       };
       const clubResults = await updater(token, "clubs/updateClub", info);
-      const updatedClub: Club = clubResults.data.updatedClub.id;
+      const updatedClub: Club = clubResults.data.updatedClub;
       setResponse(clubResults.data.message);
-      const sortedClubs = [...props.clubs, updatedClub].sort(
-        (a: Club, b: Club) => {
+      const sortedClubs = props.clubs
+        .map((club) => {
+          if (club.id === updatedClub.id) {
+            return updatedClub;
+          } else {
+            return club;
+          }
+        })
+        .sort((a: Club, b: Club) => {
           if (a.club_name > b.club_name) {
             return 1;
           } else {
             return -1;
           }
-        }
-      );
+        });
       props.setClubs(sortedClubs);
       props.userInfo.clubs = sortedClubs;
       props.userInfo.setUserInfo!(props.userInfo);
@@ -62,7 +68,7 @@ const UpdateRemoveClubModal: React.FC<UpdateRemoveClubProps> = (props) => {
       }, 2200);
     } catch (error) {
       console.log(error);
-      if (error.status < 500 && error["response"] !== undefined) {
+      if (error.response.status < 500 && error.response !== undefined) {
         setResponse(error.response.data.message);
       } else {
         setResponse("Could not update club. Server error");
@@ -89,17 +95,20 @@ const UpdateRemoveClubModal: React.FC<UpdateRemoveClubProps> = (props) => {
         setLoading(true);
         const clubResults = await deleter(
           token,
-          `clubs/removeClub/${props.club.id}`
+          "clubs/removeClub",
+          `id=${props.club.id}`
         );
         setResponse(clubResults.data.message);
         const filteredClubs = props.clubs.filter(
           (club) => club.id !== props.club.id
         );
-        props.setClubs(filteredClubs);
-        props.userInfo.clubs = filteredClubs;
-        props.userInfo.setUserInfo!(props.userInfo);
         setTimeout(() => {
-          props.setSelectedClub(props.clubs.length > 0 ? props.clubs[0] : null);
+          props.userInfo.clubs = filteredClubs;
+          props.userInfo.setUserInfo!(props.userInfo);
+          props.setClubs(filteredClubs);
+          props.setSelectedClub(
+            filteredClubs.length > 0 ? filteredClubs[0] : null
+          );
           setResponse("");
           toggle();
         }, 2200);
@@ -125,7 +134,7 @@ const UpdateRemoveClubModal: React.FC<UpdateRemoveClubProps> = (props) => {
   return (
     <div>
       <p className={classes.removeClub} onClick={toggle}>
-        -
+        &#9998;
       </p>
       <Modal isOpen={modal} toggle={toggle} className={classes.removeClubModal}>
         <ModalHeader toggle={toggle} className={classes.modalHeader}>
