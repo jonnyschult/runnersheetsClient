@@ -9,7 +9,6 @@ import FetchDates from "./Activities/SetDates";
 import CollatedWorkouts from "./Activities/CollatedWorkouts";
 import Scatter from "../charts/DistanceScatter";
 import "./Print.css";
-
 import { Container, Spinner } from "reactstrap";
 import { Activity, Club, User, UserInfo } from "../../models";
 import { getter } from "../../utilities";
@@ -76,7 +75,7 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
     if (selectedClub !== null) {
       clubActivitiesFetcher();
     }
-  }, [startDate, endDate, selectedClub, token, athletes]);
+  }, [startDate, endDate, selectedClub, token]);
 
   useEffect(() => {
     const loadUpHandler = async () => {
@@ -86,14 +85,7 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
           token,
           `clubs/getClubMembers/${selectedClub!.id}`
         );
-        console.log(clubResults.data);
-        const activitiesResults = await getter(
-          token,
-          `clubs/getClubActivities/${selectedClub!.id}`,
-          `start_date=${
-            new Date(Date.now()).getTime() - 604800000
-          }&end_date=${new Date(Date.now()).getTime()}`
-        );
+
         const viceChairsWithRoles: User[] = clubResults.data.viceChairs.map(
           (viceChair: User) => {
             viceChair.role = "vice_chair";
@@ -124,17 +116,8 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
             }
           }
         );
-        const sortedActivities: Activity[] =
-          activitiesResults.data.activities.sort((a: Activity, b: Activity) => {
-            if (new Date(+a.date).getTime() > new Date(+b.date).getTime()) {
-              return 1;
-            } else {
-              return -1;
-            }
-          });
         setChairpersons(sortedChairs);
         setAthletes(sortedAthletes);
-        setClubActivities(sortedActivities);
       } catch (error) {
         console.log(error);
         setErrorPage(true);
@@ -149,10 +132,6 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
     };
     if (selectedClub !== null) {
       loadUpHandler();
-    } else {
-      setChairpersons([]);
-      setAthletes([]);
-      setClubActivities([]);
     }
   }, [selectedClub, token]);
 

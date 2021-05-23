@@ -81,7 +81,7 @@ const ManualActivityAdder: React.FC<ManualActivityProps> = (props) => {
             ...props.activities,
             newActivity,
           ].sort((actA: Activity, actB: Activity) => {
-            return actA.date - actB.date;
+            return actB.date - actA.date;
           });
           props.setActivities(sortedActivities);
         } else if (props.activities.length === 0) {

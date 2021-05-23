@@ -30,11 +30,9 @@ const StaffModal: React.FC<StaffModalProps> = (props) => {
   const [response, setResponse] = useState<string>("");
   const [loading, setLoading] = useState<boolean>();
   const [modal, setModal] = useState<boolean>(false);
-  const [updateOpen, setOpenUpdate] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
 
   const toggle = () => setModal(!modal);
-  const updateFormOpener = () => setOpenUpdate(!updateOpen);
 
   const updateInfo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,6 +43,7 @@ const StaffModal: React.FC<StaffModalProps> = (props) => {
         user_id: props.staffer.id!,
         role: role,
       };
+      console.log(info);
       const results = await updater(token, "teams/updateCoach", info);
       props.staffer.role = results.data.updatedTeamsUsersItem.role;
       setResponse(results.data.message);
@@ -63,7 +62,7 @@ const StaffModal: React.FC<StaffModalProps> = (props) => {
       }, 2200);
     } catch (error) {
       console.log(error);
-      if (error.response.status < 500 && error.response !== undefined) {
+      if (error.response !== undefined && error.response.status < 500) {
         setResponse(error.response.data.message);
       } else {
         setResponse("Could not update user. Server error");
@@ -127,9 +126,8 @@ const StaffModal: React.FC<StaffModalProps> = (props) => {
   return (
     <div>
       <Form inline>
-        <p onClick={toggle} className={classes.cardItem}>
-          <b>{`${props.staffer.first_name} ${props.staffer.last_name}: `}</b>
-          <i> {props.staffer.role}</i>
+        <p className={classes.editModalIcon} onClick={toggle}>
+          &#9998;
         </p>
       </Form>
       <Modal
@@ -137,85 +135,70 @@ const StaffModal: React.FC<StaffModalProps> = (props) => {
         isOpen={modal}
         toggle={(e: any) => {
           toggle();
-          if (updateOpen) {
-            updateFormOpener();
-          }
         }}
       >
         <ModalHeader className={classes.modalHeader} toggle={toggle}>
           <header
             className={classes.headerText}
-          >{`${props.staffer.first_name} ${props.staffer.last_name}`}</header>
+          >{`Update ${props.staffer.first_name}`}</header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
-          <p>{`Email:   ${props.staffer.email}`}</p>
-          <p>{`Role:   ${props.staffer.role}`}</p>
-          <h6 className={classes.modalExpand} onClick={updateFormOpener}>
-            Update
-          </h6>
-          {updateOpen ? (
-            <Form className={classes.form} onSubmit={(e) => updateInfo(e)}>
-              <FormGroup tag="fieldset">
-                <legend>New Coaches Role</legend>
-                <FormGroup check>
-                  <Label check>
-                    <Input
-                      type="radio"
-                      name="radio1"
-                      value="coach"
-                      onChange={(e) => setRole(e.target.value)}
-                    />
-                    Coach
-                  </Label>
-                </FormGroup>
-                <FormGroup check>
-                  <Label check>
-                    <Input
-                      type="radio"
-                      name="radio1"
-                      value="manager"
-                      onChange={(e) => setRole(e.target.value)}
-                    />
-                    Manager
-                  </Label>
-                </FormGroup>
+          <Form className={classes.form} onSubmit={(e) => updateInfo(e)}>
+            <FormGroup tag="fieldset">
+              <legend>New Coaches Role</legend>
+              <FormGroup check>
+                <Label check>
+                  <Input
+                    type="radio"
+                    name="radio1"
+                    value="coach"
+                    onChange={(e) => setRole(e.target.value)}
+                  />
+                  Coach
+                </Label>
               </FormGroup>
-              <div className={classes.btnGroup}>
-                <Button
-                  className={`${classes.modalBtn} ${classes.updateBtn}`}
-                  type="submit"
-                >
-                  Update
-                </Button>
-                <Button
-                  className={`${classes.modalBtn} ${classes.deleteBtn}`}
-                  onClick={(e) => deleteStaffer(e)}
-                >
-                  Delete
-                </Button>
-              </div>
-              {loading ? <Spinner color="primary" /> : <></>}
-              {response ? (
-                <Alert className={classes.responseAlert}>{response}</Alert>
-              ) : (
-                <></>
-              )}
-            </Form>
-          ) : (
-            <></>
-          )}
+              <FormGroup check>
+                <Label check>
+                  <Input
+                    type="radio"
+                    name="radio1"
+                    value="manager"
+                    onChange={(e) => setRole(e.target.value)}
+                  />
+                  Manager
+                </Label>
+              </FormGroup>
+            </FormGroup>
+            <div className={classes.btnGroup}>
+              <Button
+                className={`${classes.modalBtn} ${classes.updateBtn}`}
+                type="submit"
+              >
+                Update
+              </Button>
+              <Button
+                className={`${classes.modalBtn} ${classes.deleteBtn}`}
+                onClick={(e) => deleteStaffer(e)}
+              >
+                Delete
+              </Button>
+            </div>
+            {loading ? <Spinner color="primary" /> : <></>}
+            {response ? (
+              <Alert className={classes.responseAlert}>{response}</Alert>
+            ) : (
+              <></>
+            )}
+          </Form>
         </ModalBody>
         <ModalFooter className={classes.modalFooter}>
           <Button
             className={`${classes.modalBtn} ${classes.cancelBtn}`}
             onClick={(e) => {
               toggle();
-              if (updateOpen) {
-                updateFormOpener();
-              }
             }}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>

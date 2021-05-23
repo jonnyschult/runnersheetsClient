@@ -23,10 +23,12 @@ const ClubList: React.FC<ClubListProps> = (props) => {
           {props.clubs.length > 0 ? (
             props.clubs.map((club, index) => {
               return (
-                <div className={`${classes.cardItem} ${classes.clubListItem}`}>
+                <div
+                  className={`${classes.cardItem} ${classes.clubListItem}`}
+                  key={index}
+                >
                   <CardText
                     className={`${classes.cardItem}`}
-                    key={index}
                     onClick={async (e) => {
                       props.setSelectedClub(club);
                     }}

@@ -1,7 +1,8 @@
 import React from "react";
 import classes from "../Coach.module.css";
 import AthleteAdderModal from "./AthleteAdderModal";
-import AthleteModal from "./AthleteModal";
+import AthleteInfo from "./AthleteInfo";
+import AthleteUpdater from "./AthleteUpdater";
 import { Card, CardBody, CardTitle } from "reactstrap";
 import { Team, User, UserInfo } from "../../../models";
 
@@ -23,14 +24,19 @@ const TeamAthletes: React.FC<TeamAthletesProps> = (props) => {
           {props.athletes ? (
             props.athletes.map((athlete, index) => {
               return (
-                <AthleteModal
+                <div
                   key={index}
-                  athlete={athlete}
-                  selectedTeam={props.selectedTeam}
-                  userInfo={props.userInfo}
-                  athletes={props.athletes}
-                  setAthletes={props.setAthletes}
-                />
+                  className={`${classes.cardItem} ${classes.editItem}`}
+                >
+                  <AthleteInfo athlete={athlete} userInfo={props.userInfo} />
+                  <AthleteUpdater
+                    athlete={athlete}
+                    selectedTeam={props.selectedTeam}
+                    userInfo={props.userInfo}
+                    athletes={props.athletes}
+                    setAthletes={props.setAthletes}
+                  />
+                </div>
               );
             })
           ) : (

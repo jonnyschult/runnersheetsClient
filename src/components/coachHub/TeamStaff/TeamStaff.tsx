@@ -1,7 +1,8 @@
 import React from "react";
 import classes from "../Coach.module.css";
 import StaffAdderModal from "./StaffAdderModal";
-import StaffModal from "./StaffModal";
+import StaffInfo from "./StaffInfo";
+import StaffUpdater from "./StaffUpdater";
 import { Card, CardBody, CardTitle } from "reactstrap";
 import { Team, User, UserInfo } from "../../../models";
 
@@ -23,14 +24,19 @@ const TeamStaff: React.FC<TeamStaffProps> = (props) => {
           {props.staff.length > 0 ? (
             props.staff.map((staffer, index) => {
               return (
-                <StaffModal
+                <div
                   key={index}
-                  staffer={staffer}
-                  selectedTeam={props.selectedTeam}
-                  userInfo={props.userInfo}
-                  staff={props.staff}
-                  setStaff={props.setStaff}
-                />
+                  className={`${classes.cardItem} ${classes.editItem}`}
+                >
+                  <StaffInfo staffer={staffer} userInfo={props.userInfo} />
+                  <StaffUpdater
+                    staffer={staffer}
+                    selectedTeam={props.selectedTeam}
+                    userInfo={props.userInfo}
+                    staff={props.staff}
+                    setStaff={props.setStaff}
+                  />
+                </div>
               );
             })
           ) : (

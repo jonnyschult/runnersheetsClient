@@ -38,42 +38,6 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
     setRuns([]);
   };
 
-  const getAccessToken = useCallback(async () => {
-    try {
-      const fitbitSecretResults = await getter(token, "fitbit/getSecretId");
-      const fitbitAccessFetch = await fetch(
-        `https://api.fitbit.com/oauth2/token?&grant_type=refresh_token&refresh_token=${props.userInfo.user.fitbit_refresh}`, //refreshes the refresh token and gives access token.
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Basic ${fitbitSecretResults.data.authorization}`,
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
-      const data = await fitbitAccessFetch.json();
-      setAccessToken(data.access_token);
-      const updateResults = await updater(token, "users/updateUser", {
-        fitbit_refresh: data.refresh_token,
-      });
-      const updatedUserInfo = props.userInfo;
-      updatedUserInfo.user = updateResults.data.updatedUser;
-      props.userInfo.setUserInfo!(updatedUserInfo);
-    } catch (error) {
-      console.log(error);
-      if (error.response.status < 500 && error.response !== undefined) {
-        setResponse(error.response.data.message);
-      } else {
-        setResponse("");
-      }
-      setTimeout(() => {
-        setResponse("");
-      }, 2200);
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
-
   const runAdder = async (runObj: any) => {
     try {
       const info: Activity = {
@@ -184,15 +148,46 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
     }
   };
 
+  const getAccessToken = useCallback(async () => {
+    try {
+      const fitbitSecretResults = await getter(token, "fitbit/getSecretId");
+      const fitbitAccessFetch = await fetch(
+        `https://api.fitbit.com/oauth2/token?&grant_type=refresh_token&refresh_token=${props.userInfo.user.fitbit_refresh}`, //refreshes the refresh token and gives access token.
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Basic ${fitbitSecretResults.data.authorization}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
+      const data = await fitbitAccessFetch.json();
+      setAccessToken(data.access_token);
+      const updateResults = await updater(token, "users/updateUser", {
+        fitbit_refresh: data.refresh_token,
+      });
+      const updatedUserInfo = props.userInfo;
+      updatedUserInfo.user = updateResults.data.updatedUser;
+      props.userInfo.setUserInfo!(updatedUserInfo);
+    } catch (error) {
+      console.log(error);
+      if (error.response.status < 500 && error.response !== undefined) {
+        setResponse(error.response.data.message);
+      } else {
+        setResponse("");
+      }
+      setTimeout(() => {
+        setResponse("");
+      }, 2200);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
+
   useEffect(() => {
     const savedFitbitActivitiesFetcher = async () => {
       try {
-        const activitiesResults = await getter(
-          token,
-          "activities/getActivities",
-          `user_id=${props.userInfo.user.id}`
-        );
-        const fitbitRuns: Activity[] = activitiesResults.data.activities.filter(
+        const fitbitRuns: Activity[] = props.activities.filter(
           (run: Activity) => run.fitbit_id
         );
         setAlreadyAdded(fitbitRuns.map((run) => +run.fitbit_id!));
@@ -209,8 +204,15 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
       }
     };
     savedFitbitActivitiesFetcher();
-    getAccessToken();
-  }, [token, props.userInfo.user.id, getAccessToken]);
+    if (props.userInfo.user.fitbit_refresh) {
+      getAccessToken();
+    }
+  }, [
+    token,
+    props.userInfo.user.fitbit_refresh,
+    getAccessToken,
+    props.activities,
+  ]);
 
   return (
     <div>

@@ -62,7 +62,6 @@ const UpdateRemoveClubModal: React.FC<UpdateRemoveClubProps> = (props) => {
       props.userInfo.clubs = sortedClubs;
       props.userInfo.setUserInfo!(props.userInfo);
       setTimeout(() => {
-        props.setSelectedClub(clubResults.data.updatedClub);
         setResponse("");
         toggle();
       }, 2200);

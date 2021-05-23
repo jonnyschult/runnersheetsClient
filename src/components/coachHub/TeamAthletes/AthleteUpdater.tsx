@@ -31,7 +31,6 @@ const AthleteModal: React.FC<AthleteModalProps> = (props) => {
   const [response, setResponse] = useState<string>("");
   const [loading, setLoading] = useState<boolean>();
   const [modal, setModal] = useState<boolean>(false);
-  const [expand, setExpand] = useState<boolean>(false);
   const [feet, setFeet] = useState<number | undefined>(
     athlete.height_inches ? Math.floor(athlete.height_inches / 12) : undefined
   );
@@ -44,7 +43,6 @@ const AthleteModal: React.FC<AthleteModalProps> = (props) => {
   );
 
   const toggle = () => setModal(!modal);
-  const toggle2 = () => setExpand(!expand);
 
   const updateInfo = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -143,119 +141,84 @@ const AthleteModal: React.FC<AthleteModalProps> = (props) => {
 
   return (
     <div>
-      <Form inline onSubmit={(e) => updateInfo(e)}>
-        <p className={classes.cardItem} onClick={toggle}>
-          <b>{`${athlete.first_name} ${athlete.last_name}`}</b>
+      <Form>
+        <p className={classes.editModalIcon} onClick={toggle}>
+          &#9998;
         </p>
       </Form>
-      <Modal
-        className={classes.modal}
-        isOpen={modal}
-        toggle={(e: any) => {
-          toggle();
-          if (expand) {
-            toggle2();
-          }
-        }}
-      >
+      <Modal className={classes.modal} isOpen={modal} toggle={toggle}>
         <ModalHeader className={classes.modalHeader} toggle={toggle}>
           <header
             className={classes.headerText}
-          >{`${athlete.first_name} ${athlete.last_name}`}</header>
+          >{`Update ${athlete.first_name}`}</header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
-          <p>{`Email:   ${athlete.email}`}</p>
-          <p>{`DOB:   ${athlete.date_of_birth.substring(10, 0)}`}</p>
-          {athlete.weight_pounds ? (
-            <p>{`Weight:   ${athlete.weight_pounds}lbs`}</p>
-          ) : (
-            <></>
-          )}
-          {athlete.height_inches ? (
-            <p>{`Height:   ${Math.floor(athlete.height_inches / 12)}' ${
-              athlete.height_inches % 12
-            }"`}</p>
-          ) : (
-            <></>
-          )}
-          <h6 className={classes.modalExpand} onClick={toggle2}>
-            Update
-          </h6>
-          {expand ? (
-            <Form onSubmit={(e) => updateInfo(e)} className={classes.form}>
-              <legend>Athlete Info</legend>
-              <FormGroup style={{ display: "flex" }}>
-                <span> Height</span>
-                <Label htmlFor="feet">Feet</Label>
-                <Input
-                  type="number"
-                  name="feet"
-                  placeholder={`${feet}`}
-                  onChange={(e) => setFeet(parseInt(e.target.value))}
-                ></Input>
-                <Label htmlFor="feet">Inches</Label>
-                <Input
-                  type="number"
-                  name="feet"
-                  placeholder={`${inches}`}
-                  onChange={(e) => setInches(parseInt(e.target.value))}
-                ></Input>
-              </FormGroup>
-              <FormGroup>
-                <Label htmlFor="weight">Weight</Label>
-                <Input
-                  type="number"
-                  name="weight"
-                  placeholder={`${athlete.weight_pounds}`}
-                  onChange={(e) => setWeight(parseInt(e.target.value))}
-                ></Input>
-              </FormGroup>
-              <FormGroup>
-                <Label htmlFor="date_of_birth">date_of_birth*</Label>
-                <Input
-                  type="number"
-                  name="date_of_birth"
-                  placeholder={athlete.date_of_birth}
-                  onChange={(e) => setDOB(e.target.value)}
-                ></Input>
-              </FormGroup>
-              <div className={classes.btnGroup}>
-                <Button
-                  className={`${classes.modalBtn} ${classes.updateBtn}`}
-                  type="submit"
-                >
-                  Update
-                </Button>
-                <Button
-                  className={`${classes.modalBtn} ${classes.deleteBtn}`}
-                  onClick={(e) => deleteAthlete(e)}
-                >
-                  Delete
-                </Button>
-              </div>
-              {loading ? <Spinner color="primary" /> : <></>}
-              {response ? (
-                <Alert className={classes.responseAlert}>{response}</Alert>
-              ) : (
-                <></>
-              )}
-            </Form>
-          ) : (
-            <></>
-          )}
+          <Form onSubmit={(e) => updateInfo(e)} className={classes.form}>
+            <legend>Athlete Info</legend>
+            <FormGroup style={{ display: "flex" }}>
+              <span> Height</span>
+              <Label htmlFor="feet">Feet</Label>
+              <Input
+                type="number"
+                name="feet"
+                placeholder={`${feet}`}
+                onChange={(e) => setFeet(parseInt(e.target.value))}
+              ></Input>
+              <Label htmlFor="feet">Inches</Label>
+              <Input
+                type="number"
+                name="feet"
+                placeholder={`${inches}`}
+                onChange={(e) => setInches(parseInt(e.target.value))}
+              ></Input>
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="weight">Weight</Label>
+              <Input
+                type="number"
+                name="weight"
+                placeholder={`${athlete.weight_pounds}`}
+                onChange={(e) => setWeight(parseInt(e.target.value))}
+              ></Input>
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="date_of_birth">date_of_birth*</Label>
+              <Input
+                type="number"
+                name="date_of_birth"
+                placeholder={athlete.date_of_birth}
+                onChange={(e) => setDOB(e.target.value)}
+              ></Input>
+            </FormGroup>
+            <div className={classes.btnGroup}>
+              <Button
+                className={`${classes.modalBtn} ${classes.updateBtn}`}
+                type="submit"
+              >
+                Update
+              </Button>
+              <Button
+                className={`${classes.modalBtn} ${classes.deleteBtn}`}
+                onClick={(e) => deleteAthlete(e)}
+              >
+                Delete
+              </Button>
+            </div>
+            {loading ? <Spinner color="primary" /> : <></>}
+            {response ? (
+              <Alert className={classes.responseAlert}>{response}</Alert>
+            ) : (
+              <></>
+            )}
+          </Form>
         </ModalBody>
         <ModalFooter className={classes.modalFooter}>
           <Button
             className={`${classes.modalBtn} ${classes.cancelBtn}`}
             color="primary"
-            onClick={(e) => {
-              toggle();
-              if (expand) {
-                toggle2();
-              }
-            }}
+            onClick={toggle}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>

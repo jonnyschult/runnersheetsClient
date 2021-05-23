@@ -1,4 +1,5 @@
 import TeamAdderModal from "./TeamAdderModal";
+import UpdateRemoveTeam from "./UpdateRemoveTeam";
 import classes from "../Coach.module.css";
 import { Card, CardBody, CardTitle, CardText } from "reactstrap";
 import { Team, UserInfo } from "../../../models";
@@ -22,15 +23,27 @@ const TeamList: React.FC<TeamListProps> = (props) => {
           {props.teams.length > 0 ? (
             props.teams.map((team, index) => {
               return (
-                <CardText
-                  className={classes.cardItem}
+                <div
+                  className={`${classes.cardItem} ${classes.editItem}`}
                   key={index}
-                  onClick={async (e) => {
-                    props.setSelectedTeam(team);
-                  }}
                 >
-                  <b>{team.team_name}</b> <i>{team.role}</i>
-                </CardText>
+                  <CardText
+                    className={classes.cardItem}
+                    key={index}
+                    onClick={async (e) => {
+                      props.setSelectedTeam(team);
+                    }}
+                  >
+                    <b>{team.team_name}</b> <i>{team.role}</i>
+                  </CardText>
+                  <UpdateRemoveTeam
+                    userInfo={props.userInfo}
+                    team={team}
+                    teams={props.teams}
+                    setTeams={props.setTeams}
+                    setSelectedTeam={props.setSelectedTeam}
+                  />
+                </div>
               );
             })
           ) : (

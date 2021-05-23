@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import classes from "./Coach.module.css";
 import ErrorPage from "../ErrorPage/ErrorPage";
 import TeamList from "./TeamList/TeamList";
@@ -23,7 +23,7 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [errorPage, setErrorPage] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
-  const [loadingMain, setLoadingMain] = useState<boolean>(true);
+  const [loadingMain, setLoadingMain] = useState<boolean>(false);
   const [staff, setStaff] = useState<User[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(
     props.userInfo.teams.length > 0 ? props.userInfo.teams[0] : null
@@ -47,16 +47,24 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
             `teams/getTeamActivities/${selectedTeam.id}`,
             `start_date=${startDate}&end_date=${endDate}`
           );
-          const sortedActivities = activitiesResults.data.activities.sort(
-            (a: Activity, b: Activity) => {
-              if (new Date(a.date).getTime() > new Date(b.date).getTime()) {
-                return 1;
-              } else {
-                return -1;
-              }
-            }
-          );
-          setTeamActivities(sortedActivities);
+          if (activitiesResults.data.activities.length > 0) {
+            const sortedActivities: Activity[] =
+              activitiesResults.data.activities.sort(
+                (a: Activity, b: Activity) => {
+                  if (
+                    new Date(+a.date).getTime() > new Date(+b.date).getTime()
+                  ) {
+                    return 1;
+                  } else {
+                    return -1;
+                  }
+                }
+              );
+            console.log(sortedActivities);
+            setTeamActivities(sortedActivities ? sortedActivities : []);
+          } else {
+            setTeamActivities([]);
+          }
         } catch (error) {
           console.log(error);
           setErrorPage(true);
@@ -77,23 +85,23 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
   }, [startDate, endDate, selectedTeam, token]);
 
   useEffect(() => {
-    const loadUpHandler = async () => {
+    const teamMatesGetter = async () => {
       try {
         const teamMembersResults = await getter(
           token,
           `teams/getTeamMembers/${selectedTeam!.id}`
         );
-        const activitiesResults = await getter(
-          token,
-          `teams/getTeamActivities/${selectedTeam}`,
-          `start_date=${new Date(Date.now() - 604800000).getTime()}
-          &end_date=${new Date(Date.now()).getTime()}`
-        );
         const coachesWithRoles = teamMembersResults.data.coaches.map(
-          (coach: User) => (coach.role = "coach")
+          (coach: User) => {
+            coach.role = "coach";
+            return coach;
+          }
         );
         const managersWithRoles = teamMembersResults.data.managers.map(
-          (manager: User) => (manager.role = "manager")
+          (manager: User) => {
+            manager.role = "manager";
+            return manager;
+          }
         );
         const sortedStaff = [...managersWithRoles, ...coachesWithRoles].sort(
           (a: User, b: User) => {
@@ -113,18 +121,9 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
             }
           }
         );
-        const sortedActivities = activitiesResults.data.activities.sort(
-          (a: Activity, b: Activity) => {
-            if (new Date(a.date).getTime() > new Date(b.date).getTime()) {
-              return 1;
-            } else {
-              return -1;
-            }
-          }
-        );
         setStaff(sortedStaff);
         setAthletes(sortedAthletes);
-        setTeamActivities(sortedActivities);
+        console.log(sortedAthletes, sortedStaff);
       } catch (error) {
         console.log(error);
         setErrorPage(true);
@@ -139,7 +138,7 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
     };
 
     if (selectedTeam !== null) {
-      loadUpHandler();
+      teamMatesGetter();
     }
   }, [selectedTeam, token]);
 
@@ -154,81 +153,80 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
   } else {
     return (
       <div className={classes.wrapper}>
-        {loading ? (
-          <Spinner></Spinner>
-        ) : (
-          <div className={classes.mainDiv}>
-            <div>
-              <h2 className={classes.coachLandingHeader}>
-                {selectedTeam !== null
-                  ? selectedTeam.team_name
-                  : props.userInfo.teams.length > 0
-                  ? props.userInfo.teams[0]
-                  : "Select or Create a Team"}
-              </h2>
-              <div style={{ display: "flex" }}>
-                <Container className={classes.leftContainer}>
-                  <TeamList
-                    userInfo={props.userInfo}
-                    teams={teams}
-                    selectedTeam={selectedTeam}
-                    setSelectedTeam={setSelectedTeam}
-                    setTeams={setTeams}
-                  />
-                  <TeamStaff
-                    userInfo={props.userInfo}
-                    staff={staff}
-                    selectedTeam={selectedTeam}
-                    setStaff={setStaff}
-                  />
-                  <TeamAthletes
-                    userInfo={props.userInfo}
+        <div className={classes.mainDiv}>
+          <div>
+            <h2 className={classes.coachLandingHeader}>
+              {selectedTeam !== null
+                ? selectedTeam.team_name
+                : props.userInfo.teams.length > 0
+                ? props.userInfo.teams[0]
+                : "Select or Create a Team"}
+            </h2>
+            <div style={{ display: "flex" }}>
+              <Container className={classes.leftContainer}>
+                <TeamList
+                  userInfo={props.userInfo}
+                  teams={teams}
+                  selectedTeam={selectedTeam}
+                  setSelectedTeam={setSelectedTeam}
+                  setTeams={setTeams}
+                />
+                <TeamStaff
+                  userInfo={props.userInfo}
+                  staff={staff}
+                  selectedTeam={selectedTeam}
+                  setStaff={setStaff}
+                />
+                <TeamAthletes
+                  userInfo={props.userInfo}
+                  athletes={athletes}
+                  selectedTeam={selectedTeam}
+                  setAthletes={setAthletes}
+                />
+              </Container>
+              <Container className={classes.middleContainer}>
+                {loading ? (
+                  <Spinner></Spinner>
+                ) : teamActivities ? (
+                  <Scatter activities={teamActivities} athletes={athletes} />
+                ) : (
+                  <></>
+                )}
+                {athletes && teamActivities ? (
+                  athletes.map((athlete, index) => {
+                    return (
+                      <RunCard
+                        athleteActivities={teamActivities.filter(
+                          (activity) => activity.user_id === athlete.id
+                        )}
+                        athlete={athlete}
+                        key={index}
+                      />
+                    );
+                  })
+                ) : (
+                  <></>
+                )}
+              </Container>
+
+              <Container className={classes.rightContainer}>
+                <FetchDates
+                  setStartDate={setStartDate}
+                  setEndDate={setEndDate}
+                />
+                <div className={classes.collatedWorkoutsContainer}>
+                  <legend className={classes.collatedWorkoutsLegend}>
+                    View Collated Workouts
+                  </legend>
+                  <CollatedWorkouts
+                    activities={teamActivities}
                     athletes={athletes}
-                    selectedTeam={selectedTeam}
-                    setAthletes={setAthletes}
                   />
-                </Container>
-                <Container className={classes.middleContainer}>
-                  {teamActivities ? (
-                    <Scatter activities={teamActivities} athletes={athletes} />
-                  ) : (
-                    <></>
-                  )}
-                  {athletes && teamActivities ? (
-                    athletes.map((athlete, index) => {
-                      return (
-                        <RunCard
-                          athleteActivities={teamActivities.filter(
-                            (activity) => activity.user_id === athlete.id
-                          )}
-                          athlete={athlete}
-                          key={index}
-                        />
-                      );
-                    })
-                  ) : (
-                    <></>
-                  )}
-                </Container>
-                <Container className={classes.rightContainer}>
-                  <FetchDates
-                    setStartDate={setStartDate}
-                    setEndDate={setEndDate}
-                  />
-                  <div className={classes.collatedWorkoutsContainer}>
-                    <legend className={classes.collatedWorkoutsLegend}>
-                      View Collated Workouts
-                    </legend>
-                    <CollatedWorkouts
-                      activities={teamActivities}
-                      athletes={athletes}
-                    />
-                  </div>
-                </Container>
-              </div>
+                </div>
+              </Container>
             </div>
           </div>
-        )}
+        </div>
       </div>
     );
   }
