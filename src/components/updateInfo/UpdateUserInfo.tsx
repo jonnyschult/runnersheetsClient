@@ -17,7 +17,7 @@ const UpdateInfo: React.FC<UpdateInfoProps> = (props) => {
   const [last_name, setLastName] = useState<string>(
     props.userInfo.user.last_name
   );
-  const [response, setResponse] = useState<string>();
+  const [responseMsg, setResponseMsg] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const responseDivRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +28,7 @@ const UpdateInfo: React.FC<UpdateInfoProps> = (props) => {
     e.preventDefault();
     setLoading(true);
     if (responseDivRef.current !== null) {
-      expander(responseDivRef.current!, true);
+      expander(responseDivRef.current, true);
     }
     try {
       const info: User = {
@@ -47,21 +47,21 @@ const UpdateInfo: React.FC<UpdateInfoProps> = (props) => {
       if (response.status === 404) {
         throw new Error("Error finding your account");
       }
-      props.userInfo.user = response.data.updatedUser;
-      props.userInfo.setUserInfo!(props.userInfo);
-      setResponse("Update Successful");
+      setResponseMsg("Update Successful");
       setTimeout(() => {
-        setResponse("");
+        props.userInfo.user = response.data.updatedUser;
+        props.userInfo.setUserInfo!(props.userInfo);
+        setResponseMsg("");
       }, 1500);
     } catch (error) {
-      console.log(error);
+      console.log(error.response.data);
       if (error.response !== undefined) {
-        setResponse(error.response.data.message);
+        setResponseMsg(error.response.data.message);
       } else {
-        setResponse("Server Error. Account not Updated");
+        setResponseMsg("Server Error. Account not Updated");
       }
       setTimeout(() => {
-        setResponse("");
+        setResponseMsg("");
       }, 2500);
     } finally {
       setLoading(false);
@@ -107,11 +107,11 @@ const UpdateInfo: React.FC<UpdateInfoProps> = (props) => {
         <Button type="submit" style={{ width: "100%" }}>
           Submit
         </Button>
-        <div className={classes.responseDiv} ref={responseDivRef}>
-          {loading ? <Spinner className={classes.spinner}></Spinner> : <></>}
-          {response ? <p className={classes.alert}>{response}</p> : <></>}
-        </div>
       </Form>
+      <div className={classes.responseDiv} ref={responseDivRef}>
+        {loading ? <Spinner className={classes.spinner}></Spinner> : <></>}
+        {responseMsg ? <p className={classes.alert}>{responseMsg}</p> : <></>}
+      </div>
     </div>
   );
 };
