@@ -45,12 +45,12 @@ const RunCard: React.FC<RunCardProps> = (props) => {
                 {activities.map((activity, index) => {
                   return (
                     <tr
+                      key={index}
                       className={
                         index > 7 && expand
                           ? `${classes.tr} ${classes.expandableTr}`
                           : classes.tr
                       }
-                      key={index}
                     >
                       <th scope="row">{index + 1}</th>
                       <td className={classes.td}>

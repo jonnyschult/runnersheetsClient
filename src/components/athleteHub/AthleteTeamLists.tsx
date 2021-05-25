@@ -20,7 +20,7 @@ const TeamList: React.FC<TeamListProps> = (props) => {
           {props.teams.length > 0 ? (
             props.teams.map((team, index) => {
               return (
-                <CardText className={classes.cardItem}>
+                <CardText className={classes.cardItem} key={index}>
                   <b>{team.team_name}</b>
                 </CardText>
               );

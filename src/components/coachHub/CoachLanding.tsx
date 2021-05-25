@@ -60,7 +60,6 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
                   }
                 }
               );
-            console.log(sortedActivities);
             setTeamActivities(sortedActivities ? sortedActivities : []);
           } else {
             setTeamActivities([]);
@@ -81,6 +80,8 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
     };
     if (selectedTeam !== null) {
       activityGetter();
+    } else {
+      setTeamActivities([]);
     }
   }, [startDate, endDate, selectedTeam, token]);
 
@@ -123,7 +124,6 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
         );
         setStaff(sortedStaff);
         setAthletes(sortedAthletes);
-        console.log(sortedAthletes, sortedStaff);
       } catch (error) {
         console.log(error);
         setErrorPage(true);
@@ -139,6 +139,9 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
 
     if (selectedTeam !== null) {
       teamMatesGetter();
+    } else {
+      setStaff([]);
+      setAthletes([]);
     }
   }, [selectedTeam, token]);
 

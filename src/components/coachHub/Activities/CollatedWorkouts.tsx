@@ -117,7 +117,7 @@ const CollatedWorkouts: React.FC<CollatedWorkoutsProps> = (props) => {
             onClick={toggle}
             className={`modalButton ${classes.modalBtn} ${classes.cancelBtn}`}
           >
-            Cancel
+            Okay
           </Button>
           <Button
             className={` modalButton ${classes.modalBtn} ${classes.cancelBtn}`}

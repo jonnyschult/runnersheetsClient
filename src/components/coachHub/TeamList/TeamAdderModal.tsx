@@ -53,14 +53,14 @@ const TeamAdderModal: React.FC<TeamAdderModalProps> = (props) => {
       props.setTeams(sortedTeams);
       props.userInfo.teams = sortedTeams;
       props.userInfo.setUserInfo!(props.userInfo);
+      props.setSelectedTeam(newTeam);
       setTimeout(() => {
-        props.setSelectedTeam(newTeam);
         setResponse("");
         toggle();
       }, 2200);
     } catch (error) {
       console.log(error);
-      if (error.response.status < 500 && error.response !== undefined) {
+      if (error.response !== undefined && error.response.status < 500) {
         setResponse(error.response.data.message);
       } else {
         setResponse("Could not create team team. Server error");
@@ -124,7 +124,7 @@ const TeamAdderModal: React.FC<TeamAdderModalProps> = (props) => {
             className={`${classes.modalBtn} ${classes.cancelBtn}`}
             onClick={toggle}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>

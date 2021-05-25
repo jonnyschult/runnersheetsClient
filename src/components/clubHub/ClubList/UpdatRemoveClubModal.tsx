@@ -67,7 +67,7 @@ const UpdateRemoveClubModal: React.FC<UpdateRemoveClubProps> = (props) => {
       }, 2200);
     } catch (error) {
       console.log(error);
-      if (error.response.status < 500 && error.response !== undefined) {
+      if (error.response !== undefined && error.response.status < 500) {
         setResponse(error.response.data.message);
       } else {
         setResponse("Could not update club. Server error");
@@ -178,7 +178,7 @@ const UpdateRemoveClubModal: React.FC<UpdateRemoveClubProps> = (props) => {
             className={`${classes.modalBtn} ${classes.cancelBtn}`}
             onClick={toggle}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>

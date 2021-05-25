@@ -202,7 +202,7 @@ const ActivitiesModal: React.FC<ActivitiesModalProps> = (props) => {
               className={` modalButton ${classes.modalBtn} ${classes.cancelBtn}`}
               onClick={toggle}
             >
-              Cancel
+              Okay
             </Button>
             <Button
               className={` modalButton ${classes.modalBtn} ${classes.printBtn}`}

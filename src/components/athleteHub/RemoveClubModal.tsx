@@ -101,7 +101,7 @@ const RemoveClubmodal: React.FC<RemoveClubModalProps> = (props) => {
             className={`${classes.modalBtn} ${classes.cancelBtn}`}
             onClick={toggle}
           >
-            Cancel
+            Okay
           </Button>
         </ModalFooter>
       </Modal>

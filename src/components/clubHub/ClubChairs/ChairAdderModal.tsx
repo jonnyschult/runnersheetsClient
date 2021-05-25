@@ -62,7 +62,7 @@ const ChairAdderModal: React.FC<ChairAdderModalProps> = (props) => {
       }, 2200);
     } catch (error) {
       console.log(error);
-      if (error.response.status < 500 && error.response !== undefined) {
+      if (error.response !== undefined && error.response.status < 500) {
         setResponse(error.response.data.message);
       } else {
         setResponse("Could not add chairperson. Server error");

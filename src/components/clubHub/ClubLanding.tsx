@@ -197,11 +197,11 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
                   [...athletes, ...chairpersons].map((clubmember, index) => {
                     return (
                       <RunCard
+                        key={index}
                         clubMember={clubmember}
                         activities={clubActivities.filter(
                           (activity) => activity.user_id === clubmember.id
                         )}
-                        key={index}
                       />
                     );
                   })

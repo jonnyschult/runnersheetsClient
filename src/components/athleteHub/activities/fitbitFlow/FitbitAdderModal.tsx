@@ -68,7 +68,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
       props.setActivities(sortedActivities);
     } catch (error) {
       console.log(error);
-      if (error.response.status < 500 && error.response !== undefined) {
+      if (error.response !== undefined && error.response.status < 500) {
         setResponse(error.response.data.message);
       } else {
         setResponse("");
@@ -96,7 +96,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
       );
     } catch (error) {
       console.log(error);
-      if (error.response.status < 500 && error.response !== undefined) {
+      if (error.response !== undefined && error.response.status < 500) {
         setResponse(error.response.data.message);
       } else {
         setResponse("");
@@ -135,7 +135,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
       setLoading(false);
     } catch (error) {
       console.log(error);
-      if (error.response.status < 500 && error.response !== undefined) {
+      if (error.response !== undefined && error.response.status < 500) {
         setResponse(error.response.data.message);
       } else {
         setResponse("");
@@ -171,7 +171,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
       props.userInfo.setUserInfo!(updatedUserInfo);
     } catch (error) {
       console.log(error);
-      if (error.response.status < 500 && error.response !== undefined) {
+      if (error.response !== undefined && error.response.status < 500) {
         setResponse(error.response.data.message);
       } else {
         setResponse("");
@@ -193,7 +193,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
         setAlreadyAdded(fitbitRuns.map((run) => +run.fitbit_id!));
       } catch (error) {
         console.log(error);
-        if (error.response.status < 500 && error.response !== undefined) {
+        if (error.response !== undefined && error.response.status < 500) {
           setResponse(error.response.data.message);
         } else {
           setResponse("");
@@ -204,7 +204,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
       }
     };
     savedFitbitActivitiesFetcher();
-    if (props.userInfo.user.fitbit_refresh) {
+    if (props.userInfo.user.fitbit_refresh && modal) {
       getAccessToken();
     }
   }, [
@@ -212,6 +212,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
     props.userInfo.user.fitbit_refresh,
     getAccessToken,
     props.activities,
+    modal,
   ]);
 
   return (

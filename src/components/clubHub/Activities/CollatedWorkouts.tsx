@@ -63,7 +63,7 @@ const CollatedWorkouts: React.FC<CollatedWorkoutsProps> = (props) => {
                       .filter((activity) => activity.user_id === clubMember.id)
                       .map((activity, index) => {
                         return (
-                          <tr className={classes.tr}>
+                          <tr className={classes.tr} key={index}>
                             <th scope="row">{index + 1}</th>
                             <td className={classes.td}>
                               {new Date(+activity.date).toDateString()}
