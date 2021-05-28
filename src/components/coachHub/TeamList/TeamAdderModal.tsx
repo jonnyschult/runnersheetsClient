@@ -27,7 +27,6 @@ const TeamAdderModal: React.FC<TeamAdderModalProps> = (props) => {
   const token = props.userInfo.token;
   const [modal, setModal] = useState<boolean>(false);
   const [teamTitle, setTeamTitle] = useState<string>("");
-  const [modalContent, setModalContent] = useState<boolean>(false);
   const [response, setResponse] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -110,13 +109,6 @@ const TeamAdderModal: React.FC<TeamAdderModalProps> = (props) => {
             ) : (
               <></>
             )}
-
-            <h6
-              className={classes.modalSwitch}
-              onClick={(e) => setModalContent(!modalContent)}
-            >
-              Update
-            </h6>
           </Form>
         </ModalBody>
         <ModalFooter className={classes.modalFooter}>

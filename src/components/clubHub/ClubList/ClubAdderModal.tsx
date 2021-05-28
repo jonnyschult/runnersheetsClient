@@ -27,7 +27,6 @@ const ClubAdderModal: React.FC<ClubAdderModalProps> = (props) => {
   const token = props.userInfo.token;
   const [modal, setModal] = useState<boolean>(false);
   const [clubTitle, setClubTitle] = useState<string>("");
-  const [modalContent, setModalContent] = useState<boolean>(false);
   const [response, setResponse] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -109,12 +108,6 @@ const ClubAdderModal: React.FC<ClubAdderModalProps> = (props) => {
             ) : (
               <></>
             )}
-            <h6
-              className={classes.modalSwitch}
-              onClick={(e) => setModalContent(!modalContent)}
-            >
-              Update
-            </h6>
           </Form>
         </ModalBody>
         <ModalFooter className={classes.modalFooter}>

@@ -200,12 +200,12 @@ const Register: React.FC<RegisterProps> = (props) => {
           <Button type="submit" className={classes.submitButton}>
             Submit
           </Button>
-          <div className={classes.responseDiv} ref={responseDivRef}>
-            {loading ? <Spinner className={classes.spinner}></Spinner> : <></>}
-            {error ? <p className={classes.alert}>{error}</p> : <></>}
-            {response ? <p className={classes.alert}>{response}</p> : <></>}
-          </div>
         </Form>
+        <div className={classes.responseDiv} ref={responseDivRef}>
+          {loading ? <Spinner className={classes.spinner}></Spinner> : <></>}
+          {error ? <p className={classes.alert}>{error}</p> : <></>}
+          {response ? <p className={classes.alert}>{response}</p> : <></>}
+        </div>
       </ModalBody>
       <ModalFooter className={classes.modalFooter}>
         <p className={classes.switchModalText}>Already a user?</p>
