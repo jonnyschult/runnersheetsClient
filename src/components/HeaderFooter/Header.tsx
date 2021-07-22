@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import classes from "./HeaderFooter.module.css";
-import { Link,  } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Navbar,
   NavbarBrand,
@@ -16,10 +16,10 @@ import {
 } from "reactstrap";
 
 interface HeaderProps {
-  logoutHandler: () => void
+  logoutHandler: () => void;
 }
 
-const Header:React.FC<HeaderProps> = (props) => {
+const Header: React.FC<HeaderProps> = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
   return (
@@ -50,9 +50,6 @@ const Header:React.FC<HeaderProps> = (props) => {
                 </Link>
               </NavbarText>
             </NavItem>
-            {/* <NavItem className={classes.navItem}>
-              <NavbarText className={classes.navbarText}>Plans</NavbarText>
-            </NavItem> */}
           </Nav>
           <Nav>
             <UncontrolledDropdown nav inNavbar>
@@ -63,6 +60,11 @@ const Header:React.FC<HeaderProps> = (props) => {
                 <DropdownItem className={classes.dropdownItem}>
                   <Link className={classes.link} to="/updateInfo">
                     Update User Info
+                  </Link>
+                </DropdownItem>
+                <DropdownItem className={classes.dropdownItem}>
+                  <Link className={classes.link} to="/strava">
+                    Link Strava
                   </Link>
                 </DropdownItem>
                 <DropdownItem className={classes.dropdownItem}>
@@ -83,7 +85,6 @@ const Header:React.FC<HeaderProps> = (props) => {
           </Nav>
         </Collapse>
       </Navbar>
-
     </div>
   );
 };

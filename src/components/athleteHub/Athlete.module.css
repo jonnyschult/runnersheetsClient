@@ -369,20 +369,20 @@
   background-color: tomato;
 }
 
-.fitbitBtn {
+.activitiesBtn {
   width: 13em;
 }
 
-.fitbitBtn:hover {
+.activitiesBtn:hover {
   background-color: rgb(134, 216, 134);
   border: 1px solid whitesmoke;
 }
 
-.fitbitRemoverBtn {
+.activitiesRemoverBtn {
   cursor: pointer;
 }
 
-.fitbitRemoverBtn:hover {
+.activitiesRemoverBtn:hover {
   font-weight: bold;
 }
 

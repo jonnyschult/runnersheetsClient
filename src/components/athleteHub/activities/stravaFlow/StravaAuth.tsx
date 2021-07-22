@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import classes from "./Fitbit.module.css";
-import Fitbit from "../../../../Assets/fitbit.jpg";
+import APIURL from "../../../../utilities/environment";
+import classes from "./Strava.module.css";
+import StravaImg from "../../../../Assets/strava.png";
 import {
   Button,
   Spinner,
@@ -12,41 +13,42 @@ import {
   CardText,
 } from "reactstrap";
 import { UserInfo } from "../../../../models";
-import { getter, poster } from "../../../../utilities";
+import { getter, poster, updater } from "../../../../utilities";
+import axios from "axios";
 
-interface FibitAuthProps {
+interface StravaAuthProps {
   userInfo: UserInfo;
 }
 
-const FitbitAuth: React.FC<FibitAuthProps> = (props) => {
+const StravaAuth: React.FC<StravaAuthProps> = (props) => {
   const token = props.userInfo.token;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [response, setResponse] = useState<string>("");
 
-  //checks for query parameter, which fitbit returns in their callback uri
+  //checks for query parameter, which strava returns in their callback uri
   const stringParser = (str: string) => {
     //Gets token from window.location.href
     const query = str.split("?");
     const codePlusHash = query[1].split("code=");
-    const code = codePlusHash[1].split("#");
+    const code = codePlusHash[1].split("&scope");
     return code[0];
   };
 
   useEffect(() => {
     const url = window.location.href;
 
-    const fitbitTokenHandler = async () => {
+    const stravaTokenHandler = async () => {
       try {
         setLoading(true);
         const authCode = stringParser(url);
-        const results = await poster(token, "fitbit/createRefresh", {
+        const results = await poster(token, "strava/createRefresh", {
           authCode: authCode,
         });
         props.userInfo.user = results.data.updatedUser;
         props.userInfo.setUserInfo!(props.userInfo);
         setResponse(
-          "Success! You can now add FitBit activities on the Athletes page."
+          "Success! You can now add Strava activities on the Athletes page."
         );
       } catch (error) {
         console.log(error);
@@ -63,22 +65,22 @@ const FitbitAuth: React.FC<FibitAuthProps> = (props) => {
       }
     };
     if (url.includes("?")) {
-      fitbitTokenHandler();
+      stravaTokenHandler();
     }
   }, [token]);
 
-  const fitbitTokenFetcher = async () => {
+  const stravaTokenFetcher = async () => {
     try {
-      const clientResults = await getter(token, "fitbit/getAuth");
+      const results = await getter(token, "strava/getData");
       window.open(
-        `https://www.fitbit.com/oauth2/authorize?response_type=code&client_id=${clientResults.data.clientId}&redirect_uri=${clientResults.data.redirectURI}&scope=activity%20nutrition%20heartrate%20location%20nutrition%20profile%20settings%20sleep%20social%20weight`
+        `http://www.strava.com/oauth/authorize?client_id=${results.data.stravaID}&response_type=code&redirect_uri=${results.data.redirectURI}&approval_prompt=force&scope=read,activity:read`
       );
     } catch (error) {
       console.log(error);
       if (error.response !== undefined && error.response.status < 500) {
         setResponse(error.response.data.message);
       } else {
-        setResponse("Unable to connect to fitbit");
+        setResponse("Unable to connect to strava");
       }
       setTimeout(() => {
         setResponse("");
@@ -89,21 +91,21 @@ const FitbitAuth: React.FC<FibitAuthProps> = (props) => {
   return (
     <div className={classes.wrapper}>
       <div className={classes.mainDiv}>
-        <Card className={classes.fitbitCard}>
-          <CardHeader className={classes.fitbitCardHeader}>
-            <h1 className={classes.headerText}>Connect Fitbit</h1>{" "}
+        <Card className={classes.stravaCard}>
+          <CardHeader className={classes.stravaCardHeader}>
+            <h1 className={classes.headerText}>Connect Strava</h1>{" "}
           </CardHeader>
-          <CardBody className={classes.fitbitCardBody}>
-            <CardImg src={Fitbit} className={classes.fitbitCardImg} />
+          <CardBody className={classes.stravaCardBody}>
+            <CardImg src={StravaImg} className={classes.stravaCardImg} />
             <CardText>
-              Connecting Fitbit with RunnerSheets enables you to easily share
+              Connecting Strava with RunnerSheets enables you to easily share
               your activities with your coach and fellow runners!
             </CardText>
             <Button
-              className={classes.fitbitBtn}
-              onClick={(e) => fitbitTokenFetcher()}
+              className={classes.stravaBtn}
+              onClick={(e) => stravaTokenFetcher()}
             >
-              Connect to Fitbit
+              Connect to Strava
             </Button>
           </CardBody>
           {response ? <Alert>{response}</Alert> : <></>}
@@ -114,4 +116,4 @@ const FitbitAuth: React.FC<FibitAuthProps> = (props) => {
   );
 };
 
-export default FitbitAuth;
+export default StravaAuth;

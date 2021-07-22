@@ -4,6 +4,7 @@ import LoginHeader from "./components/HeaderFooter/LoginHeader";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import AthleteLanding from "./components/athleteHub/AthleteLanding";
 import FitbitAuth from "./components/athleteHub/activities/fitbitFlow/FitbitAuth";
+import StravaAuth from "./components/athleteHub/activities/stravaFlow/StravaAuth";
 import CoachLanding from "./components/coachHub/CoachLanding";
 import ClubLanding from "./components/clubHub/ClubLanding";
 import UpdateInfoLanding from "./components/updateInfo/UpdateInfoLanding";
@@ -97,6 +98,9 @@ const App: React.FC = () => {
               </Route>
               <Route exact path="/clubs">
                 <ClubLanding userInfo={userInfo} />
+              </Route>
+              <Route exact path="/strava">
+                <StravaAuth userInfo={userInfo} />
               </Route>
               <Route exact path="/fitbit">
                 <FitbitAuth userInfo={userInfo} />

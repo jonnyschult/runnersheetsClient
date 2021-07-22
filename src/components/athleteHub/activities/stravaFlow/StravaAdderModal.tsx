@@ -16,19 +16,21 @@ import {
 } from "reactstrap";
 import { Activity, UserInfo } from "../../../../models";
 import { deleter, getter, poster, updater } from "../../../../utilities";
+import axios from "axios";
 
-interface FitbitAdderProps {
+interface StravaAdderProps {
   userInfo: UserInfo;
   activities: Activity[];
   setActivities: React.Dispatch<React.SetStateAction<Activity[]>>;
 }
 
-const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
+const StravaAdderModal: React.FC<StravaAdderProps> = (props) => {
   const token = props.userInfo.token;
   const [runs, setRuns] = useState<any[]>([]);
   const [modal, setModal] = useState<boolean>(false);
   const [accessToken, setAccessToken] = useState<string>("");
-  const [startDate, setStartDate] = useState<string>();
+  const [startDate, setStartDate] = useState<number>();
+  const [endDate, setEndDate] = useState<number>();
   const [loading, setLoading] = useState<boolean>();
   const [response, setResponse] = useState<string>("");
   const [alreadyAdded, setAlreadyAdded] = useState<number[]>([]);
@@ -38,23 +40,43 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
     setRuns([]);
   };
 
+  const secondsToTime = (e: number) => {
+    var h = Math.floor(e / 3600)
+        .toString()
+        .padStart(2, "0"),
+      m = Math.floor((e % 3600) / 60)
+        .toString()
+        .padStart(2, "0"),
+      s = Math.floor(e % 60)
+        .toString()
+        .padStart(2, "0");
+
+    return `${h}:${m}:${s}`;
+  };
+
   const runAdder = async (runObj: any) => {
     try {
       const info: Activity = {
         user_id: props.userInfo.user.id!,
-        date: new Date(runObj.startTime).getTime(),
-        distance_meters: runObj.distance * 1000,
-        duration_seconds: runObj.activeDuration / 1000,
-        elevation_meters: runObj.elevationGain,
-        avg_hr: runObj.averageHeartRate,
-        max_hr: undefined,
+        date: new Date(runObj.start_date_local).getTime(),
+        distance_meters: runObj.distance,
+        duration_seconds: runObj.moving_time,
+        elevation_meters: runObj.total_elevation_gain
+          ? runObj.total_elevation_gain
+          : undefined,
+        avg_hr: runObj.average_heartrate
+          ? runObj.average_heartrate.toFixed(0)
+          : undefined,
+        max_hr: runObj.max_heartrate
+          ? runObj.max_heartrate.toFixed(0)
+          : undefined,
         description: undefined,
-        strava_id: undefined,
+        strava_id: runObj.id,
         garmin_id: undefined,
-        fitbit_id: runObj.logId,
+        fitbit_id: undefined,
       };
       const results = await poster(token, "activities/createActivity", info);
-      setAlreadyAdded([...alreadyAdded, +results.data.newActivity.fitbit_id]);
+      setAlreadyAdded([...alreadyAdded, +results.data.newActivity.strava_id]);
       const sortedActivities = [
         ...props.activities,
         results.data.newActivity,
@@ -86,12 +108,12 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
       await deleter(
         token,
         "activities/removeActivity",
-        `fitbit_id=${runObj.logId}`
+        `strava_id=${runObj.id}`
       );
-      setAlreadyAdded(alreadyAdded.filter((act) => act !== runObj.logId));
+      setAlreadyAdded(alreadyAdded.filter((act) => act !== runObj.id));
       props.setActivities(
         props.activities.filter(
-          (activity) => +activity.fitbit_id! !== runObj.logId
+          (activity) => +activity.strava_id! !== runObj.id
         )
       );
     } catch (error) {
@@ -109,26 +131,19 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
     }
   };
 
-  const fitbitActivitiesFetcher = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const activitiesFetcher = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await fetch(
-        `https://api.fitbit.com/1/user/-/activities/list.json?afterDate=${startDate}&sort=desc&offset=0&limit=100`,
-        {
-          //get's fitbit data
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
+      const results = await axios(
+        `https://www.strava.com/api/v3/athlete/activities?before=${endDate}&after=${startDate}&per_page=200&access_token=${accessToken}`
       );
-      const data = await response.json();
-      const runsData = await data.activities.filter(
+      const runsData = await results.data.filter(
         (activity: any) =>
-          (activity.activityName === "Treadmill" ||
-            activity.activityName === "Run") &&
+          (activity.type === "Treadmill" ||
+            activity.type === "Run" ||
+            activity.type === "Walk" ||
+            activity.type === "Hike") &&
           activity.distance > 0.05
       );
       setRuns(runsData);
@@ -150,7 +165,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
 
   const getAccessToken = useCallback(async () => {
     try {
-      const results = await getter(token, "fitbit/getAccessToken");
+      const results = await getter(token, "strava/getAccessToken");
       setAccessToken(results.data.accessToken);
     } catch (error) {
       console.log(error);
@@ -168,12 +183,12 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
   }, [token]);
 
   useEffect(() => {
-    const savedFitbitActivitiesFetcher = async () => {
+    const savedActivitiesFetcher = async () => {
       try {
-        const fitbitRuns: Activity[] = props.activities.filter(
-          (run: Activity) => run.fitbit_id
+        const stravaRuns: Activity[] = props.activities.filter(
+          (run: Activity) => run.strava_id
         );
-        setAlreadyAdded(fitbitRuns.map((run) => +run.fitbit_id!));
+        setAlreadyAdded(stravaRuns.map((run) => +run.strava_id!));
       } catch (error) {
         console.log(error);
         if (error.response !== undefined && error.response.status < 500) {
@@ -186,13 +201,13 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
         }, 2200);
       }
     };
-    savedFitbitActivitiesFetcher();
-    if (props.userInfo.user.fitbit_refresh && modal) {
+    savedActivitiesFetcher();
+    if (props.userInfo.user.strava_refresh && modal) {
       getAccessToken();
     }
   }, [
     token,
-    props.userInfo.user.fitbit_refresh,
+    props.userInfo.user.strava_refresh,
     getAccessToken,
     props.activities,
     modal,
@@ -202,7 +217,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
     <div>
       <Form inline onSubmit={(e) => e.preventDefault()}>
         <Button className={classes.launchModalBtn} onClick={toggle}>
-          Add Fitbit Activities
+          Add Strava Activities
         </Button>
       </Form>
       <Modal
@@ -212,20 +227,31 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
         className={`print ${classes.modal}`}
       >
         <ModalHeader className={classes.modalHeader} toggle={toggle}>
-          <header className={classes.headerText}>Fitbit Activities</header>
+          <header className={classes.headerText}>Strava Activities</header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
-          <Form
-            className={classes.form}
-            onSubmit={(e) => fitbitActivitiesFetcher(e)}
-          >
+          <Form className={classes.form} onSubmit={(e) => activitiesFetcher(e)}>
             <FormGroup>
               <Label htmlFor="start date">From</Label>
               <Input
                 required
                 type="date"
                 name="start date"
-                onChange={(e) => setStartDate(e.target.value)}
+                onChange={(e) =>
+                  setStartDate(new Date(e.target.value).getTime() / 1000)
+                }
+              ></Input>
+              <p>to {new Date().toDateString()}</p>
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="end date">To</Label>
+              <Input
+                required
+                type="date"
+                name="end date"
+                onChange={(e) => {
+                  setEndDate(new Date(e.target.value).getTime() / 1000);
+                }}
               ></Input>
               <p>to {new Date().toDateString()}</p>
             </FormGroup>
@@ -233,7 +259,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
               className={`${classes.modalBtn} ${classes.activitiesBtn}`}
               type="submit"
             >
-              Get Fitbit Activities
+              Get Strava Activities
             </Button>
           </Form>
           {runs ? (
@@ -249,7 +275,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
                       <th className={classes.th}>#</th>
                       <th className={classes.th}>Date</th>
                       <th className={classes.th}>Kilometers</th>
-                      <th className={classes.th}>Time</th>
+                      <th className={classes.th}>Duration</th>
                       <th className={classes.th}>Pace km</th>
                       <th className={classes.th}>Elevation/m</th>
                       <th className={classes.th}>Average HR</th>
@@ -262,42 +288,42 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
                         <tr className={classes.tr} key={index}>
                           <th scope="row">{index + 1}</th>
                           <td className={classes.td}>
-                            {run.startTime
-                              ? new Date(run.startTime).toDateString()
+                            {run.start_date_local
+                              ? new Date(run.start_date_local).toDateString()
                               : "N/A"}
                           </td>
                           <td className={classes.td}>
-                            {run.distance ? run.distance.toFixed(2) : "N/A"}
-                          </td>
-                          <td className={classes.td}>
-                            {run.activeDuration
-                              ? new Date(run.activeDuration)
-                                  .toISOString()
-                                  .substr(11, 8)
+                            {run.distance
+                              ? (run.distance.toFixed(2) / 1000).toFixed(2)
                               : "N/A"}
                           </td>
                           <td className={classes.td}>
-                            {run.pace
-                              ? new Date(run.pace * 1000)
-                                  .toISOString()
-                                  .substr(11, 8)
+                            {run.moving_time
+                              ? secondsToTime(run.moving_time)
                               : "N/A"}
                           </td>
                           <td className={classes.td}>
-                            {run.elevationGain
-                              ? run.elevationGain.toFixed(2)
+                            {run.moving_time && run.distance
+                              ? secondsToTime(
+                                  run.moving_time / (run.distance / 1000)
+                                )
                               : "N/A"}
                           </td>
                           <td className={classes.td}>
-                            {run.averageHeartRate
-                              ? run.averageHeartRate
+                            {run.total_elevation_gain
+                              ? run.total_elevation_gain.toFixed(2)
                               : "N/A"}
                           </td>
-                          {alreadyAdded.includes(run.logId) ? (
+                          <td className={classes.td}>
+                            {run.average_heartrate
+                              ? run.average_heartrate
+                              : "N/A"}
+                          </td>
+                          {alreadyAdded.includes(run.id) ? (
                             <div style={{ display: "flex" }}>
                               <h5 style={{ color: "green" }}>Added &#10003;</h5>
                               <div
-                                className={classes.fitbitRemoverBtn}
+                                className={classes.activitiesRemoverBtn}
                                 onClick={(e) => runRemover(run)}
                               >
                                 Undo
@@ -334,4 +360,4 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
   );
 };
 
-export default FitbitAdderModal;
+export default StravaAdderModal;

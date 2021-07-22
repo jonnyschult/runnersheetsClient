@@ -19,7 +19,8 @@ type Info =
   | Club
   | TeamsUsers
   | ClubsUsers
-  | { fitbit_refresh: number | string };
+  | { fitbit_refresh: number | string }
+  | { strava_refresh: number | string };
 
 const updater: (
   token: string,
