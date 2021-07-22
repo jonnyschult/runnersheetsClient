@@ -10,7 +10,8 @@ type Info =
   | Team
   | Club
   | { club_id?: number; team_id?: number; email: string; role?: string }
-  | { authCode: string };
+  | { authCode: string }
+  | { password: string };
 
 const poster: (
   token: string,

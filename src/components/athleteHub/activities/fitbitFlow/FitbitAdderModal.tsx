@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import classes from "../../Athlete.module.css";
+import FitbitAuth from "./FitbitAuth";
+import axios from "axios";
 import {
   Button,
   Table,
@@ -19,6 +21,7 @@ import { deleter, getter, poster, updater } from "../../../../utilities";
 
 interface FitbitAdderProps {
   userInfo: UserInfo;
+  startDate: number;
   activities: Activity[];
   setActivities: React.Dispatch<React.SetStateAction<Activity[]>>;
 }
@@ -27,8 +30,11 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
   const token = props.userInfo.token;
   const [runs, setRuns] = useState<any[]>([]);
   const [modal, setModal] = useState<boolean>(false);
+  const [authorized, setAuthorized] = useState<boolean>(
+    props.userInfo.user.fitbit_refresh ? true : false
+  );
   const [accessToken, setAccessToken] = useState<string>("");
-  const [startDate, setStartDate] = useState<string>();
+  const [fromDate, setFromDate] = useState<string>();
   const [loading, setLoading] = useState<boolean>();
   const [response, setResponse] = useState<string>("");
   const [alreadyAdded, setAlreadyAdded] = useState<number[]>([]);
@@ -58,13 +64,7 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
       const sortedActivities = [
         ...props.activities,
         results.data.newActivity,
-      ].sort((a: Activity, b: Activity) => {
-        if (new Date(+a.date).getTime() > new Date(+b.date).getTime()) {
-          return -1;
-        } else {
-          return 1;
-        }
-      });
+      ].sort((a: Activity, b: Activity) => +a.date - +b.date);
       props.setActivities(sortedActivities);
     } catch (error) {
       console.log(error);
@@ -115,17 +115,14 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
     e.preventDefault();
     try {
       setLoading(true);
-      const response = await fetch(
-        `https://api.fitbit.com/1/user/-/activities/list.json?afterDate=${startDate}&sort=desc&offset=0&limit=100`,
-        {
-          //get's fitbit data
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      const data = await response.json();
-      const runsData = await data.activities.filter(
+      const results = await axios({
+        url: `https://api.fitbit.com/1/user/-/activities/list.json?afterDate=${fromDate}&sort=desc&offset=0&limit=100`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const runsData = await results.data.activities.filter(
         (activity: any) =>
           (activity.activityName === "Treadmill" ||
             activity.activityName === "Run") &&
@@ -133,12 +130,30 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
       );
       setRuns(runsData);
       setLoading(false);
-    } catch (error) {
-      console.log(error);
-      if (error.response !== undefined && error.response.status < 500) {
-        setResponse(error.response.data.message);
-      } else {
+      setResponse(
+        results.data.activities.length > 0
+          ? "Success"
+          : "No runs for that period."
+      );
+      setTimeout(() => {
         setResponse("");
+      }, 1500);
+    } catch (error) {
+      console.log(error.response);
+      if (error.response.status === 401) {
+        setResponse("Looks like you may need to reauthorize access to Strava");
+        setTimeout(() => {
+          setAuthorized(false);
+        }, 2100);
+      } else if (error.response !== undefined && error.response.status < 500) {
+        setResponse(
+          error.response.data.message +
+            "If problem perists, you may need to reauthorize in settings."
+        );
+      } else {
+        setResponse(
+          "Error: If problem perists, you may need to reauthorize in settings."
+        );
       }
       setTimeout(() => {
         setResponse("");
@@ -215,110 +230,118 @@ const FitbitAdderModal: React.FC<FitbitAdderProps> = (props) => {
           <header className={classes.headerText}>Fitbit Activities</header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
-          <Form
-            className={classes.form}
-            onSubmit={(e) => fitbitActivitiesFetcher(e)}
-          >
-            <FormGroup>
-              <Label htmlFor="start date">From</Label>
-              <Input
-                required
-                type="date"
-                name="start date"
-                onChange={(e) => setStartDate(e.target.value)}
-              ></Input>
-              <p>to {new Date().toDateString()}</p>
-            </FormGroup>
-            <Button
-              className={`${classes.modalBtn} ${classes.activitiesBtn}`}
-              type="submit"
-            >
-              Get Fitbit Activities
-            </Button>
-          </Form>
-          {runs ? (
-            <Table>
-              {loading ? (
-                <Spinner></Spinner>
-              ) : (
-                <>
-                  {" "}
-                  <h5>Runs</h5>
-                  <thead className={classes.thead}>
-                    <tr className={classes.tr}>
-                      <th className={classes.th}>#</th>
-                      <th className={classes.th}>Date</th>
-                      <th className={classes.th}>Kilometers</th>
-                      <th className={classes.th}>Time</th>
-                      <th className={classes.th}>Pace km</th>
-                      <th className={classes.th}>Elevation/m</th>
-                      <th className={classes.th}>Average HR</th>
-                      <th className={classes.th}>Upload</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {runs.map((run: any, index: number) => {
-                      return (
-                        <tr className={classes.tr} key={index}>
-                          <th scope="row">{index + 1}</th>
-                          <td className={classes.td}>
-                            {run.startTime
-                              ? new Date(run.startTime).toDateString()
-                              : "N/A"}
-                          </td>
-                          <td className={classes.td}>
-                            {run.distance ? run.distance.toFixed(2) : "N/A"}
-                          </td>
-                          <td className={classes.td}>
-                            {run.activeDuration
-                              ? new Date(run.activeDuration)
-                                  .toISOString()
-                                  .substr(11, 8)
-                              : "N/A"}
-                          </td>
-                          <td className={classes.td}>
-                            {run.pace
-                              ? new Date(run.pace * 1000)
-                                  .toISOString()
-                                  .substr(11, 8)
-                              : "N/A"}
-                          </td>
-                          <td className={classes.td}>
-                            {run.elevationGain
-                              ? run.elevationGain.toFixed(2)
-                              : "N/A"}
-                          </td>
-                          <td className={classes.td}>
-                            {run.averageHeartRate
-                              ? run.averageHeartRate
-                              : "N/A"}
-                          </td>
-                          {alreadyAdded.includes(run.logId) ? (
-                            <div style={{ display: "flex" }}>
-                              <h5 style={{ color: "green" }}>Added &#10003;</h5>
-                              <div
-                                className={classes.fitbitRemoverBtn}
-                                onClick={(e) => runRemover(run)}
-                              >
-                                Undo
-                              </div>
-                            </div>
-                          ) : (
-                            <Button onClick={(e) => runAdder(run)}>
-                              Add Run
-                            </Button>
-                          )}
+          {authorized ? (
+            <>
+              <Form
+                className={classes.form}
+                onSubmit={(e) => fitbitActivitiesFetcher(e)}
+              >
+                <FormGroup>
+                  <Label htmlFor="start date">From</Label>
+                  <Input
+                    required
+                    type="date"
+                    name="start date"
+                    onChange={(e) => setFromDate(e.target.value)}
+                  ></Input>
+                  <p>to {new Date().toDateString()}</p>
+                </FormGroup>
+                <Button
+                  className={`${classes.modalBtn} ${classes.activitiesBtn}`}
+                  type="submit"
+                >
+                  Get Fitbit Activities
+                </Button>
+              </Form>
+              {runs ? (
+                <Table>
+                  {loading ? (
+                    <Spinner></Spinner>
+                  ) : (
+                    <>
+                      {" "}
+                      <h5>Runs</h5>
+                      <thead className={classes.thead}>
+                        <tr className={classes.tr}>
+                          <th className={classes.th}>#</th>
+                          <th className={classes.th}>Date</th>
+                          <th className={classes.th}>Kilometers</th>
+                          <th className={classes.th}>Time</th>
+                          <th className={classes.th}>Pace km</th>
+                          <th className={classes.th}>Elevation/m</th>
+                          <th className={classes.th}>Average HR</th>
+                          <th className={classes.th}>Upload</th>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </>
+                      </thead>
+                      <tbody>
+                        {runs.map((run: any, index: number) => {
+                          return (
+                            <tr className={classes.tr} key={index}>
+                              <th scope="row">{index + 1}</th>
+                              <td className={classes.td}>
+                                {run.startTime
+                                  ? new Date(run.startTime).toDateString()
+                                  : "N/A"}
+                              </td>
+                              <td className={classes.td}>
+                                {run.distance ? run.distance.toFixed(2) : "N/A"}
+                              </td>
+                              <td className={classes.td}>
+                                {run.activeDuration
+                                  ? new Date(run.activeDuration)
+                                      .toISOString()
+                                      .substr(11, 8)
+                                  : "N/A"}
+                              </td>
+                              <td className={classes.td}>
+                                {run.pace
+                                  ? new Date(run.pace * 1000)
+                                      .toISOString()
+                                      .substr(11, 8)
+                                  : "N/A"}
+                              </td>
+                              <td className={classes.td}>
+                                {run.elevationGain
+                                  ? run.elevationGain.toFixed(2)
+                                  : "N/A"}
+                              </td>
+                              <td className={classes.td}>
+                                {run.averageHeartRate
+                                  ? run.averageHeartRate
+                                  : "N/A"}
+                              </td>
+                              {alreadyAdded.includes(run.logId) ? (
+                                <div style={{ display: "flex" }}>
+                                  <h5 style={{ color: "green" }}>
+                                    Added &#10003;
+                                  </h5>
+                                  <div
+                                    className={classes.fitbitRemoverBtn}
+                                    onClick={(e) => runRemover(run)}
+                                  >
+                                    Undo
+                                  </div>
+                                </div>
+                              ) : (
+                                <Button onClick={(e) => runAdder(run)}>
+                                  Add Run
+                                </Button>
+                              )}
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </>
+                  )}
+                </Table>
+              ) : (
+                <></>
               )}
-            </Table>
+              {response ? <Alert>{response}</Alert> : <></>}
+            </>
           ) : (
-            <></>
+            <FitbitAuth userInfo={props.userInfo} />
           )}
-          {response ? <Alert>{response}</Alert> : <></>}
         </ModalBody>
         <ModalFooter>
           <Button

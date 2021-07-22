@@ -17,10 +17,12 @@ import {
 import { Activity, UserInfo } from "../../../../models";
 import { deleter, getter, poster, updater } from "../../../../utilities";
 import axios from "axios";
+import StravaAuth from "./StravaAuth";
 
 interface StravaAdderProps {
   userInfo: UserInfo;
   activities: Activity[];
+  startDate: number; //from AthleteLanding
   setActivities: React.Dispatch<React.SetStateAction<Activity[]>>;
 }
 
@@ -28,9 +30,12 @@ const StravaAdderModal: React.FC<StravaAdderProps> = (props) => {
   const token = props.userInfo.token;
   const [runs, setRuns] = useState<any[]>([]);
   const [modal, setModal] = useState<boolean>(false);
+  const [authorized, setAuthorized] = useState<boolean>(
+    props.userInfo.user.strava_refresh ? true : false
+  );
   const [accessToken, setAccessToken] = useState<string>("");
-  const [startDate, setStartDate] = useState<number>();
-  const [endDate, setEndDate] = useState<number>();
+  const [fromDate, setFromDate] = useState<number>();
+  const [toDate, setToDate] = useState<number>();
   const [loading, setLoading] = useState<boolean>();
   const [response, setResponse] = useState<string>("");
   const [alreadyAdded, setAlreadyAdded] = useState<number[]>([]);
@@ -80,13 +85,7 @@ const StravaAdderModal: React.FC<StravaAdderProps> = (props) => {
       const sortedActivities = [
         ...props.activities,
         results.data.newActivity,
-      ].sort((a: Activity, b: Activity) => {
-        if (new Date(+a.date).getTime() > new Date(+b.date).getTime()) {
-          return -1;
-        } else {
-          return 1;
-        }
-      });
+      ].sort((a: Activity, b: Activity) => +a.date - +b.date);
       props.setActivities(sortedActivities);
     } catch (error) {
       console.log(error);
@@ -136,7 +135,7 @@ const StravaAdderModal: React.FC<StravaAdderProps> = (props) => {
     try {
       setLoading(true);
       const results = await axios(
-        `https://www.strava.com/api/v3/athlete/activities?before=${endDate}&after=${startDate}&per_page=200&access_token=${accessToken}`
+        `https://www.strava.com/api/v3/athlete/activities?before=${toDate}&after=${fromDate}&per_page=200&access_token=${accessToken}`
       );
       const runsData = await results.data.filter(
         (activity: any) =>
@@ -148,16 +147,32 @@ const StravaAdderModal: React.FC<StravaAdderProps> = (props) => {
       );
       setRuns(runsData);
       setLoading(false);
-    } catch (error) {
-      console.log(error);
-      if (error.response !== undefined && error.response.status < 500) {
-        setResponse(error.response.data.message);
-      } else {
+      setResponse(
+        results.data.length > 0 ? "Success" : "No runs for that period."
+      );
+      setTimeout(() => {
         setResponse("");
+      }, 1500);
+    } catch (error) {
+      console.log(error.response);
+      if (error.response.status === 401) {
+        setResponse("Looks like you may need to reauthorize access to Strava");
+        setTimeout(() => {
+          setAuthorized(false);
+        }, 2100);
+      } else if (error.response !== undefined && error.response.status < 500) {
+        setResponse(
+          error.response.data.message +
+            "If problem perists, you may need to reauthorize in settings."
+        );
+      } else {
+        setResponse(
+          "Error: If problem perists, you may need to reauthorize in settings."
+        );
       }
       setTimeout(() => {
         setResponse("");
-      }, 2200);
+      }, 2500);
     } finally {
       setLoading(false);
     }
@@ -194,7 +209,7 @@ const StravaAdderModal: React.FC<StravaAdderProps> = (props) => {
         if (error.response !== undefined && error.response.status < 500) {
           setResponse(error.response.data.message);
         } else {
-          setResponse("");
+          setResponse("An error has occurred.");
         }
         setTimeout(() => {
           setResponse("");
@@ -230,121 +245,134 @@ const StravaAdderModal: React.FC<StravaAdderProps> = (props) => {
           <header className={classes.headerText}>Strava Activities</header>
         </ModalHeader>
         <ModalBody className={classes.modalBody}>
-          <Form className={classes.form} onSubmit={(e) => activitiesFetcher(e)}>
-            <FormGroup>
-              <Label htmlFor="start date">From</Label>
-              <Input
-                required
-                type="date"
-                name="start date"
-                onChange={(e) =>
-                  setStartDate(new Date(e.target.value).getTime() / 1000)
-                }
-              ></Input>
-              <p>to {new Date().toDateString()}</p>
-            </FormGroup>
-            <FormGroup>
-              <Label htmlFor="end date">To</Label>
-              <Input
-                required
-                type="date"
-                name="end date"
-                onChange={(e) => {
-                  setEndDate(new Date(e.target.value).getTime() / 1000);
-                }}
-              ></Input>
-              <p>to {new Date().toDateString()}</p>
-            </FormGroup>
-            <Button
-              className={`${classes.modalBtn} ${classes.activitiesBtn}`}
-              type="submit"
-            >
-              Get Strava Activities
-            </Button>
-          </Form>
-          {runs ? (
-            <Table>
-              {loading ? (
-                <Spinner></Spinner>
-              ) : (
-                <>
-                  {" "}
-                  <h5>Runs</h5>
-                  <thead className={classes.thead}>
-                    <tr className={classes.tr}>
-                      <th className={classes.th}>#</th>
-                      <th className={classes.th}>Date</th>
-                      <th className={classes.th}>Kilometers</th>
-                      <th className={classes.th}>Duration</th>
-                      <th className={classes.th}>Pace km</th>
-                      <th className={classes.th}>Elevation/m</th>
-                      <th className={classes.th}>Average HR</th>
-                      <th className={classes.th}>Upload</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {runs.map((run: any, index: number) => {
-                      return (
-                        <tr className={classes.tr} key={index}>
-                          <th scope="row">{index + 1}</th>
-                          <td className={classes.td}>
-                            {run.start_date_local
-                              ? new Date(run.start_date_local).toDateString()
-                              : "N/A"}
-                          </td>
-                          <td className={classes.td}>
-                            {run.distance
-                              ? (run.distance.toFixed(2) / 1000).toFixed(2)
-                              : "N/A"}
-                          </td>
-                          <td className={classes.td}>
-                            {run.moving_time
-                              ? secondsToTime(run.moving_time)
-                              : "N/A"}
-                          </td>
-                          <td className={classes.td}>
-                            {run.moving_time && run.distance
-                              ? secondsToTime(
-                                  run.moving_time / (run.distance / 1000)
-                                )
-                              : "N/A"}
-                          </td>
-                          <td className={classes.td}>
-                            {run.total_elevation_gain
-                              ? run.total_elevation_gain.toFixed(2)
-                              : "N/A"}
-                          </td>
-                          <td className={classes.td}>
-                            {run.average_heartrate
-                              ? run.average_heartrate
-                              : "N/A"}
-                          </td>
-                          {alreadyAdded.includes(run.id) ? (
-                            <div style={{ display: "flex" }}>
-                              <h5 style={{ color: "green" }}>Added &#10003;</h5>
-                              <div
-                                className={classes.activitiesRemoverBtn}
-                                onClick={(e) => runRemover(run)}
-                              >
-                                Undo
-                              </div>
-                            </div>
-                          ) : (
-                            <Button onClick={(e) => runAdder(run)}>
-                              Add Run
-                            </Button>
-                          )}
+          {authorized ? (
+            <>
+              <Form
+                className={classes.form}
+                onSubmit={(e) => activitiesFetcher(e)}
+              >
+                <FormGroup>
+                  <Label htmlFor="start date">From</Label>
+                  <Input
+                    required
+                    type="date"
+                    name="start date"
+                    onChange={(e) =>
+                      setFromDate(new Date(e.target.value).getTime() / 1000)
+                    }
+                  ></Input>
+                  <p>to {new Date().toDateString()}</p>
+                </FormGroup>
+                <FormGroup>
+                  <Label htmlFor="end date">To</Label>
+                  <Input
+                    required
+                    type="date"
+                    name="end date"
+                    onChange={(e) => {
+                      setToDate(new Date(e.target.value).getTime() / 1000);
+                    }}
+                  ></Input>
+                  <p>to {new Date().toDateString()}</p>
+                </FormGroup>
+                <Button
+                  className={`${classes.modalBtn} ${classes.activitiesBtn}`}
+                  type="submit"
+                >
+                  Get Strava Activities
+                </Button>
+              </Form>
+              {runs ? (
+                <Table>
+                  {loading ? (
+                    <Spinner></Spinner>
+                  ) : (
+                    <>
+                      {" "}
+                      <h5>Runs</h5>
+                      <thead className={classes.thead}>
+                        <tr className={classes.tr}>
+                          <th className={classes.th}>#</th>
+                          <th className={classes.th}>Date</th>
+                          <th className={classes.th}>Kilometers</th>
+                          <th className={classes.th}>Duration</th>
+                          <th className={classes.th}>Pace km</th>
+                          <th className={classes.th}>Elevation/m</th>
+                          <th className={classes.th}>Average HR</th>
+                          <th className={classes.th}>Upload</th>
                         </tr>
-                      );
-                    })}
-                  </tbody>
-                </>
+                      </thead>
+                      <tbody>
+                        {runs.map((run: any, index: number) => {
+                          return (
+                            <tr className={classes.tr} key={index}>
+                              <th scope="row">{index + 1}</th>
+                              <td className={classes.td}>
+                                {run.start_date_local
+                                  ? new Date(
+                                      run.start_date_local
+                                    ).toDateString()
+                                  : "N/A"}
+                              </td>
+                              <td className={classes.td}>
+                                {run.distance
+                                  ? (run.distance.toFixed(2) / 1000).toFixed(2)
+                                  : "N/A"}
+                              </td>
+                              <td className={classes.td}>
+                                {run.moving_time
+                                  ? secondsToTime(run.moving_time)
+                                  : "N/A"}
+                              </td>
+                              <td className={classes.td}>
+                                {run.moving_time && run.distance
+                                  ? secondsToTime(
+                                      run.moving_time / (run.distance / 1000)
+                                    )
+                                  : "N/A"}
+                              </td>
+                              <td className={classes.td}>
+                                {run.total_elevation_gain
+                                  ? run.total_elevation_gain.toFixed(2)
+                                  : "N/A"}
+                              </td>
+                              <td className={classes.td}>
+                                {run.average_heartrate
+                                  ? run.average_heartrate
+                                  : "N/A"}
+                              </td>
+                              {alreadyAdded.includes(run.id) ? (
+                                <div style={{ display: "flex" }}>
+                                  <h5 style={{ color: "green" }}>
+                                    Added &#10003;
+                                  </h5>
+                                  <div
+                                    className={classes.activitiesRemoverBtn}
+                                    onClick={(e) => runRemover(run)}
+                                  >
+                                    Undo
+                                  </div>
+                                </div>
+                              ) : (
+                                <Button onClick={(e) => runAdder(run)}>
+                                  Add Run
+                                </Button>
+                              )}
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </>
+                  )}
+                </Table>
+              ) : (
+                <></>
               )}
-            </Table>
+              {response ? <Alert>{response}</Alert> : <></>}
+            </>
           ) : (
-            <></>
+            <StravaAuth userInfo={props.userInfo} />
           )}
-          {response ? <Alert>{response}</Alert> : <></>}
         </ModalBody>
         <ModalFooter>
           <Button

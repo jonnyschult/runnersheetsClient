@@ -1,8 +1,8 @@
 import React from "react";
 import classes from "../Athlete.module.css";
+import Demo from "./Demo";
 import FitbitAdderModal from "./fitbitFlow/FitbitAdderModal";
 import StravaAdderModal from "./stravaFlow/StravaAdderModal";
-// import GarminAdderModal from "./garminFlow/GarminAdderModal";
 import ManualActivityAdder from "./ManualActivityAdder";
 import { Card, CardBody, CardTitle } from "reactstrap";
 import { Activity, UserInfo } from "../../../models";
@@ -27,11 +27,13 @@ const AdderCard: React.FC<AdderCardProps> = (props) => {
             userInfo={props.userInfo}
             activities={props.activities}
             setActivities={props.setActivities}
+            startDate={props.startDate}
           />
           <FitbitAdderModal
             userInfo={props.userInfo}
             activities={props.activities}
             setActivities={props.setActivities}
+            startDate={props.startDate}
           />
           <ManualActivityAdder
             userInfo={props.userInfo}
@@ -40,6 +42,16 @@ const AdderCard: React.FC<AdderCardProps> = (props) => {
             endDate={props.endDate}
             startDate={props.startDate}
           />
+          {window.location.hostname === "localhost" ? (
+            <Demo
+              userInfo={props.userInfo}
+              activities={props.activities}
+              setActivities={props.setActivities}
+              startDate={props.startDate}
+            />
+          ) : (
+            <></>
+          )}
         </CardBody>
       </Card>
     </div>
