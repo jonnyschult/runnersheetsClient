@@ -55,11 +55,17 @@ const RemoveClubmodal: React.FC<RemoveClubModalProps> = (props) => {
         }, 2200);
       } catch (error) {
         console.log(error);
-        setResponse(error.message);
+        if (error.response.status === 403) {
+          setResponse(
+            "You cannot remove yourself from a club where you are the only chair person. Got to clubs and delete the club."
+          );
+        } else {
+          setResponse("There was an error");
+        }
         setTimeout(() => {
           setResponse("");
           toggle();
-        }, 2200);
+        }, 3000);
       } finally {
         setLoading(false);
       }
@@ -68,7 +74,7 @@ const RemoveClubmodal: React.FC<RemoveClubModalProps> = (props) => {
       setTimeout(() => {
         setResponse("");
         toggle();
-      }, 2200);
+      }, 30000);
     }
   };
 
