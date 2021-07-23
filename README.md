@@ -1,35 +1,47 @@
+# RunnerSheets - Frontend
 
-# runnersheetsClient
+## App Description
 
-**Overview:** This application is aimed at team running, be that high school crosscountry teams, or a local running club. As such, this project orients around two main hubs, the athlete hub, and the coach hub. The athlete hub is where users can manually upload activities, or transfer them from fitbit. It also presents these activities on a table which display data such as distance, pace and heart rate. All activities are full CRUD. Also, athletes can see the teams they are on and update their biometrics. The coaches hub is the most feature rich section of the app. Here, coaches can create teams, add staff and athletes, and view athlete activites. Each athlete has a section which display their activities, and there is a collated, printable sheet on the side. Also, individual user activities can be printed. Teams and staff are full CRUD. 
+RunnerSheets is an ongoing project meant to be a data hub, integrating activities stored on various platforms. As of now, it is integrated with Strava and Fitbit. The app also allows one to share data with other users via the club option, and it allows coaches to collate the data from their team members without sharing that data between peers.
 
-Here is the app: [RunnerSheets](https://runnersheetsclient.herokuapp.com/)
+### Features
 
-### Important feature:
-- **Fitbit connectivity**
-    - follows an Oath 2.0 flow.
-    - client ID and client Secret are stored in server .env file
-    - client ID and client Secret Base64 encoded for fetch calls is stored in .env file
-    - refresh token, which is a onetime use token to get an access token, is stored in the database. 
-    - the user must grant permission for data to be accessed by app. 
-    - activities are checked against database activities to prevent duplicate adds. 
-- **Coach's view**
-    - coach is able to pull all activities for athletes on team. 
-    - athletes can be easily added or removed from team, this does not effect athlete data
-    - coach can update athlete biometrics
-    - measure are in place to ensure that at least one person on the team has the "manager" role, which has access to all endpoints and can delete team. 
-    - coach can easily view training iteration with preset and custom date values options to retrieve specific workout intervals.
-    - individual athlete and all team workouts are printable
-- **General User/Athlete**
-    - users are full CRUD. Biometrics, personal data, and password are all updatable, and user can delete themselves. 
-    - activities can also be manually created and updated. 
-    - activities can be viewed in a single sheet descending according to date. 
+- Oauth integration with Strava and Fitbit
+- Full User CRUD
+- Team data sharing with a coach or coaches
+- Club peer to peer data sharing
+- Chartjs data visualization
+- Manual activity adder
 
-### Dependencies
-- **React:** Base technology for client
-- **Reactstrap/Bootstrap:** Assisted with styling and modals. 
-- **CSS Modules:** Used for most of the styling.
-- **React-router-dom:** Used for page navigation
+This project is hosted on Heroku
 
+[Demo for RunnerSheets](https://runnersheetsclient.herokuapp.com)
 
-<!--prettier-ignore-end-->
+## Backend
+
+Go to [GitHub-RunnerSheetsServer](https://github.com/jonnyschult/runnersheetsServer) and follow the instructions in the README to start the server and set up the database.
+
+## Frontend
+
+This app is built with React, so the starting up process is fairly straightforward.
+
+- Move to the root directory of the project
+- Run `npm install` or `yarn install`
+- Run `npm start` or `yarn start`
+
+[Create-React-App boilerplate](https://github.com/facebook/create-react-app/blob/main/packages/cra-template/template/README.md)
+
+## Using RunnerSheets
+
+1. Follow the instruction on the backend's README to start the server and create the database.
+2. Once it is running, press the "+Yourself or Sign In" button and register a user. With the user registered, the app should automatically redirect you to the athlete's landing page.
+3. Click on the "Create Demo Data" button in the "Add Activities" container at the bottom right of the browser screen. This button is only available when the app is running on localhost.
+4. Type in "testpass" for the password and press the "Generate Activites" button. **If you put a different value for the DEMO_PASS .env variable on the backend, you'll have to use that instead**.
+
+This should generate about a years worth of runs assuming moderate running ability. It will also create 3 clubs, two of which you are a members, one of which you are the chair person. You have different permissions depending on which role you have. To populate those clubs, the demo button also adds about a years worth of runs for each user in those clubs. You can see this by clicking through the clubs page. I didn't bother populating the coaches page because it is very similar to the clubs page, except only the coach can see the activities.
+
+From here, you do whatever you want. You can update user info, change password, delete user, etc. You can also log in as the other generated users. You can find their emails on the club page. All of their passwords are "testpass".
+
+Couple final notes. As mentioned above, the Strava and Fitbit integration won't work, because you'd need my seceret keys, and I'm not sharing. Second, the UX/UI is a bit clunky, but adequate for testing out the functionality. If/when I redesign this app, it will be smoother.
+
+Contact me: jonathon.schult@gmail.com
