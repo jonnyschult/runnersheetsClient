@@ -47,7 +47,7 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
         if (activitiesResults.data.activities.length > 0) {
           const sortedActivities: Activity[] =
             activitiesResults.data.activities.sort(
-              (a: Activity, b: Activity) => +a.date > +b.date
+              (a: Activity, b: Activity) => +b.date - +a.date
             );
           setClubActivities(sortedActivities ? sortedActivities : []);
         } else {
@@ -59,7 +59,7 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
         if (error.response) {
           setError(error.response.data.message);
         } else {
-          setError("Problem fetching your data. Please let site admin Know.");
+          setError("Problem fetching your data.  .");
         }
       } finally {
         setLoading(false);
@@ -117,7 +117,7 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
         if (error.response) {
           setError(error.response.data.message);
         } else {
-          setError("Problem fetching your data. Please let site admin Know.");
+          setError("Problem fetching your data.  .");
         }
       } finally {
         setLoadingMain(false);

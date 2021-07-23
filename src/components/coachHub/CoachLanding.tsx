@@ -58,7 +58,7 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
           if (error.response) {
             setError(error.response.data.message);
           } else {
-            setError("Problem fetching your data. Please let site admin Know.");
+            setError("Problem fetching your data.  .");
           }
           console.log(error);
         } finally {
@@ -118,7 +118,7 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
         if (error.response) {
           setError(error.response.data.message);
         } else {
-          setError("Problem fetching your data. Please let site admin Know.");
+          setError("Problem fetching your data.  .");
         }
       } finally {
         setLoadingMain(false);

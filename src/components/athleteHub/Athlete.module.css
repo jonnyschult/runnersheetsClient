@@ -160,7 +160,7 @@
   cursor: pointer;
 }
 
-.runDescription {
+.activityDescription {
   visibility: hidden;
   width: 200px;
   background-color: rgb(41, 41, 43);
@@ -172,7 +172,7 @@
   z-index: 1;
 }
 
-.descriptionExpander:hover + .runDescription {
+.descriptionExpander:hover + .activityDescription {
   visibility: visible;
 }
 

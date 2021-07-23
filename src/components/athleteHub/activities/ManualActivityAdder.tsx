@@ -81,12 +81,7 @@ const ManualActivityAdder: React.FC<ManualActivityProps> = (props) => {
             ...props.activities,
             newActivity,
           ].sort((actA: Activity, actB: Activity) => actB.date - actA.date);
-          const currentActivities = results.data.generatedActivities.filter(
-            (act: Activity) => act.date > props.startDate
-          );
-          props.setActivities(currentActivities);
-        } else if (props.activities.length === 0) {
-          props.setActivities([newActivity]);
+          props.setActivities(sortedActivities);
         }
 
         setMinutes(0);

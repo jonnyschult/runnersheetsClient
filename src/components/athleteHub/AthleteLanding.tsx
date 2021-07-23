@@ -46,7 +46,7 @@ const AthleteLanding: React.FC<AthleteLandingProps> = (props) => {
           `start_date=${startDate}&end_date=${endDate}`
         );
         const sortedActivities = activitiesResults.data.activities.sort(
-          (a: Activity, b: Activity) => +a.date - +b.date
+          (a: Activity, b: Activity) => +b.date - +a.date
         );
         setActivities(sortedActivities);
       } catch (error) {
@@ -55,7 +55,7 @@ const AthleteLanding: React.FC<AthleteLandingProps> = (props) => {
         if (error.response) {
           setError(error.response.data.message);
         } else {
-          setError("Problem fetching your data. Please let site admin Know.");
+          setError("Problem fetching your data.  .");
         }
         console.log(error);
       } finally {

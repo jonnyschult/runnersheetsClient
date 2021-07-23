@@ -47,7 +47,7 @@ const Login: React.FC<LoginProps> = (props) => {
       if (error.response !== undefined) {
         setError(error.response.data.message);
       } else {
-        setError("Problem creating your account. Please let site admin know");
+        setError("Problem creating your account.  ");
       }
       setTimeout(() => {
         setError("");
