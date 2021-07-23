@@ -47,15 +47,8 @@ const ClubLanding: React.FC<ClubLandingProps> = (props) => {
         if (activitiesResults.data.activities.length > 0) {
           const sortedActivities: Activity[] =
             activitiesResults.data.activities.sort(
-              (a: Activity, b: Activity) => {
-                if (new Date(+a.date).getTime() > new Date(+b.date).getTime()) {
-                  return 1;
-                } else {
-                  return -1;
-                }
-              }
+              (a: Activity, b: Activity) => +a.date > +b.date
             );
-          console.log(sortedActivities);
           setClubActivities(sortedActivities ? sortedActivities : []);
         } else {
           setClubActivities([]);

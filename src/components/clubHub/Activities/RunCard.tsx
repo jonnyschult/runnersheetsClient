@@ -12,10 +12,7 @@ interface RunCardProps {
 
 const RunCard: React.FC<RunCardProps> = (props) => {
   const clubMember = props.clubMember;
-  const activities = props.activities.sort(
-    (runA, runB) =>
-      new Date(runB.date).getTime() - new Date(runA.date).getTime()
-  );
+  const activities = props.activities;
 
   const [expand, setExpand] = useState(true);
 

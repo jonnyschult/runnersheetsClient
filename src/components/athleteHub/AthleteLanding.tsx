@@ -11,6 +11,7 @@ import ChartsAndGraphs from "../charts/ChartsAndGraphs";
 import { Container, Spinner } from "reactstrap";
 import { Activity, Club, Team, UserInfo } from "../../models";
 import { getter } from "../../utilities";
+import { convertCompilerOptionsFromJson } from "typescript";
 
 interface AthleteLandingProps {
   userInfo: UserInfo;
@@ -45,13 +46,7 @@ const AthleteLanding: React.FC<AthleteLandingProps> = (props) => {
           `start_date=${startDate}&end_date=${endDate}`
         );
         const sortedActivities = activitiesResults.data.activities.sort(
-          (a: Activity, b: Activity) => {
-            if (new Date(+a.date).getTime() > new Date(+b.date).getTime()) {
-              return -1;
-            } else {
-              return 1;
-            }
-          }
+          (a: Activity, b: Activity) => +a.date - +b.date
         );
         setActivities(sortedActivities);
       } catch (error) {

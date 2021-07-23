@@ -47,23 +47,11 @@ const CoachLanding: React.FC<CoachLandingProps> = (props) => {
             `teams/getTeamActivities/${selectedTeam.id}`,
             `start_date=${startDate}&end_date=${endDate}`
           );
-          if (activitiesResults.data.activities.length > 0) {
-            const sortedActivities: Activity[] =
-              activitiesResults.data.activities.sort(
-                (a: Activity, b: Activity) => {
-                  if (
-                    new Date(+a.date).getTime() > new Date(+b.date).getTime()
-                  ) {
-                    return 1;
-                  } else {
-                    return -1;
-                  }
-                }
-              );
-            setTeamActivities(sortedActivities ? sortedActivities : []);
-          } else {
-            setTeamActivities([]);
-          }
+          const sortedActivities: Activity[] =
+            activitiesResults.data.activities.sort(
+              (a: Activity, b: Activity) => +a.date > +b.date
+            );
+          setTeamActivities(sortedActivities);
         } catch (error) {
           console.log(error);
           setErrorPage(true);
